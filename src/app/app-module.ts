@@ -12,12 +12,14 @@ import { LayoutModule } from './layout/layout-module';
 // Pages
 import { Home } from './home/home';
 import { NotFound } from './not-found/not-found';
+import { ProductFilterPipe } from './pipes/product-filter-pipe';
 
 @NgModule({
   declarations: [
     App,
     Home,
-    NotFound
+    NotFound,
+    ProductFilterPipe
   ],
   imports: [
     BrowserModule,
