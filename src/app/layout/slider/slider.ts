@@ -15,25 +15,25 @@ export class Slider implements OnInit, OnDestroy {
       title: 'Premium Collection',
       subtitle: 'Discover Our Finest Blends',
       startCost : "10.00$",
-      image: 'assets/slider/th.jpeg',
+      image: 'assets/slider/OIP.jpeg',
       buttonText: 'Shop Now',
-      buttonLink: '/tea-beans'
+      buttonLink: '/products'
     },
     {
       title: 'Elegant Accessories',
       subtitle: 'Complete Your Experience',
       startCost : "50.00$",
-      image: 'assets/slider/accessories.jpeg',
+      image: 'assets/slider/tea.jpeg',
       buttonText: 'Shop Now',
-      buttonLink: '/tea-mugs'
+      buttonLink: '/products'
     },
     {
       title: 'Professional Machines',
       subtitle: 'Brewing Perfection Made Simple',
       startCost : "200.00$",
-      image: 'assets/slider/machine.jpeg',
+      image: 'assets/slider/slider1.jpeg',
       buttonText: 'Shop Now',
-      buttonLink: '/tea-machines'
+      buttonLink: '/products'
     }
   ];
 

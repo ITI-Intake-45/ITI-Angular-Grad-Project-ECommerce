@@ -1,5 +1,5 @@
-
 import { Component } from '@angular/core';
+import { AuthService } from '../../core/services/auth'; // Adjust the path as needed
 
 @Component({
   selector: 'app-sidebar',
@@ -10,7 +10,8 @@ import { Component } from '@angular/core';
 export class Sidebar {
   isVisible = false;
 
-  navigationItems = [
+  // Base navigation items that are always shown
+  baseNavigationItems = [
     {
       icon: 'fas fa-home',
       label: 'Home',
@@ -18,23 +19,15 @@ export class Sidebar {
       color: '#3498db'
     },
     {
-      icon: 'fas fa-leaf',
-      label: 'Tea Beans',
-      route: '/tea-beans',
-      color: '#27ae60'
-    },
-    {
-      icon: 'fas fa-coffee',
-      label: 'Tea Mugs',
-      route: '/tea-mugs',
-      color: '#e67e22'
-    },
-    {
-      icon: 'fas fa-cog',
-      label: 'Machines',
-      route: '/tea-machines',
+      icon: 'fas fa-store',
+      label: 'Store',
+      route: '/products',
       color: '#9b59b6'
     },
+  ];
+
+  // Items shown only for logged-in users
+  authenticatedItems = [
     {
       icon: 'fas fa-shopping-cart',
       label: 'Cart',
@@ -46,8 +39,41 @@ export class Sidebar {
       label: 'Profile',
       route: '/profile',
       color: '#34495e'
-    }
+    },
+    {
+      icon: 'fas fa-sign-out-alt',
+      label: 'Logout',
+      route: '/logout',
+      color: '#e67e22'
+    },
   ];
+
+  // Items shown only for non-logged-in users
+  unauthenticatedItems = [
+    {
+      icon: 'fas fa-sign-in',
+      label: 'Login',
+      route: '/login',
+      color: '#f39c12'
+    },
+    {
+      icon: 'fas fa-user-plus',
+      label: 'Register',
+      route: '/register',
+      color: '#f39c12'
+    },
+  ];
+
+  // Calculate the final navigation items
+  get navigationItems() {
+    if (this.authService.isAuthenticated()) {
+      return [...this.baseNavigationItems, ...this.authenticatedItems];
+    } else {
+      return [...this.baseNavigationItems, ...this.unauthenticatedItems];
+    }
+  }
+
+  constructor(private authService: AuthService) {}
 
   toggleVisibility() {
     this.isVisible = !this.isVisible;

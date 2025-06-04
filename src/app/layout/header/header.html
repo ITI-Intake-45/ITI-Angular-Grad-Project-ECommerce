@@ -115,14 +115,24 @@
               <i class="fas fa-envelope me-1"></i>Contact Us
             </a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" *ngIf="!authService.isAuthenticated()">
             <a class="nav-link" routerLink="/register">
               <i class="fas fa-user-plus me-1"></i>Register
             </a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" *ngIf="!authService.isAuthenticated()">
             <a class="nav-link" routerLink="/login">
               <i class="fas fa-sign-in-alt me-1"></i>Login
+            </a>
+          </li>
+          <li class="nav-item" *ngIf="authService.isAuthenticated()">
+            <a class="nav-link" routerLink="/profile">
+              <i class="fas fa-user-alt me-1"></i>Account
+            </a>
+          </li>
+          <li class="nav-item" *ngIf="authService.isAuthenticated()">
+            <a class="nav-link" routerLink="/logout">
+              <i class="fas fa-sign-out-alt me-1"></i>Logout
             </a>
           </li>
         </ul>
@@ -135,13 +145,13 @@
       <div class="col-md-4">
         <ul class="navbar-nav main-nav d-flex flex-row">
           <li class="nav-item">
-            <a class="nav-link" routerLink="/tea-beans" routerLinkActive="active"> Beans </a>
+            <a class="nav-link" routerLink="/products" routerLinkActive="active"> Beans </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/tea-mugs" routerLinkActive="active"> Mugs </a>
+            <a class="nav-link" routerLink="/products" routerLinkActive="active"> Mugs </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/tea-machines" routerLinkActive="active"> Machines </a>
+            <a class="nav-link" routerLink="/products" routerLinkActive="active"> Machines </a>
           </li>
         </ul>
       </div>
@@ -163,7 +173,7 @@
       <div class="col-md-4">
         <ul class="navbar-nav icon-nav d-flex flex-row justify-content-end">
           <li class="nav-item">
-            <a class="nav-link store-link" routerLink="/store">
+            <a class="nav-link store-link" routerLink="/">
               <i class="fas fa-home"></i>
             </a>
           </li>

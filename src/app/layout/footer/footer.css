@@ -57,7 +57,7 @@
           transition: color 0.3s;
 
           &:hover {
-            color: #000;
+            color: #f39c12;
           }
         }
       }
@@ -75,7 +75,7 @@
       transition: color 0.3s;
 
       &:hover {
-        color: #000;
+        color: #f39c12;
       }
     }
   }
