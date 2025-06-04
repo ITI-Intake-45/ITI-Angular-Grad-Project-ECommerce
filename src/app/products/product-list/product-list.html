@@ -12,12 +12,18 @@
     <div class="products-header">
       <div class="product-count">
         Products {{ products.length }} of {{ totalProducts }}
+<select (change)="onPageSizeChange($event)">
+          <option value="9" selected>Show 9</option>
+          <option value="18">Show 18</option>
+          <option value="33">Show 33</option>
+        </select>
       </div>
       <div class="sort-by">
         <label>Sort By:</label>
         <select (change)="onSortChange($event)">
+          <option value="">None</option>
           <option value="asc">Lowest Price</option>
-          <option value="desc" selected>Highest Price</option>
+          <option value="desc">Highest Price</option>
         </select>
       </div>
     </div>

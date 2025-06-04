@@ -19,7 +19,7 @@ import { ProductFilterPipe } from './pipes/product-filter-pipe';
     App,
     Home,
     NotFound,
-    ProductFilterPipe
+    ProductFilterPipe,
   ],
   imports: [
     BrowserModule,

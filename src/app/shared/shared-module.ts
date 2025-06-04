@@ -12,6 +12,8 @@ import { Breadcrumb } from './breadcrumb/breadcrumb';
 import { Rating } from './rating/rating';
 import { ImageGallery } from './image-gallery/image-gallery';
 import { ConfirmDialog } from './confirm-dialog/confirm-dialog';
+import { TruncateWordsPipe } from '../pipes/truncate-words-pipe';
+
 
 @NgModule({
   declarations: [
@@ -23,7 +25,8 @@ import { ConfirmDialog } from './confirm-dialog/confirm-dialog';
     Breadcrumb,
     Rating,
     ImageGallery,
-    ConfirmDialog
+    ConfirmDialog,
+    TruncateWordsPipe
   ],
   imports: [
     CommonModule,
@@ -46,7 +49,8 @@ import { ConfirmDialog } from './confirm-dialog/confirm-dialog';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    RouterModule
+    RouterModule,
+    TruncateWordsPipe
   ]
 })
 export class SharedModule { }

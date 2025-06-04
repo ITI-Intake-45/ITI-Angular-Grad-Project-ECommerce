@@ -1,10 +1,12 @@
 import { Component, Input } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Product } from '../../shared/models';
 
+
 @Component({
-  standalone:false,
+  standalone: false,
   selector: 'app-product-card',
-  templateUrl: './product-card.html',
+  templateUrl: './product-card.html', // Updated file name
   styleUrls: ['./product-card.css']
 })
 export class ProductCard {
@@ -12,18 +14,20 @@ export class ProductCard {
   quantity = 1;
   showActions = false;
 
+  constructor(private sanitizer: DomSanitizer) {}
+
   addToCart() {
-    // Implement cart logic here (e.g., emit event or call a cart service)
     console.log(`Added ${this.quantity} of ${this.product.name} to cart`);
   }
 
-  // quickLook() {
-  //   // Implement quick look modal logic (e.g., open a modal with product-details)
-  //   console.log(`Quick look for ${this.product.name}`);
-  // }
+  getImageUrl(): SafeUrl {
+    if (this.product && this.product.image) { // Fixed to use imagePath
+      return this.sanitizer.bypassSecurityTrustUrl(`http://localhost:8080/images/${this.product.image}`);
+    }
+    return this.sanitizer.bypassSecurityTrustUrl('https://via.placeholder.com/200?text=No+Image');
+  }
 
-  getImageUrl(): string {
-    // Construct the full URL to the image
-    return `http://localhost:8080/images/${this.product.image}`;
+  onImageError(event: Event) {
+    (event.target as HTMLImageElement).src = 'https://via.placeholder.com/200?text=No+Image';
   }
 }

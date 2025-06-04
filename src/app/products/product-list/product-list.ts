@@ -13,8 +13,8 @@ export class ProductList implements OnInit {
   categories: ProductCategory[] = [];
   totalProducts = 0;
   currentPage = 0;
-  pageSize = 9;
-  sortDir = 'desc';
+  pageSize = 9; // Default to 9
+  sortDir = ''; // Default to blank (no sorting)
   filterName: string | null = null;
   filterCategory: string | null = null;
   filterMaxPrice: number | null = null;
@@ -55,7 +55,7 @@ export class ProductList implements OnInit {
     this.filterName = filters.name;
     this.filterCategory = filters.category;
     this.filterMaxPrice = filters.maxPrice;
-    this.currentPage = 0; // Reset to first page on filter change
+    this.currentPage = 0;
     this.loadProducts();
   }
 
@@ -63,9 +63,20 @@ export class ProductList implements OnInit {
     const selectElement = event.target as HTMLSelectElement;
     if (selectElement && selectElement.value) {
       this.sortDir = selectElement.value;
-      this.loadProducts();
+    } else {
+      this.sortDir = ''; // Reset to blank (no sorting)
     }
+    this.currentPage = 0;
+    this.loadProducts();
   }
+
+onPageSizeChange(event: Event) {
+  const selectElement = event.target as HTMLSelectElement;
+  this.pageSize = +selectElement.value;
+  this.currentPage = 0;
+  this.loadProducts();
+}
+
 
   onPageChange(page: number) {
     this.currentPage = page;

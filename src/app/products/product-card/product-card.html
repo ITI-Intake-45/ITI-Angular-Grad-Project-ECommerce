@@ -1,25 +1,20 @@
-<div
-  class="product-card"
-  (mouseenter)="showActions = true"
-  (mouseleave)="showActions = false"
->
-  <img [src]="getImageUrl()" alt="{{ product.name }}" class="product-image" />
-  <div class="product-info">
-    <h3>{{ product.name }}</h3>
-    <p>{{ product.description }}</p>
+<div class="card">
+  <div class="card-img-top-container">
+    <img
+      [src]="getImageUrl()"
+      alt="{{ product.name }}"
+      class="product-image"
+      (error)="onImageError($event)"
+    />
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">{{ product.name }}</h5>
+  <p class="card-text">{{ product.description | truncateWords:50 }}</p>
     <div class="price-stock">
       <span class="price">${{ product.price }}</span>
       <span class="stock">Stock: {{ product.stock }}</span>
     </div>
   </div>
-
-  <!-- Hover Actions -->
-  <!-- <div class="hover-actions" *ngIf="showActions">
-    <button (click)="addToCart()">Add to Cart</button>
-    <button (click)="quickLook()">Quick Look</button>
-  </div> -->
-
-  <!-- Quantity and Add to Cart (Visible by default like the second screenshot) -->
   <div class="quantity-cart" *ngIf="product.stock > 0">
     <div class="quantity">
       <button (click)="quantity = quantity > 1 ? quantity - 1 : 1">-</button>
