@@ -3,47 +3,48 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 @Component({
   standalone: false,
   selector: 'app-pagination',
-  template: `
-    <div class="pagination">
-      <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 0">
-        Previous
-      </button>
-      <span>Page {{ currentPage + 1 }} of {{ totalPages }}</span>
-      <button
-        (click)="onPageChange(currentPage + 1)"
-        [disabled]="currentPage >= totalPages - 1"
-      >
-        Next
-      </button>
-    </div>
-  `,
-  styles: [
-    `
-      .pagination {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-        margin-top: 20px;
-      }
-      button {
-        padding: 8px 12px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      button[disabled] {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-    `
-  ]
+  templateUrl: './pagination.html',
+  styleUrls: ['./pagination.css']
 })
 export class Pagination {
   @Input() currentPage = 0;
   @Input() totalItems = 0;
   @Input() pageSize = 9;
   @Output() pageChange = new EventEmitter<number>();
+
+get pages(): number[] {
+  const total = this.totalPages;
+  const current = this.currentPage;
+  const maxVisible = 5;
+  const pages: number[] = [];
+
+  if (total <= maxVisible + 2) {
+    // Show all pages if few
+    return Array.from({ length: total }, (_, i) => i);
+  }
+
+  const start = Math.max(1, current - 2);
+  const end = Math.min(total - 2, current + 2);
+
+  pages.push(0); // Always show first page
+
+  if (start > 1) {
+    pages.push(-1); // -1 will represent '...'
+  }
+
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+
+  if (end < total - 2) {
+    pages.push(-1); // '...'
+  }
+
+  pages.push(total - 1); // Always show last page
+
+  return pages;
+}
+
 
   get totalPages(): number {
     return Math.ceil(this.totalItems / this.pageSize);

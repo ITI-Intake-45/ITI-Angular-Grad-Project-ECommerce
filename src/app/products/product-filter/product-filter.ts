@@ -10,27 +10,32 @@ import { ProductCategory } from '../../shared/models';
 export class ProductFilter {
   @Input() categories: ProductCategory[] = [];
   @Output() filterChange = new EventEmitter<{
-    name: string | null;
-    category: string | null;
-    maxPrice: number | null;
-  }>();
+  name: string | null;
+  category: string | null;
+  minPrice: number | null;
+  maxPrice: number | null;
+}>();
 
-  filterName: string | null = null;
-  filterCategory: string | null = null;
-  filterMaxPrice: number | null = null;
+filterName: string | null = null;
+filterCategory: string | null = null;
+filterMinPrice: number | null = null;
+filterMaxPrice: number | null = null;
 
-  applyFilters() {
-    this.filterChange.emit({
-      name: this.filterName,
-      category: this.filterCategory,
-      maxPrice: this.filterMaxPrice
-    });
-  }
+applyFilters() {
+  this.filterChange.emit({
+    name: this.filterName,
+    category: this.filterCategory,
+    minPrice: this.filterMinPrice,
+    maxPrice: this.filterMaxPrice
+  });
+}
 
-  resetFilters() {
-    this.filterName = null;
-    this.filterCategory = null;
-    this.filterMaxPrice = null;
-    this.applyFilters();
-  }
+resetFilters() {
+  this.filterName = null;
+  this.filterCategory = null;
+  this.filterMinPrice = null;
+  this.filterMaxPrice = null;
+  this.applyFilters();
+}
+
 }

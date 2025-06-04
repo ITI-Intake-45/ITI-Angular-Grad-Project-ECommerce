@@ -18,6 +18,7 @@ export class ProductList implements OnInit {
   filterName: string | null = null;
   filterCategory: string | null = null;
   filterMaxPrice: number | null = null;
+  filterMinPrice: number | null = null;
   loading = false;
 
   constructor(private productService: ProductService) {}
@@ -34,30 +35,34 @@ export class ProductList implements OnInit {
   }
 
   loadProducts() {
-    this.loading = true;
-    this.productService
-      .getFilteredProducts(
-        this.filterName,
-        this.filterCategory,
-        this.filterMaxPrice,
-        this.sortDir,
-        this.currentPage,
-        this.pageSize
-      )
-      .subscribe((page: Page<Product>) => {
-        this.products = page.content;
-        this.totalProducts = page.totalElements;
-        this.loading = false;
-      });
-  }
+  this.loading = true;
+  this.productService
+    .getFilteredProducts(
+      this.filterName,
+      this.filterCategory,
+      this.filterMinPrice,  // ← added
+      this.filterMaxPrice,
+      this.sortDir,
+      this.currentPage,
+      this.pageSize
+    )
+    .subscribe((page: Page<Product>) => {
+      this.products = page.content;
+      this.totalProducts = page.totalElements;
+      this.loading = false;
+    });
+}
 
-  onFilterChange(filters: { name: string | null; category: string | null; maxPrice: number | null }) {
-    this.filterName = filters.name;
-    this.filterCategory = filters.category;
-    this.filterMaxPrice = filters.maxPrice;
-    this.currentPage = 0;
-    this.loadProducts();
-  }
+
+  onFilterChange(filters: { name: string | null; category: string | null; minPrice: number | null; maxPrice: number | null }) {
+  this.filterName = filters.name;
+  this.filterCategory = filters.category;
+  this.filterMinPrice = filters.minPrice;
+  this.filterMaxPrice = filters.maxPrice;
+  this.currentPage = 0;
+  this.loadProducts();
+}
+
 
   onSortChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;

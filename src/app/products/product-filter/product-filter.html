@@ -13,7 +13,7 @@
 
   <div class="filter-group">
     <label>CATEGORY</label>
-    <select [(ngModel)]="filterCategory" (change)="applyFilters()">
+    <select [(ngModel)]="filterCategory" (change)="applyFilters()" class="list">
       <option value="">ALL</option>
       <option *ngFor="let category of categories" [value]="category.name">
         {{ category.name }}
@@ -22,14 +22,24 @@
   </div>
 
   <div class="filter-group">
-    <label>PRICE</label>
+  <label>PRICE RANGE</label>
+  <div class="price-range">
     <input
       type="number"
-      placeholder="Max Price"
+      placeholder="Min"
+      [(ngModel)]="filterMinPrice"
+      (input)="applyFilters()"
+    />
+    <span class="separator">–</span>
+    <input
+      type="number"
+      placeholder="Max"
       [(ngModel)]="filterMaxPrice"
       (input)="applyFilters()"
     />
   </div>
+</div>
+
 
   <button (click)="resetFilters()">CLEAR FILTERS</button>
 </div>

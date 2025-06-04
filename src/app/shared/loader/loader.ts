@@ -19,7 +19,7 @@ import { Component } from '@angular/core';
         width: 40px;
         height: 40px;
         border: 4px solid #ddd;
-        border-top: 4px solid #ff6200;
+        border-top: 4px solid #28a745;
         border-radius: 50%;
         animation: spin 1s linear infinite;
       }

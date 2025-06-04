@@ -16,22 +16,28 @@ export class ProductService {
   }
 
   getFilteredProducts(
-    name: string | null,
-    category: string | null,
-    maxPrice: number | null,
-    sortDir: string,
-    page: number,
-    size: number
-  ): Observable<Page<Product>> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('size', size.toString())
-      .set('sortDir', sortDir);
+  name: string | null,
+  category: string | null,
+  minPrice: number | null, // ← added
+  maxPrice: number | null,
+  sortDir: string,
+  page: number,
+  size: number
+): Observable<Page<Product>> {
+  let params = new HttpParams()
+    .set('page', page.toString())
+    .set('size', size.toString())
+    .set('sortDir', sortDir);
 
-    if (name) params = params.set('name', name);
-    if (category) params = params.set('category', category);
-    if (maxPrice !== null) params = params.set('maxPrice', maxPrice.toString());
+  if (name) params = params.set('name', name);
+  if (category) params = params.set('category', category);
+  if (minPrice !== null) params = params.set('minPrice', minPrice.toString()); // ← added
+  if (maxPrice !== null) params = params.set('maxPrice', maxPrice.toString());
 
-    return this.http.get<Page<Product>>(`${this.apiUrl}/products/filter`, { params, withCredentials: true });
-  }
+  return this.http.get<Page<Product>>(`${this.apiUrl}/products/filter`, {
+    params,
+    withCredentials: true
+  });
+}
+
 }

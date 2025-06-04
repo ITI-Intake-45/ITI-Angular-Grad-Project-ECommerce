@@ -1,1 +1,22 @@
-<p>pagination works!</p>
+<div class="pagination">
+  <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 0">
+    &lt;
+  </button>
+
+  <ng-container *ngFor="let page of pages">
+    <ng-container *ngIf="page === -1">
+      <span class="ellipsis">...</span>
+    </ng-container>
+    <ng-container *ngIf="page !== -1">
+      <button
+        (click)="onPageChange(page)"
+        [class.active]="page === currentPage">
+        {{ page + 1 }}
+      </button>
+    </ng-container>
+  </ng-container>
+
+  <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage >= totalPages - 1">
+    &gt;
+  </button>
+</div>

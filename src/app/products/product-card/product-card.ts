@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Product } from '../../shared/models';
 
@@ -16,14 +16,17 @@ export class ProductCard {
 
   constructor(private sanitizer: DomSanitizer) {}
 
+  @Output() addToCartEvent = new EventEmitter<{ product: Product; quantity: number }>();
+
   addToCart() {
-    console.log(`Added ${this.quantity} of ${this.product.name} to cart`);
+    this.addToCartEvent.emit({ product: this.product, quantity: this.quantity });
   }
 
   getImageUrl(): SafeUrl {
-    if (this.product && this.product.image) { // Fixed to use imagePath
+    if (this.product?.image) {
       return this.sanitizer.bypassSecurityTrustUrl(`http://localhost:8080/images/${this.product.image}`);
     }
+
     return this.sanitizer.bypassSecurityTrustUrl('https://via.placeholder.com/200?text=No+Image');
   }
 
