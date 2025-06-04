@@ -1,11 +1,21 @@
-import { Component } from '@angular/core';
+import { Component  } from '@angular/core';
 
 @Component({
   selector: 'app-header',
-  standalone: false,
   templateUrl: './header.html',
-  styleUrl: './header.css'
+  styleUrls: ['./header.css'],
+  standalone:false
 })
 export class Header {
+  isMenuOpen = false;
 
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  onSearch(event: any) {
+    const searchTerm = event.target.value;
+    console.log('Searching for:', searchTerm);
+    // Implement your search logic here
+  }
 }

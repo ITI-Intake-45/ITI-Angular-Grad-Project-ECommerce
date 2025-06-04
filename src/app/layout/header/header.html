@@ -1,1 +1,86 @@
-<p>header works!</p>
+<header class="main-header">
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <!-- Logo -->
+      <a class="navbar-brand" href="#" routerLink="/">
+        <img src="assets/favicon.png" alt="Cuppot" class="logo-img">
+        <span class="brand-text">Cuppot</span>
+      </a>
+
+      <!-- Mobile Menu Toggle -->
+      <button class="navbar-toggler" type="button" (click)="toggleMenu()"
+              [class.collapsed]="!isMenuOpen" aria-expanded="false">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Navigation Menu -->
+      <div class="navbar-collapse" [class.collapse]="!isMenuOpen" [class.show]="isMenuOpen">
+
+        <!-- Left Navigation -->
+        <div>
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0 main-nav">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/tea-beans" routerLinkActive="active">Tea Beans</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/tea-mugs" routerLinkActive="active">Tea Mugs</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/tea-machines" routerLinkActive="active">Tea Machines</a>
+            </li>
+          </ul>
+        </div>
+        <!-- Search Bar -->
+        <div class="search-container me-4">
+          <div class="input-group search-box">
+            <input type="text" class="form-control search-input"
+                   placeholder="Search" (input)="onSearch($event)">
+            <button class="btn search-btn" type="button">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+        <!-- Right Navigation -->
+        <ul class="navbar-nav right-nav">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/about">
+              <i class="fas fa-info-circle me-1"></i>About Us
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/faq">
+              <i class="fas fa-question-circle me-1"></i>FAQ
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/contact">
+              <i class="fas fa-envelope me-1"></i>Contact Us
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/register">
+              <i class="fas fa-user-plus me-1"></i>Register
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/login">
+              <i class="fas fa-sign-in-alt me-1"></i>Login
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link cart-link" routerLink="/cart">
+              <i class="fas fa-home me-1"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link cart-link" routerLink="/cart">
+              <i class="fas fa-shopping-bag"></i>
+              <span class="cart-badge">0</span>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+    </div>
+  </nav>
+</header>

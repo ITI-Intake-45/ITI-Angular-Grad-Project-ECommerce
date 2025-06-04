@@ -1,0 +1,81 @@
+<section class="hero-slider" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+  <div class="slider-container">
+    <!-- Slides -->
+    <div class="slides-wrapper">
+      <div
+        *ngFor="let slide of slides; let i = index"
+        class="slide"
+        [class.active]="i === currentSlide"
+        [style.background-image]="'url(' + slide.image + ')'"
+      >
+        <div class="slide-overlay"></div>
+        <div class="container">
+          <div class="row align-items-center min-vh-100">
+            <!-- Content Section -->
+            <div class="col-lg-6 col-md-8">
+              <div class="slide-content" [class.animate]="i === currentSlide">
+                <h3 class="slide-subtitle">{{ slide.subtitle }}</h3>
+                <h1 class="slide-title">{{ slide.title }}</h1>
+                <div class="slide-actions">
+                  <a [routerLink]="slide.buttonLink" class="btn btn-primary slide-btn">
+                    {{ slide.buttonText }}
+                    <i class="fas fa-arrow-right ms-2"></i>
+                  </a>
+<!--                  <a routerLink="/about" class="btn btn-outline-light learn-more-btn ms-3">-->
+<!--                    Learn More-->
+<!--                  </a>-->
+                </div>
+
+                <!-- Special Offer Badge -->
+                <div class="offer-badge" *ngIf="i === 0">
+                  <div class="badge-content">
+                    <span class="offer-text">Starting At</span>
+                    <span class="offer-price">$12.99</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Product Showcase -->
+<!--            <div class="col-lg-6 d-none d-lg-block">-->
+<!--              <div class="product-showcase" [class.animate]="i === currentSlide">-->
+<!--                <div class="product-grid">-->
+<!--                  <div class="product-item product-1">-->
+<!--                    <img src="assets/slider/th.jpeg" alt="Premium Black Tea" class="product-img">-->
+<!--                  </div>-->
+<!--                  <div class="product-item product-2">-->
+<!--                    <img src="assets/slider/images (2).jpeg" alt="Green Tea Blend" class="product-img">-->
+<!--                  </div>-->
+<!--                  <div class="product-item product-3">-->
+<!--                    <img src="assets/slider/images (6).jpeg" alt="Golden Tea Mix" class="product-img">-->
+<!--                  </div>-->
+<!--                  <div class="product-item product-4">-->
+<!--                    <img src="assets/slider/images (1).jpeg" alt="Herbal Tea" class="product-img">-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Arrows -->
+    <button class="slider-nav prev-btn" (click)="prevSlide()">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="slider-nav next-btn" (click)="nextSlide()">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+
+    <!-- Slide Indicators -->
+    <div class="slide-indicators">
+      <button
+        *ngFor="let slide of slides; let i = index"
+        class="indicator"
+        [class.active]="i === currentSlide"
+        (click)="goToSlide(i)"
+      ></button>
+    </div>
+  </div>
+</section>

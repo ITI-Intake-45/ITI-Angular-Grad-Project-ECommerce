@@ -4,9 +4,12 @@ import { Home } from './home/home';
 import { NotFound } from './not-found/not-found';
 import { AuthGuard } from './core/guards/auth-guard';
 import { AdminGuard } from './core/guards/admin-guard';
+import {Slider} from './layout/slider/slider';
+
 
 const routes: Routes = [
   { path: '', component: Home },
+  { path: 'home', component: Slider },
   {
     path: 'auth',
     loadChildren: () => import('./auth/auth-module').then(m => m.AuthModule)
