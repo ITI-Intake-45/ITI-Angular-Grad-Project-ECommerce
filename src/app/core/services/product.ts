@@ -1,71 +1,37 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-export interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
-  category: string;
-  stock: number;
-  rating: number;
-}
-
-export interface ProductFilter {
-  category?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  search?: string;
-  page?: number;
-  limit?: number;
-}
+import { Product, ProductCategory, Page } from '../../shared/models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  private apiUrl = 'http://localhost:3000/api/products';
+  private apiUrl = 'http://localhost:8080/api/v1'; // Direct URL (no proxy for now)
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  getProducts(filter?: ProductFilter): Observable<any> {
-    let params = new HttpParams();
-    
-    if (filter) {
-      Object.keys(filter).forEach(key => {
-        const value = (filter as any)[key];
-        if (value !== undefined && value !== null) {
-          params = params.set(key, value.toString());
-        }
-      });
-    }
-
-    return this.http.get<any>(this.apiUrl, { params });
+  getCategories(): Observable<ProductCategory[]> {
+    return this.http.get<ProductCategory[]>(`${this.apiUrl}/categories`, { withCredentials: true });
   }
 
-  getProduct(id: number): Observable<Product> {
-    return this.http.get<Product>(`${this.apiUrl}/${id}`);
-  }
+  getFilteredProducts(
+    name: string | null,
+    category: string | null,
+    maxPrice: number | null,
+    sortDir: string,
+    page: number,
+    size: number
+  ): Observable<Page<Product>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('sortDir', sortDir);
 
-  createProduct(product: Partial<Product>): Observable<Product> {
-    return this.http.post<Product>(this.apiUrl, product);
-  }
+    if (name) params = params.set('name', name);
+    if (category) params = params.set('category', category);
+    if (maxPrice !== null) params = params.set('maxPrice', maxPrice.toString());
 
-  updateProduct(id: number, product: Partial<Product>): Observable<Product> {
-    return this.http.put<Product>(`${this.apiUrl}/${id}`, product);
-  }
-
-  deleteProduct(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
-  }
-
-  getCategories(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/categories`);
-  }
-
-  getFeaturedProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.apiUrl}/featured`);
+    return this.http.get<Page<Product>>(`${this.apiUrl}/products/filter`, { params, withCredentials: true });
   }
 }

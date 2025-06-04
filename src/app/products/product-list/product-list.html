@@ -1,1 +1,44 @@
-<p>product-list works!</p>
+<div class="product-list-container">
+  <!-- Filters -->
+  <div class="filters-section">
+    <app-product-filters
+      [categories]="categories"
+      (filterChange)="onFilterChange($event)"
+    ></app-product-filters>
+  </div>
+
+  <!-- Products -->
+  <div class="products-section">
+    <div class="products-header">
+      <div class="product-count">
+        Products {{ products.length }} of {{ totalProducts }}
+      </div>
+      <div class="sort-by">
+        <label>Sort By:</label>
+        <select (change)="onSortChange($event)">
+          <option value="asc">Lowest Price</option>
+          <option value="desc" selected>Highest Price</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <app-loading *ngIf="loading"></app-loading>
+
+    <!-- Product Grid -->
+    <div class="product-grid" *ngIf="!loading">
+      <app-product-card
+        *ngFor="let product of products"
+        [product]="product"
+      ></app-product-card>
+    </div>
+
+    <!-- Pagination -->
+    <app-pagination
+      [currentPage]="currentPage"
+      [totalItems]="totalProducts"
+      [pageSize]="pageSize"
+      (pageChange)="onPageChange($event)"
+    ></app-pagination>
+  </div>
+</div>

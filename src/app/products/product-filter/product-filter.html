@@ -1,1 +1,35 @@
-<p>product-filter works!</p>
+<div class="filters">
+  <h3>FILTERS</h3>
+
+  <div class="filter-group">
+    <label>PRODUCT TITLE</label>
+    <input
+      type="text"
+      placeholder="Search by title..."
+      [(ngModel)]="filterName"
+      (input)="applyFilters()"
+    />
+  </div>
+
+  <div class="filter-group">
+    <label>CATEGORY</label>
+    <select [(ngModel)]="filterCategory" (change)="applyFilters()">
+      <option value="">ALL</option>
+      <option *ngFor="let category of categories" [value]="category.name">
+        {{ category.name }}
+      </option>
+    </select>
+  </div>
+
+  <div class="filter-group">
+    <label>PRICE</label>
+    <input
+      type="number"
+      placeholder="Max Price"
+      [(ngModel)]="filterMaxPrice"
+      (input)="applyFilters()"
+    />
+  </div>
+
+  <button (click)="resetFilters()">CLEAR FILTERS</button>
+</div>
