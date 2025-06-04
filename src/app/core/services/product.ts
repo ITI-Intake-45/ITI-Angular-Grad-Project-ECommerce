@@ -40,4 +40,8 @@ export class ProductService {
   });
 }
 
+createProduct(formData: FormData): Observable<Product> {
+    return this.http.post<Product>(`${this.apiUrl}/products`, formData, { withCredentials: true });
+  }
+
 }

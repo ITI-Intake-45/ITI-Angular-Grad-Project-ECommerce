@@ -11,6 +11,8 @@ import { CategoryManagement } from './category-management/category-management';
 import { ProductForm } from './product-form/product-form';
 import { CategoryForm } from './category-form/category-form';
 
+
+
 @NgModule({
   declarations: [
     AdminLogin,
