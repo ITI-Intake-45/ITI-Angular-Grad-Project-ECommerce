@@ -18,4 +18,9 @@ export class Header {
     console.log('Searching for:', searchTerm);
     // Implement your search logic here
   }
+  closeMenu() {
+    this.isMenuOpen = false;
+  }
+
 }
+

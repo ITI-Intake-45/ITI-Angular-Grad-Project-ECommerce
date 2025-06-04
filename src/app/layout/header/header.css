@@ -4,14 +4,26 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  min-height: 150px;
-
+  padding: 5px 0;
+  color: #fff;
+  font-family: "Gugi", "Coming Soon", "Open Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-.navbar {
-  padding: 1rem 0;
+/* Top Row Styling */
+.top-header {
+  padding-bottom: 2px;
+  margin-bottom: 2px;
+  margin-top: 5px;
 }
 
+/* Bottom Row Styling */
+.bottom-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+/* Logo and Brand Name */
 .navbar-brand {
   display: flex;
   align-items: center;
@@ -19,6 +31,8 @@
   font-weight: bold;
   font-size: 1.5rem;
   text-decoration: none;
+  margin-left: 25px;
+
 }
 
 .navbar-brand:hover {
@@ -26,22 +40,29 @@
 }
 
 .logo-img {
-  height: 40px;
-  width: 40px;
+  height: 60px;
+  width: 60px;
   margin-right: 10px;
   border-radius: 50%;
+  margin-left: 25px;
 }
 
 .brand-text {
   font-family: 'Brush Script MT', cursive;
-  font-size: 1.8rem;
+  font-size: 2.5rem;
   color: #f39c12;
+}
+
+/* Main Navigation (Categories) */
+.main-nav {
+  display: flex;
+  gap: 10px;
+  margin-left: 45px;
 }
 
 .main-nav .nav-link {
   color: #ecf0f1 !important;
   font-weight: 500;
-  margin: 0 15px;
   padding: 8px 16px;
   border-radius: 20px;
   transition: all 0.3s ease;
@@ -54,8 +75,12 @@
   transform: translateY(-2px);
 }
 
+/* Search Bar */
 .search-container {
-  min-width: 300px;
+  width: 500px;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 15px;
 }
 
 .search-box {
@@ -90,9 +115,16 @@
   transform: scale(1.05);
 }
 
+/* Right Navigation */
+.right-nav {
+  display: flex;
+  gap: 10px;
+  margin-right: 50px;
+  padding: 10px ;
+}
+
 .right-nav .nav-link {
   color: #ecf0f1 !important;
-  margin: 0 8px;
   padding: 8px 12px;
   border-radius: 15px;
   transition: all 0.3s ease;
@@ -105,8 +137,31 @@
   transform: translateY(-1px);
 }
 
+/* Icon Navigation */
+.icon-nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-right: 70px;
+}
+
+.icon-nav .nav-link {
+  color: #ecf0f1 !important;
+  font-size: 1.2rem;
+  padding: 12px 12px;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+}
+
+.icon-nav .nav-link:hover {
+  color: #f39c12 !important;
+  transform: translateY(-2px);
+}
+
+/* Cart Badge */
 .cart-link {
   position: relative;
+
 }
 
 .cart-badge {
@@ -116,8 +171,8 @@
   background-color: #e74c3c;
   color: white;
   border-radius: 50%;
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
   font-size: 11px;
   display: flex;
   align-items: center;
@@ -125,9 +180,12 @@
   font-weight: bold;
 }
 
+/* Mobile Menu Toggle */
 .navbar-toggler {
+
   border: none;
   color: #fff;
+  display: none;
 }
 
 .navbar-toggler:focus {
@@ -138,20 +196,43 @@
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.85%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='m4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 
+/* Mobile Navigation */
+.mobile-nav {
+  display: none;
+}
+
 /* Responsive Design */
 @media (max-width: 991.98px) {
-  .search-container {
-    min-width: 100%;
-    margin: 1rem 0;
+  .top-header, .bottom-header {
+    flex-direction: column;
   }
 
-  .main-nav .nav-link,
-  .right-nav .nav-link {
-    margin: 5px 0;
+  .navbar-brand, .right-nav, .main-nav, .search-container, .icon-nav {
+    width: 100%;
+    justify-content: center;
+    margin: 10px 0;
   }
 
-  .navbar-nav {
-    text-align: center;
+  .navbar-toggler {
+    display: block;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  }
+
+  .mobile-nav.show {
+    display: block;
+    padding: 15px;
+    background-color: rgba(44, 62, 80, 0.95);
+  }
+
+  .top-header, .bottom-header {
+    display: none;
+  }
+
+  .mobile-nav.show .top-header,
+  .mobile-nav.show .bottom-header {
+    display: block;
   }
 }
 
@@ -161,7 +242,15 @@
   }
 
   .logo-img {
-    height: 35px;
-    width: 35px;
+    height: 60px;
+    width: 60px;
+  }
+
+  .right-nav, .main-nav, .icon-nav {
+    flex-wrap: wrap;
+  }
+
+  .search-container {
+    width: 90%;
   }
 }

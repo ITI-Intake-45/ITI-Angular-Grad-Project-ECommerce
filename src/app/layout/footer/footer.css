@@ -3,7 +3,7 @@
   color: #f1f1f1;
   padding: 40px 0 20px;
   border-top: 1px solid #e7e7e7;
-  font-family: Arial, sans-serif;
+  font-family: "Gugi", "Coming Soon", "Open Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
   .footer-container {
     max-width: 1200px;
@@ -31,6 +31,7 @@
       p {
         margin-bottom: 10px;
         display: flex;
+        color: #f1f1f1;
         align-items: center;
 
         i {
@@ -68,7 +69,7 @@
 
     .social-icon {
       display: inline-block;
-      color: #666;
+      color: #f1f1f1;
       font-size: 20px;
       margin-right: 15px;
       transition: color 0.3s;
@@ -84,7 +85,6 @@
     text-align: left;
     margin-top: 30px;
     padding-top: 20px;
-    /*border-top: 1px solid #e7e7e7;*/
     color: #f1f1f1;
     font-size: 14px;
   }
@@ -102,3 +102,4 @@
     }
   }
 }
+

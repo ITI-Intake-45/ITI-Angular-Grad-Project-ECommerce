@@ -16,24 +16,17 @@
               <div class="slide-content" [class.animate]="i === currentSlide">
                 <h3 class="slide-subtitle">{{ slide.subtitle }}</h3>
                 <h1 class="slide-title">{{ slide.title }}</h1>
+                Starting At <h1 class="offer-price inline-price">{{ slide.startCost }}</h1>
+
+
+
                 <div class="slide-actions">
                   <a [routerLink]="slide.buttonLink" class="btn btn-primary slide-btn">
                     {{ slide.buttonText }}
                     <i class="fas fa-arrow-right ms-2"></i>
                   </a>
-<!--                  <a routerLink="/about" class="btn btn-outline-light learn-more-btn ms-3">-->
-<!--                    Learn More-->
-<!--                  </a>-->
-                </div>
 
-                <!-- Special Offer Badge -->
-                <div class="offer-badge" *ngIf="i === 0">
-                  <div class="badge-content">
-                    <span class="offer-text">Starting At</span>
-                    <span class="offer-price">$12.99</span>
-                  </div>
                 </div>
-              </div>
             </div>
 
             <!-- Product Showcase -->
@@ -54,19 +47,19 @@
 <!--                  </div>-->
 <!--                </div>-->
 <!--              </div>-->
-<!--            </div>-->
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Navigation Arrows -->
-    <button class="slider-nav prev-btn" (click)="prevSlide()">
-      <i class="fas fa-chevron-left"></i>
-    </button>
-    <button class="slider-nav next-btn" (click)="nextSlide()">
-      <i class="fas fa-chevron-right"></i>
-    </button>
+<!--    <button class="slider-nav prev-btn" (click)="prevSlide()">-->
+<!--      <i class="fas fa-chevron-left"></i>-->
+<!--    </button>-->
+<!--    <button class="slider-nav next-btn" (click)="nextSlide()">-->
+<!--      <i class="fas fa-chevron-right"></i>-->
+<!--    </button>-->
 
     <!-- Slide Indicators -->
     <div class="slide-indicators">

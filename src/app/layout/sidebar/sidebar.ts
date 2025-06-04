@@ -36,12 +36,6 @@ export class Sidebar {
       color: '#9b59b6'
     },
     {
-      icon: 'fas fa-heart',
-      label: 'Favorites',
-      route: '/favorites',
-      color: '#e74c3c'
-    },
-    {
       icon: 'fas fa-shopping-cart',
       label: 'Cart',
       route: '/cart',

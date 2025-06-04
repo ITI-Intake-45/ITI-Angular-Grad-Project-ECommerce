@@ -12,22 +12,25 @@ export class Slider implements OnInit, OnDestroy {
 
   slides = [
     {
-      title: 'Premium Tea Collection',
-      subtitle: 'Discover Our Finest Tea Blends',
+      title: 'Premium Collection',
+      subtitle: 'Discover Our Finest Blends',
+      startCost : "10.00$",
       image: 'assets/slider/th.jpeg',
       buttonText: 'Shop Now',
       buttonLink: '/tea-beans'
     },
     {
-      title: 'Elegant Tea Accessories',
-      subtitle: 'Complete Your Tea Experience',
+      title: 'Elegant Accessories',
+      subtitle: 'Complete Your Experience',
+      startCost : "50.00$",
       image: 'assets/slider/accessories.jpeg',
       buttonText: 'Shop Now',
       buttonLink: '/tea-mugs'
     },
     {
-      title: 'Professional Tea Machines',
+      title: 'Professional Machines',
       subtitle: 'Brewing Perfection Made Simple',
+      startCost : "200.00$",
       image: 'assets/slider/machine.jpeg',
       buttonText: 'Shop Now',
       buttonLink: '/tea-machines'
@@ -45,7 +48,7 @@ export class Slider implements OnInit, OnDestroy {
   startAutoSlide() {
     this.autoSlideInterval = setInterval(() => {
       this.nextSlide();
-    }, 5000);
+    }, 2000);
   }
 
   stopAutoSlide() {
