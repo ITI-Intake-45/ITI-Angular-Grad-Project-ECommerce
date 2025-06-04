@@ -8,7 +8,10 @@
     />
   </div>
   <div class="card-body">
-    <h5 class="card-title">{{ product.name }}</h5>
+    <h5 class="card-title" (click)="handleClick($event)" [routerLink]="['/products','product', product.productId]">
+       {{ product.name }}
+    </h5>
+    <p class="card-category">{{ product.category.name }}<p>
   <p class="card-text">{{ product.description | truncateWords:50 }}</p>
     <div class="price-stock">
       <span class="price">${{ product.price }}</span>

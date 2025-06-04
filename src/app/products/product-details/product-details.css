@@ -1,0 +1,102 @@
+/* product-details.css */
+
+/* Container padding and background */
+.product-details-container {
+  padding: 2rem;
+  background-color: #fff;
+}
+
+/* Product title */
+.product-details-container h1 {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+/* Category link styling */
+.product-details-container p.text-muted span {
+  cursor: pointer;
+  color: #0d6efd; /* Bootstrap primary color */
+}
+
+.product-details-container p.text-muted span:hover {
+  text-decoration: underline;
+}
+
+/* Description text spacing */
+.product-details-container .text-secondary {
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+/* Price styling */
+.product-details-container .mb-3 h3 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+/* Stock status spacing */
+.product-details-container .mb-3 p {
+  margin: 0.25rem 0;
+}
+
+/* Quantity selector buttons */
+.product-details-container .input-group button {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 1.25rem;
+}
+
+/* Center the number input text */
+.product-details-container .input-group input {
+  text-align: center;
+  font-size: 1rem;
+}
+
+/* “Add to Cart” button height alignment */
+.product-details-container .btn-success {
+  height: 2.5rem;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+}
+
+/* “Continue Shopping” button margin */
+.product-details-container .btn-outline-primary {
+  margin-top: 1rem;
+}
+
+/* Related Products heading */
+.related-products h4 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Center each related product card */
+.related-products .row > .col-sm-6,
+.related-products .row > .col-md-4,
+.related-products .row > .col-lg-3 {
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .product-details-container {
+    padding: 1rem;
+  }
+  
+  .product-details-container h1 {
+    font-size: 1.75rem;
+  }
+  
+  .related-products h4 {
+    font-size: 1.25rem;
+  }
+}

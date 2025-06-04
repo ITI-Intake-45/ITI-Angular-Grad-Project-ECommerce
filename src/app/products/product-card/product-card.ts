@@ -33,4 +33,13 @@ export class ProductCard {
   onImageError(event: Event) {
     (event.target as HTMLImageElement).src = 'https://via.placeholder.com/200?text=No+Image';
   }
+  handleClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    if (target.classList.contains('card-title')) {
+      target.classList.add('clicked');
+      
+    }
+    setTimeout(() => target.classList.remove('clicked'), 100);
+  }
 }

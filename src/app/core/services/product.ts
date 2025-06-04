@@ -15,6 +15,17 @@ export class ProductService {
     return this.http.get<ProductCategory[]>(`${this.apiUrl}/categories`, { withCredentials: true });
   }
 
+  getProductById(id: string): Observable<Product> {
+    return this.http.get<Product>(`${this.apiUrl}/products/${id}`, { withCredentials: true });
+  }
+
+  getProductsByCategoryId(categoryId: number): Observable<Product[]> {
+  return this.http.get<Product[]>(`${this.apiUrl}/products/category/${categoryId}`, { withCredentials: true });
+}
+
+
+
+
   getFilteredProducts(
   name: string | null,
   category: string | null,
@@ -43,5 +54,70 @@ export class ProductService {
 createProduct(formData: FormData): Observable<Product> {
     return this.http.post<Product>(`${this.apiUrl}/products`, formData, { withCredentials: true });
   }
+
+// addToCart(product: any) {
+//     const existingItem = this.cartItems.find(item => item.id === product.id);
+//     if (existingItem) {
+//       existingItem.quantity++;
+//     } else {
+//       this.cartItems.push({ ...product, quantity: 1 });
+//     }
+//     this.saveCartToStorage();
+//     this.cartSubject.next([...this.cartItems]);
+//   }
+
+//   removeFromCart(id: number) {
+//     this.cartItems = this.cartItems.filter(item => item.id !== id);
+//     this.saveCartToStorage();
+//     this.cartSubject.next([...this.cartItems]);
+//   }
+
+//   updateQuantity(id: number, quantity: number) {
+//     const item = this.cartItems.find(item => item.id === id);
+//     if (item && quantity > 0) { // Ensure quantity is positive
+//       item.quantity = quantity;
+//       this.saveCartToStorage();
+//       this.cartSubject.next([...this.cartItems]);
+//     }
+//   }
+
+//   clearCart() {
+//     this.cartItems = [];
+//     this.saveCartToStorage();
+//     this.cartSubject.next([]);
+//   }
+
+//   private saveCartToStorage() {
+//     try {
+//       localStorage.setItem('cart', JSON.stringify(this.cartItems));
+//     } catch (error) {
+//       console.error('Error saving cart to localStorage:', error);
+//     }
+//   }
+
+//   private loadCartFromStorage() {
+//     try {
+//       const cart = localStorage.getItem('cart');
+//       if (cart) {
+//         this.cartItems = JSON.parse(cart);
+//         this.cartSubject.next([...this.cartItems]); // Emit the loaded cart
+//       }
+//     } catch (error) {
+//       console.error('Error loading cart from localStorage:', error);
+//       this.cartItems = [];
+//       this.cartSubject.next([]);
+//     }
+//   }
+
+//   getCartItemCount() {
+//     return this.cartItems.reduce((total, item) => total + item.quantity, 0);
+//   }
+
+//   getCartTotal() {
+//     return this.cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+//   }
+
+
+
 
 }
