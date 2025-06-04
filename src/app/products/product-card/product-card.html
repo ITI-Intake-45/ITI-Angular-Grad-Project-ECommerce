@@ -3,7 +3,7 @@
   (mouseenter)="showActions = true"
   (mouseleave)="showActions = false"
 >
-  <img [src]="product.image" alt="{{ product.name }}" class="product-image" />
+  <img [src]="getImageUrl()" alt="{{ product.name }}" class="product-image" />
   <div class="product-info">
     <h3>{{ product.name }}</h3>
     <p>{{ product.description }}</p>
@@ -14,10 +14,10 @@
   </div>
 
   <!-- Hover Actions -->
-  <div class="hover-actions" *ngIf="showActions">
+  <!-- <div class="hover-actions" *ngIf="showActions">
     <button (click)="addToCart()">Add to Cart</button>
     <button (click)="quickLook()">Quick Look</button>
-  </div>
+  </div> -->
 
   <!-- Quantity and Add to Cart (Visible by default like the second screenshot) -->
   <div class="quantity-cart" *ngIf="product.stock > 0">

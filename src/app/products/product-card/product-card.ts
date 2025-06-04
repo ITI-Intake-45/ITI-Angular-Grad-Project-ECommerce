@@ -17,8 +17,13 @@ export class ProductCard {
     console.log(`Added ${this.quantity} of ${this.product.name} to cart`);
   }
 
-  quickLook() {
-    // Implement quick look modal logic (e.g., open a modal with product-details)
-    console.log(`Quick look for ${this.product.name}`);
+  // quickLook() {
+  //   // Implement quick look modal logic (e.g., open a modal with product-details)
+  //   console.log(`Quick look for ${this.product.name}`);
+  // }
+
+  getImageUrl(): string {
+    // Construct the full URL to the image
+    return `http://localhost:8080/images/${this.product.image}`;
   }
 }
