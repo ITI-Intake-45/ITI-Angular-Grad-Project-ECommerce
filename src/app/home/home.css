@@ -1,0 +1,199 @@
+
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  width: 100%;
+  font-family: "Gugi", "Coming Soon", "Open Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 10px;
+
+}
+
+/* Button Styles */
+.btn {
+  padding: 15px 30px;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-primary {
+  background: #d4940c;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #b8800a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212, 148, 12, 0.3);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.btn-secondary:hover {
+  background: white;
+  color: #1a1a1a;
+  transform: translateY(-2px);
+}
+
+
+
+/* Coffee Showcase Section */
+.coffee-showcase {
+  background: #f8f8f8;
+  padding: 80px 0;
+  position: relative;
+}
+
+.coffee-bags-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 40px;
+  margin-top: 50px;
+}
+
+.coffee-bag {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.coffee-bag:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.bag-image {
+  position: relative;
+  height: 300px;
+  overflow: hidden;
+}
+
+.bag-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.coffee-bag:hover .bag-image img {
+  transform: scale(1.1);
+}
+
+.bag-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.coffee-bag:hover .bag-overlay {
+  opacity: 1;
+}
+
+.btn-shop {
+  background: #d4940c;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-shop:hover {
+  background: #b8800a;
+  transform: scale(1.05);
+}
+
+.bag-info {
+  padding: 25px;
+  text-align: center;
+}
+
+.bag-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.bag-price {
+  font-size: 24px;
+  color: #d4940c;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* FontAwesome Icons */
+.fas {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+}
+
+.fa-chevron-left::before { content: "\f053"; }
+.fa-chevron-right::before { content: "\f054"; }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+
+  .btn {
+    padding: 12px 25px;
+    font-size: 14px;
+  }
+
+  .coffee-bags-container {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+  }
+
+  .coffee-showcase {
+    padding: 60px 0;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .coffee-bags-container {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .bag-image {
+    height: 250px;
+  }
+}
+.products {
+  border-bottom: #849dbc;
+  /*border-bottom-style: solid;*/
+  /*border-bottom-width: 1px;*/
+  padding: 10px;
+  font-size: 20px;
+
+}
