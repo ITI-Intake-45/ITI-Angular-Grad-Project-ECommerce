@@ -1,0 +1,105 @@
+.main-footer {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: #f1f1f1;
+  padding: 40px 0 20px;
+  border-top: 1px solid #e7e7e7;
+  font-family: "Gugi", "Coming Soon", "Open Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .footer-section {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 20px;
+    padding: 0 15px;
+
+    .footer-title {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #f1f1f1;
+      font-weight: 600;
+    }
+
+    .footer-content {
+      p {
+        margin-bottom: 10px;
+        display: flex;
+        color: #f1f1f1;
+        align-items: center;
+
+        i {
+          margin-right: 10px;
+          color: #f1f1f1;
+          width: 20px;
+          text-align: center;
+        }
+      }
+    }
+
+    .footer-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        margin-bottom: 8px;
+
+        a {
+          color: #f1f1f1;
+          text-decoration: none;
+          transition: color 0.3s;
+
+          &:hover {
+            color: #f39c12;
+          }
+        }
+      }
+    }
+  }
+
+  .social-icons {
+    margin-top: 15px;
+
+    .social-icon {
+      display: inline-block;
+      color: #f1f1f1;
+      font-size: 20px;
+      margin-right: 15px;
+      transition: color 0.3s;
+
+      &:hover {
+        color: #f39c12;
+      }
+    }
+  }
+
+  .copyright-section {
+    width: 100%;
+    text-align: left;
+    margin-top: 30px;
+    padding-top: 20px;
+    color: #f1f1f1;
+    font-size: 14px;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .main-footer {
+    .footer-container {
+      flex-direction: column;
+    }
+
+    .footer-section {
+      margin-bottom: 30px;
+    }
+  }
+}
+
