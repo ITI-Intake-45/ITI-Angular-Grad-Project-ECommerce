@@ -1,102 +1,186 @@
 /* product-details.css */
-
-/* Container padding and background */
-.product-details-container {
-  padding: 2rem;
-  background-color: #fff;
+.product-image {
+  max-height: 500px;
+  object-fit: contain;
 }
 
-/* Product title */
-.product-details-container h1 {
-  font-size: 2rem;
-  margin-bottom: 0.75rem;
-  font-weight: 600;
+/* Related Products Slider Styles */
+.related-products-slider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
-/* Category link styling */
-.product-details-container p.text-muted span {
+.slider-container {
+  flex: 1;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.slider-track {
+  display: flex;
+  transition: transform 0.3s ease-in-out;
+  will-change: transform;
+}
+
+.slider-item {
+  flex: 0 0 25%; /* Default: 4 items per slide */
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+.slider-btn {
+  background: #fff;
+  border: 2px solid #dee2e6;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  color: #0d6efd; /* Bootstrap primary color */
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 2;
 }
 
-.product-details-container p.text-muted span:hover {
-  text-decoration: underline;
+.slider-btn:hover:not(:disabled) {
+  background: #f8f9fa;
+  border-color: #6c757d;
+  transform: scale(1.05);
 }
 
-/* Description text spacing */
-.product-details-container .text-secondary {
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
+.slider-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
-/* Price styling */
-.product-details-container .mb-3 h3 {
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+.slider-btn i {
+  font-size: 18px;
+  color: #495057;
 }
 
-/* Stock status spacing */
-.product-details-container .mb-3 p {
-  margin: 0.25rem 0;
+.slider-btn:hover:not(:disabled) i {
+  color: #212529;
 }
 
-/* Quantity selector buttons */
-.product-details-container .input-group button {
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  font-size: 1.25rem;
+/* Slider Indicators */
+.slider-indicators {
+  margin-top: 15px;
 }
 
-/* Center the number input text */
-.product-details-container .input-group input {
-  text-align: center;
-  font-size: 1rem;
+.indicator-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background: #dee2e6;
+  margin: 0 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-/* “Add to Cart” button height alignment */
-.product-details-container .btn-success {
-  height: 2.5rem;
-  padding: 0 1rem;
-  display: flex;
-  align-items: center;
+.indicator-dot:hover {
+  background: #adb5bd;
+  transform: scale(1.2);
 }
 
-/* “Continue Shopping” button margin */
-.product-details-container .btn-outline-primary {
-  margin-top: 1rem;
+.indicator-dot.active {
+  background: #0d6efd;
+  transform: scale(1.3);
 }
 
-/* Related Products heading */
-.related-products h4 {
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
-  font-weight: 600;
+/* Responsive Slider Adjustments */
+@media (max-width: 991px) {
+  .slider-item {
+    flex: 0 0 33.333%; /* 3 items per slide on medium screens */
+  }
 }
 
-/* Center each related product card */
-.related-products .row > .col-sm-6,
-.related-products .row > .col-md-4,
-.related-products .row > .col-lg-3 {
-  display: flex;
-  justify-content: center;
-}
-
-/* Responsive adjustments */
 @media (max-width: 767px) {
-  .product-details-container {
-    padding: 1rem;
+  .slider-item {
+    flex: 0 0 50%; /* 2 items per slide on small screens */
   }
   
-  .product-details-container h1 {
-    font-size: 1.75rem;
+  .slider-btn {
+    width: 40px;
+    height: 40px;
   }
   
-  .related-products h4 {
-    font-size: 1.25rem;
+  .slider-btn i {
+    font-size: 16px;
   }
+  
+  .related-products-slider {
+    gap: 10px;
+  }
+  
+  .slider-item {
+    padding: 0 6px;
+  }
+}
+
+@media (max-width: 575px) {
+  .slider-item {
+    flex: 0 0 100%; /* 1 item per slide on mobile */
+  }
+  
+  .slider-btn {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .slider-btn i {
+    font-size: 14px;
+  }
+}
+
+/* Original Styles */
+@media (max-width: 767px) {
+  .product-image {
+    max-height: 300px;
+  }
+  
+  .d-md-flex {
+    flex-direction: column;
+  }
+  
+  .btn-lg {
+    margin-bottom: 10px;
+    width: 100%;
+  }
+}
+
+/* Quantity input group styling */
+.input-group .btn-outline-secondary {
+  border-color: #dee2e6;
+  transition: all 0.2s;
+}
+
+.input-group .btn-outline-secondary:hover {
+  background-color: #f8f9fa;
+}
+
+.input-group input {
+  font-weight: 500;
+  background-color: #f8f9fa;
+}
+
+/* Smooth animations for better UX */
+.slider-track {
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Focus styles for accessibility */
+.slider-btn:focus {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+.indicator-dot:focus {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
 }

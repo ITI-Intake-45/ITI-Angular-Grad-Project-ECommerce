@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
+
 import { Loader } from './loader/loader';
 import { Modal } from './modal/modal';
 import { Toast } from './toast/toast';
@@ -26,7 +27,7 @@ import { TruncateWordsPipe } from '../pipes/truncate-words-pipe';
     Rating,
     ImageGallery,
     ConfirmDialog,
-    TruncateWordsPipe
+    TruncateWordsPipe,
   ],
   imports: [
     CommonModule,
