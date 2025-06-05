@@ -1,38 +1,39 @@
-<!-- Side Navigator -->
-<div class="side-navigator" [class.visible]="isVisible">
-  <!-- Toggle Button -->
-  <button class="nav-toggle-btn" (click)="toggleVisibility()">
-    <i class="fas fa-bars" *ngIf="!isVisible"></i>
-    <i class="fas fa-times" *ngIf="isVisible"></i>
-  </button>
+<!--&lt;!&ndash; Side Navigator &ndash;&gt;-->
+<!--<div class="side-navigator" [class.visible]="isVisible">-->
+<!--  &lt;!&ndash; Toggle Button &ndash;&gt;-->
+<!--  <button class="nav-toggle-btn" (click)="toggleVisibility()">-->
+<!--    <i class="fas fa-bars" *ngIf="!isVisible"></i>-->
+<!--    <i class="fas fa-times" *ngIf="isVisible"></i>-->
+<!--  </button>-->
 
-  <!-- Navigation Menu -->
-  <nav class="nav-menu" (mouseenter)="showNavigator()" (mouseleave)="hideNavigator()">
-    <div class="nav-header">
-      <div class="nav-logo">
-        <i class="fas fa-leaf nav-logo-icon"></i>
-        <span class="nav-logo-text" [class.show]="isVisible">Cuppot</span>
-      </div>
-    </div>
+<!--  &lt;!&ndash; Navigation Menu &ndash;&gt;-->
+<!--  <nav class="nav-menu" (mouseenter)="showNavigator()" (mouseleave)="hideNavigator()">-->
+<!--    <div class="nav-header">-->
+<!--      <div class="nav-logo">-->
+<!--        <i class="fas fa-leaf nav-logo-icon"></i>-->
+<!--        <span class="nav-logo-text" [class.show]="isVisible">Cuppot</span>-->
+<!--      </div>-->
+<!--    </div>-->
 
-    <ul class="nav-list">
-      <li class="nav-item" *ngFor="let item of navigationItems; let i = index"
-          [style.animation-delay]="(i * 0.1) + 's'">
-        <a [routerLink]="item.route"
-           class="nav-link"
-           routerLinkActive="active"
-           [title]="item.label">
-          <div class="nav-icon" [style.background-color]="item.color">
-            <i [class]="item.icon"></i>
-          </div>
-          <span class="nav-label" [class.show]="isVisible">{{ item.label }}</span>
-          <div class="nav-indicator"></div>
-        </a>
-      </li>
-    </ul>
+<!--    <ul class="nav-list">-->
+<!--      <li class="nav-item" *ngFor="let item of navigationItems; let i = index"-->
+<!--          [style.animation-delay]="(i * 0.1) + 's'">-->
+<!--        <a [routerLink]="item.route"-->
+<!--           class="nav-link"-->
+<!--           routerLinkActive="active"-->
+<!--           [title]="item.label">-->
+<!--          <div class="nav-icon" [style.background-color]="item.color">-->
+<!--            <i [class]="item.icon"></i>-->
+<!--          </div>-->
+<!--          <span class="nav-label" [class.show]="isVisible">{{ item.label }}</span>-->
+<!--          <div class="nav-indicator"></div>-->
+<!--        </a>-->
+<!--      </li>-->
+<!--    </ul>-->
 
-  </nav>
+<!--  </nav>-->
 
-  <!-- Backdrop -->
-  <div class="nav-backdrop" *ngIf="isVisible" (click)="hideNavigator()"></div>
-</div>
+<!--  &lt;!&ndash; Backdrop &ndash;&gt;-->
+<!--  <div class="nav-backdrop" *ngIf="isVisible" (click)="hideNavigator()"></div>-->
+<!--</div>-->
+
