@@ -1,101 +1,140 @@
-<div class="product-details-container" *ngIf="!loading && product">
-  <div class="row">
-    <!-- Left: Big product image -->
-    <div class="col-md-6">
-      <img
-        [src]="
-          product.image
-            ? 'http://localhost:8080/images/' + product.image
-            : 'https://via.placeholder.com/400?text=No+Image'
-        "
-        alt="{{ product.name }}"
-        class="img-fluid rounded"
-        (error)="onImageError($event)"
-      />
+
+<div class="container py-4" *ngIf="!loading && product">
+  <div class="row g-4">
+    <!-- Product Image Column -->
+    <div class="col-lg-6">
+      <div class="bg-light rounded-3 p-3 shadow-sm h-100 d-flex align-items-center justify-content-center">
+        <img 
+          [src]="product.image ? 'http://localhost:8080/images/' + product.image : 'https://via.placeholder.com/600?text=No+Image'"
+          alt="{{ product.name }}"
+          class="img-fluid rounded product-image"
+          (error)="onImageError($event)"
+        />
+      </div>
     </div>
 
-    <!-- Right: Details, price, add-to-cart, continue shopping -->
-    <div class="col-md-6">
-      <h1>{{ product.name }}</h1>
-      <p class="text-muted">
-        Category:
-        <span
-          style="cursor: pointer; text-decoration: underline;"
-          (click)="continueShopping()"
-        >
-          {{ product.category.name }}
-        </span>
-      </p>
-      <p class="text-secondary">{{ product.description }}</p>
-
-      <div class="mb-3">
-        <h3 class="text-primary">${{ product.price }}</h3>
-        <p *ngIf="product.stock === 0" class="text-danger">Out of Stock</p>
-        <p *ngIf="product.stock > 0" class="text-success">In Stock</p>
-      </div>
-
-      <div class="d-flex align-items-center mb-4" *ngIf="product.stock > 0">
-        <label class="me-2">Quantity:</label>
-        <div class="input-group w-50">
-          <button
-            class="btn btn-outline-secondary"
-            (click)="onQuantityChange(-1)"
-            [disabled]="selectedQuantity <= 1"
-          >
-            −
-          </button>
-          <input
-            type="number"
-            class="form-control text-center"
-            [value]="selectedQuantity"
-            readonly
-            style="max-width: 60px;"
-          />
-          <button
-            class="btn btn-outline-secondary"
-            (click)="onQuantityChange(1)"
-            [disabled]="selectedQuantity >= product.stock"
-          >
-            +
-          </button>
+    <!-- Product Details Column -->
+    <div class="col-lg-6">
+      <div class="d-flex flex-column h-100">
+        <h1 class="mb-2 fw-bold">{{ product.name }}</h1>
+        
+        <div class="d-flex align-items-center mb-3">
+          <span class="badge bg-info mb-2 ">{{ product.category.name }}</span>
+          
+           
         </div>
-        <button
-          class="btn btn-success ms-3"
-          (click)="addToCart()"
-          [disabled]="product.stock === 0"
-        >
-          Add to Cart
-        </button>
-      </div>
+        
+        <p class="text-muted mb-4 flex-grow-1">{{ product.description }}</p>
 
-      <button class="btn btn-outline-primary" (click)="continueShopping()">
-        ← Continue Shopping
+        <div class="mb-4">
+          <h2 class="text-success fw-bold">${{ product.price | number:'1.2-2' }}</h2>
+          <!-- <span 
+            [class]="product.stock > 0 ? 'badge bg-success' : 'badge bg-danger'"
+            class="fs-6"
+          >
+            {{ product.stock > 0 ? 'In Stock' : 'Out of Stock' }}
+          </span> -->
+                <span class="stock">Stock: {{ product.stock }}</span>
+
+        </div>
+
+        <div *ngIf="product.stock > 0" class="mt-auto">
+          <div class="d-flex align-items-center mb-3">
+            <label class="fw-medium me-3">Quantity:</label>
+            <div class="input-group" style="width: 150px;">
+              <!-- Quantity Button -->
+<div class="input-group quantity-group">
+  <button 
+    class="btn btn-quantity"
+    (click)="onQuantityChange(-1)"
+    [disabled]="selectedQuantity <= 1"
+  >–</button>
+
+  <input 
+    type="text" 
+    class="form-control text-center quantity-input"
+    [value]="selectedQuantity"
+    readonly
+  />
+
+  <button 
+    class="btn btn-quantity"
+    (click)="onQuantityChange(1)"
+    [disabled]="selectedQuantity >= product.stock"
+  >+</button>
+</div>
+
+            </div>
+          </div>
+          
+          <div class="d-grid gap-2 d-md-flex">
+            <button 
+              class="btn btn-success btn-lg px-4"
+              (click)="addToCart()"
+            >
+              <i class="bi bi-cart-plus me-2"></i>Add to Cart
+            </button>
+            <!-- Continue Shopping Button -->
+<button 
+  class="btn custom-btn-outline btn-lg px-4"
+  (click)="continueShopping()"
+>
+  <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Products Slider -->
+  <div class="mt-5 pt-4 border-top" *ngIf="relatedProducts.length > 0">
+    <h3 class="mb-4 fw-bold">Related Products</h3>
+    <div class="related-products-slider">
+      <button 
+        class="slider-btn slider-btn-prev"
+        (click)="slideProducts('prev')"
+        [disabled]="currentSlideIndex === 0"
+      >
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      
+      <div class="slider-container">
+        <div 
+          class="slider-track"
+          [style.transform]="'translateX(-' + (currentSlideIndex * slideWidth) + '%)'">
+          <div class="slider-item" *ngFor="let relatedProduct of relatedProducts">
+            <app-product-card [product]="relatedProduct"></app-product-card>
+          </div>
+        </div>
+      </div>
+      
+      <button 
+        class="slider-btn slider-btn-next"
+        (click)="slideProducts('next')"
+        [disabled]="currentSlideIndex >= maxSlideIndex"
+      >
+        <i class="bi bi-chevron-right"></i>
       </button>
     </div>
-  </div>
-
-  <!-- Related Products -->
-  <div class="related-products mt-5" *ngIf="relatedProducts.length > 0">
-    <h4>Related Products</h4>
-    <div class="row">
-      <div
-        class="col-sm-6 col-md-4 col-lg-3 mb-4"
-        *ngFor="let rel of relatedProducts"
-      >
-        <app-product-card [product]="rel"></app-product-card>
-      </div>
+    
+    <!-- Slider Indicators -->
+    <div class="slider-indicators mt-3 text-center" *ngIf="maxSlideIndex > 0">
+      <button 
+        *ngFor="let indicator of indicators; let i = index"
+        class="indicator-dot"
+        [class.active]="i === currentSlideIndex"
+        (click)="goToSlide(i)"
+      ></button>
     </div>
   </div>
 </div>
 
-<!-- Loading spinner -->
-<div class="text-center py-5" *ngIf="loading">
-  <div class="spinner-border" role="status">
-    <span class="visually-hidden">Loading...</span>
-  </div>
+<div class="d-flex justify-content-center align-items-center py-5" *ngIf="loading">
+  <app-loading></app-loading>
 </div>
 
-<!-- Error message -->
-<div class="alert alert-danger" *ngIf="!loading && errorMessage">
-  {{ errorMessage }}
+<!-- Error Message -->
+<div class="alert alert-danger text-center" *ngIf="!loading && errorMessage">
+  <i class="bi bi-exclamation-triangle me-2"></i> {{ errorMessage }}
 </div>

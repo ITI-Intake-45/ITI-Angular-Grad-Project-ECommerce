@@ -1,3 +1,4 @@
+
 <div class="product-list-container">
   <!-- Filters -->
   <div class="filters-section">
@@ -14,7 +15,7 @@
   <div class="products-header">
     <div class="product-count"
     [ngClass]="{ 'has-products': products.length > 0, 'no-products': products.length === 0 }">
-    Products {{ products.length }} of {{ totalProducts }}
+    Products Found {{ totalProducts }}
   </div>
 
 
@@ -62,3 +63,4 @@
     ></app-pagination>
   </div>
 </div>
+
