@@ -1,0 +1,29 @@
+.user-dashboard {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.left-sidebar {
+  width: 300px;
+  background-color: #ffffff;
+  border-right: 1px solid #e9ecef;
+  padding: 20px;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.main-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+app-dashboard-sidebar {
+  display: block;
+  margin-bottom: 30px;
+}
+
+app-orders-statistics {
+  display: block;
+}
