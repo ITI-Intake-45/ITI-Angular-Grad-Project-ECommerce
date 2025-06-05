@@ -7,7 +7,6 @@ import { Footer } from './footer/footer';
 import { Sidebar } from './sidebar/sidebar';
 import { Slider } from './slider/slider';
 import { AdminLayout } from './admin-layout/admin-layout';
-import { UserLayoutComponent } from './user-layout/user-layout';
 import {RouterLink, RouterLinkActive} from '@angular/router';
 
 

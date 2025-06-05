@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { UserRoutingModule } from './user-routing.module';
-import { LayoutModule } from '../layout/layout-module';
 
 import { Profile } from './profile/profile';
 import { EditProfile } from './edit-profile/edit-profile';
@@ -23,7 +22,6 @@ import {OrdersModule} from '../orders/orders-module';
   imports: [
     CommonModule,
     UserRoutingModule,
-    // LayoutModule, // Add layout module here
     OrdersModule,
     DashboardSidebar
   ],

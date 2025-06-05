@@ -6,7 +6,7 @@ import { Profile } from './profile/profile';
 import { EditProfile } from './edit-profile/edit-profile';
 import { ChangePassword } from './change-password/change-password';
 import { CreditBalance } from './credit-balance/credit-balance';
-import {UserLayoutComponent} from '../layout/user-layout/user-layout';
+import {UserLayoutComponent} from './user-layout/user-layout';
 
 const routes: Routes = [
   {
