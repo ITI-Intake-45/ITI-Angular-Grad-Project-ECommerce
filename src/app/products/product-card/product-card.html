@@ -1,3 +1,4 @@
+
 <div class="card">
   <div class="card-img-top-container">
     <img
@@ -15,12 +16,12 @@
   <p class="card-text">{{ product.description | truncateWords:50 }}</p>
     <div class="price-stock">
       <span class="price">${{ product.price }}</span>
-      <!-- <span class="stock">Stock: {{ product.stock }}</span> -->
-       <span 
+      <span class="stock">Stock: {{ product.stock }}</span>
+       <!-- <span 
   class="stock" 
   [ngClass]="{ 'in-stock': product.stock > 0, 'out-of-stock': product.stock === 0 }">
   {{ product.stock > 0 ? 'In Stock' : 'Out of Stock' }}
-</span>
+</span> -->
 
     </div>
   </div>

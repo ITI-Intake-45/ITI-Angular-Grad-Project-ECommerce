@@ -1,3 +1,4 @@
+
 .card {
   border: 1px solid #e0e0e0;
   border-radius: 12px;
@@ -52,11 +53,11 @@
 .card-title:hover {
   text-decoration: underline;
   cursor: pointer;
-  color: #12279b;
+  color: #0c1e5f;
 }
 
 .card-title.clicked {
-  color: rgb(63, 22, 63);
+  color: #060e2d;
   transform: scale(0.97);
 
 }
@@ -86,14 +87,14 @@
   font-weight: 500;
 }
 
-.in-stock {
+/* .in-stock {
   background-color: #28a745;
   width: 70px;
   height: 30px;
   border-radius: 20px;
   text-align: center;
   align-content: center;
-  color: #f0f0f0; /* Bootstrap success green */
+  color: #f0f0f0;
 }
 
 .out-of-stock {
@@ -103,8 +104,8 @@
   border-radius: 20px;
   text-align: center;
   align-content: center;
-  color: #f0f0f0; /* Bootstrap success green */
-}
+  color: #f0f0f0; 
+} */
 
 
 .price {
@@ -152,7 +153,7 @@
   width: 32px;
   height: 32px;
   border: 1px solid #ccc;
-  background-color: #28a745;
+  background-color: #3c5c7d;
   border-radius: 6px;
   font-size: 16px;
   cursor: pointer;
@@ -161,7 +162,7 @@
 }
 
 .quantity button:hover {
-  background-color: #0b2b13;
+  background-color: #202933;
 }
 
 .quantity span {
@@ -172,7 +173,7 @@
 
 .add-to-cart {
   padding: 8px 14px;
-  background-color: #28a745;
+  background-color: #f39c12;
   color: white;
   font-weight: 500;
   border: none;
@@ -182,5 +183,5 @@
 }
 
 .add-to-cart:hover {
-  background-color: #0b2b13;
+  background-color: #e67e22;
 }

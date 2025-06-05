@@ -1,3 +1,4 @@
+
 .filters {
   background: #ffffff;
   padding: 20px;
@@ -49,13 +50,13 @@
 
 .filter-group input:focus,
 .filter-group select:focus {
-  border-color: #28a745;
+  border-color: #060e2d;
 }
 
 .filters button {
   width: 100%;
   padding: 10px;
-  background-color: #28a745;
+  background-color: #081441e5;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-weight: 500;
@@ -66,7 +67,7 @@
 }
 
 .filters button:hover {
-  background-color: #0b2b13;
+  background-color: #060e2d;
 }
 
 .price-range {

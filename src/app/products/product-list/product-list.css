@@ -1,3 +1,4 @@
+
 .product-list-container {
   display: flex;
   gap: 24px;
@@ -64,7 +65,7 @@
 .sort-controls select {
   padding: 6px;
   border-radius: 6px;
-  border: 2px solid #0b2b13;
+  border: 2px solid #060e2d;
   font-size: 1em;
 }
 

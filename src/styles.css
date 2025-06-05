@@ -1,3 +1,4 @@
+
 @import 'bootstrap/dist/css/bootstrap.min.css';
 
 /* Import Font Awesome */
@@ -11,6 +12,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: "Gugi", "Coming Soon", "Open Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 /* Root Variables */
