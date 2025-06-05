@@ -5,7 +5,7 @@ import { Footer } from './footer/footer';
 import { Sidebar } from './sidebar/sidebar';
 import { Slider } from './slider/slider';
 import { AdminLayout } from './admin-layout/admin-layout';
-import {RouterLink} from '@angular/router';
+import {RouterLink, RouterLinkActive} from '@angular/router';
 
 
 
@@ -25,7 +25,8 @@ import {RouterLink} from '@angular/router';
   ],
   imports: [
     CommonModule,
-    RouterLink
+    RouterLink,
+    RouterLinkActive
   ]
 })
 export class LayoutModule { }

@@ -119,7 +119,7 @@
 .right-nav {
   display: flex;
   gap: 7px;
-  margin-right: 50px;
+  /*margin-right: 50px;*/
   padding: 10px ;
 }
 
@@ -142,7 +142,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 15px;
-  margin-right: 70px;
+  margin-right: 80px;
 }
 
 .icon-nav .nav-link {

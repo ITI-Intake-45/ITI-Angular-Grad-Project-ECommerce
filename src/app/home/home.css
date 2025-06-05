@@ -1,11 +1,15 @@
+.home-container {
+font-family: "Gugi", "Coming Soon", "Open Sans", -apple-system, "system-ui", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif";
+font-size: 10px;
 
+}
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
   width: 100%;
-  font-family: "Gugi", "Coming Soon", "Open Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: "Gugi", "Coming Soon", "Open Sans", -apple-system, "system-ui", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif";
   font-size: 10px;
 
 }
@@ -153,7 +157,7 @@
 
 /* FontAwesome Icons */
 .fas {
-  font-family: "Font Awesome 5 Free";
+  font-family: "Font Awesome 5 Free", serif;
   font-weight: 900;
 }
 
@@ -190,10 +194,26 @@
   }
 }
 .products {
-  border-bottom: #849dbc;
-  /*border-bottom-style: solid;*/
-  /*border-bottom-width: 1px;*/
+  border-bottom: #b6b6b6;
+  border-bottom-style: solid;
+  border-bottom-width: 0.5px;
   padding: 10px;
   font-size: 20px;
+}
+.Mugs {
+  margin-top: 100px;
+  border-bottom: #b6b6b6;
+  border-bottom-style: solid;
+  border-bottom-width: 0.5px;
+  padding: 10px;
+  font-size: 20px;
+}
 
+.Machines {
+  margin-top: 100px;
+  border-bottom: #b6b6b6;
+  border-bottom-style: solid;
+  border-bottom-width: 0.5px;
+  padding: 10px;
+  font-size: 20px;
 }

@@ -38,11 +38,12 @@
 
 /* Global Styles */
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Gugi", "Coming Soon", "Open Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   line-height: 1.6;
   color: var(--dark-color);
   background-color: #f8f9fa;
   overflow-x: hidden;
+
 }
 
 .app-container {
