@@ -7,6 +7,7 @@
   padding: 5px 0;
   color: #fff;
   font-family: "Gugi", "Coming Soon", "Open Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
 }
 
 /* Top Row Styling */
@@ -63,6 +64,8 @@
 .main-nav .nav-link {
   color: #ecf0f1 !important;
   font-weight: 500;
+  font-size: 15px;
+  font-family: "Gugi", "Coming Soon", "Open Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   padding: 8px 16px;
   border-radius: 20px;
   transition: all 0.3s ease;
@@ -128,7 +131,7 @@
   padding: 8px 12px;
   border-radius: 15px;
   transition: all 0.3s ease;
-  font-size: 14px;
+  font-size: 17px;
 }
 
 .right-nav .nav-link:hover {
@@ -142,7 +145,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 15px;
-  margin-right: 80px;
+  margin-right: 50px;
 }
 
 .icon-nav .nav-link {
@@ -253,4 +256,66 @@
   .search-container {
     width: 90%;
   }
+}
+/* Dropdown styling */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-toggle::after {
+  display: inline-block;
+  margin-left: 0.255em;
+  vertical-align: 0.255em;
+  content: "";
+  border-top: 0.3em solid;
+  border-right: 0.3em solid transparent;
+  border-bottom: 0;
+  border-left: 0.3em solid transparent;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  min-width: 10rem;
+  padding: 0.5rem 0;
+  margin: 0.125rem 0 0;
+  font-size: 1rem;
+  color: #212529;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25rem;
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.25rem 1.5rem;
+  clear: both;
+  font-weight: 400;
+  color: #212529;
+  text-align: inherit;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 0;
+  text-decoration: none;
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+  color: #16181b;
+  text-decoration: none;
+  background-color: #f8f9fa;
+}
+.dropdown-item:hover{
+  color: #f39c12 !important;
+  transform: translateY(-2px);
 }

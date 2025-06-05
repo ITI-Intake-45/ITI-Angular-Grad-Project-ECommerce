@@ -12,9 +12,10 @@
         <h2 class="products">Recent Products</h2>
 
         <div class="coffee-bags-container">
-          <div class="coffee-bag" *ngFor="let bag of coffeeBags; let i = index">
-            <div class="bag-image">
-              <img [src]="bag.image" [alt]="bag.name">
+          <div class="coffee-bag" *ngFor="let bag of recentProducts; let i = index">
+          <div class="bag-image">
+<!--              <img [src]="bag.image" [alt]="bag.name">-->
+            <img [src]="getImageUrl(bag)" [alt]="bag.name">
               <div class="bag-overlay">
                 <button class="btn btn-shop" routerLink="/products" >Shop Now</button>
               </div>
@@ -32,9 +33,11 @@
         <h2 class="Mugs">Recent Mugs</h2>
 
         <div class="coffee-bags-container">
-          <div class="coffee-bag" *ngFor="let bag of coffeeBags; let i = index">
+          <!-- For Recent Mugs section -->
+          <div class="coffee-bag" *ngFor="let bag of recentMugs; let i = index">
             <div class="bag-image">
-              <img [src]="bag.image" [alt]="bag.name">
+<!--              <img [src]="bag.image" [alt]="bag.name">-->
+              <img [src]="getImageUrl(bag)" [alt]="bag.name">
               <div class="bag-overlay">
                 <button class="btn btn-shop" routerLink="/products" >Shop Now</button>
               </div>
@@ -51,9 +54,11 @@
         <h2 class="Machines">Recent Machines</h2>
 
         <div class="coffee-bags-container">
-          <div class="coffee-bag" *ngFor="let bag of coffeeBags; let i = index">
+          <!-- For Recent Machines section -->
+          <div class="coffee-bag" *ngFor="let bag of recentMachines; let i = index">
             <div class="bag-image">
-              <img [src]="bag.image" [alt]="bag.name">
+<!--              <img [src]="bag.image" [alt]="bag.name">-->
+              <img [src]="getImageUrl(bag)" [alt]="bag.name">
               <div class="bag-overlay">
                 <button class="btn btn-shop" routerLink="/products" >Shop Now</button>
               </div>
