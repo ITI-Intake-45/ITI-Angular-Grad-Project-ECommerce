@@ -18,6 +18,7 @@ import { OrdersStatistics } from './orders-statistics/orders-statistics';
     OrdersStatistics
   ],
   imports: [
+    CommonModule,
     SharedModule,
     RouterModule,
     OrdersRoutingModule

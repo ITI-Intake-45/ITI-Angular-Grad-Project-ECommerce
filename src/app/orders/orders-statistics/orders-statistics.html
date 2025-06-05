@@ -1,1 +1,72 @@
-<p>orders-statistics works!</p>
+<div class="dash__box dash__box--bg-white dash__box--shadow dash__box--w">
+  <!-- Loading State -->
+  <div class="dash__loading" *ngIf="isLoading">
+    <div class="dash__spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+    </div>
+    <p>Loading statistics...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="dash__error" *ngIf="error && !isLoading">
+    <div class="dash__error-content">
+      <i class="fas fa-exclamation-triangle"></i>
+      <p>{{ error }}</p>
+      <button
+        type="button"
+        class="dash__retry-btn"
+        (click)="refreshStatistics()">
+        <i class="fas fa-redo"></i>
+        Retry
+      </button>
+    </div>
+  </div>
+
+  <!-- Statistics Content -->
+  <div class="dash__pad-1" *ngIf="!isLoading && !error && statistics">
+    <!-- Header with Refresh Button -->
+    <div class="dash__stats-header">
+      <h4 class="dash__stats-title">Order Statistics</h4>
+      <button
+        type="button"
+        class="dash__refresh-btn"
+        (click)="refreshStatistics()"
+        title="Refresh Statistics">
+        <i class="fas fa-sync-alt"></i>
+      </button>
+    </div>
+
+    <!-- Statistics Cards -->
+    <ul class="dash__w-list">
+      <li *ngFor="let card of statisticCards">
+        <div class="dash__w-wrap">
+          <span class="dash__w-icon" [class]="card.iconStyle">
+            <i [class]="card.icon"></i>
+          </span>
+          <span class="dash__w-text">{{ card.value }}</span>
+          <span class="dash__w-name">{{ card.label }}</span>
+        </div>
+      </li>
+    </ul>
+
+    <!-- Total Orders Summary -->
+    <div class="dash__stats-summary" *ngIf="statistics">
+      <div class="dash__summary-item">
+        <span class="dash__summary-label">Total Orders:</span>
+        <span class="dash__summary-value">
+          {{ statistics.pending + statistics.accepted + statistics.cancelled}}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="dash__empty" *ngIf="!isLoading && !error && statistics &&
+       (statistics.pending + statistics.accepted + statistics.cancelled) === 0">
+    <div class="dash__empty-content">
+      <i class="fas fa-shopping-cart"></i>
+      <h5>No Orders Yet</h5>
+      <p>You haven't placed any orders yet.</p>
+    </div>
+  </div>
+</div>
