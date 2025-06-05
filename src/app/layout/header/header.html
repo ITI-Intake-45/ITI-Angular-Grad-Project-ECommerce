@@ -1,90 +1,3 @@
-<!--<header class="main-header">-->
-<!--  <nav class="navbar navbar-expand-lg">-->
-<!--    <div class="container-fluid">-->
-<!--      &lt;!&ndash; Logo &ndash;&gt;-->
-<!--      <a class="navbar-brand" href="#" routerLink="/">-->
-<!--        <img src="assets/favicon.png" alt="Cuppot" class="logo-img">-->
-<!--        <span class="brand-text">Cuppot</span>-->
-<!--      </a>-->
-
-<!--      &lt;!&ndash; Mobile Menu Toggle &ndash;&gt;-->
-<!--      <button class="navbar-toggler" type="button" (click)="toggleMenu()"-->
-<!--              [class.collapsed]="!isMenuOpen" aria-expanded="false">-->
-<!--        <span class="navbar-toggler-icon"></span>-->
-<!--      </button>-->
-
-<!--      &lt;!&ndash; Navigation Menu &ndash;&gt;-->
-<!--      <div class="navbar-collapse" [class.collapse]="!isMenuOpen" [class.show]="isMenuOpen">-->
-
-<!--        &lt;!&ndash; Left Navigation &ndash;&gt;-->
-<!--        <div>-->
-<!--          <ul class="navbar-nav me-auto mb-2 mb-lg-0 main-nav">-->
-<!--            <li class="nav-item">-->
-<!--              <a class="nav-link" routerLink="/tea-beans" routerLinkActive="active">Tea Beans</a>-->
-<!--            </li>-->
-<!--            <li class="nav-item">-->
-<!--              <a class="nav-link" routerLink="/tea-mugs" routerLinkActive="active">Tea Mugs</a>-->
-<!--            </li>-->
-<!--            <li class="nav-item">-->
-<!--              <a class="nav-link" routerLink="/tea-machines" routerLinkActive="active">Tea Machines</a>-->
-<!--            </li>-->
-<!--          </ul>-->
-<!--        </div>-->
-<!--        &lt;!&ndash; Search Bar &ndash;&gt;-->
-<!--        <div class="search-container me-4">-->
-<!--          <div class="input-group search-box">-->
-<!--            <input type="text" class="form-control search-input"-->
-<!--                   placeholder="Search" (input)="onSearch($event)">-->
-<!--            <button class="btn search-btn" type="button">-->
-<!--              <i class="fas fa-search"></i>-->
-<!--            </button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        &lt;!&ndash; Right Navigation &ndash;&gt;-->
-<!--        <ul class="navbar-nav right-nav">-->
-<!--          <li class="nav-item">-->
-<!--            <a class="nav-link" routerLink="/about">-->
-<!--              <i class="fas fa-info-circle me-1"></i>About Us-->
-<!--            </a>-->
-<!--          </li>-->
-<!--          <li class="nav-item">-->
-<!--            <a class="nav-link" routerLink="/faq">-->
-<!--              <i class="fas fa-question-circle me-1"></i>FAQ-->
-<!--            </a>-->
-<!--          </li>-->
-<!--          <li class="nav-item">-->
-<!--            <a class="nav-link" routerLink="/contact">-->
-<!--              <i class="fas fa-envelope me-1"></i>Contact Us-->
-<!--            </a>-->
-<!--          </li>-->
-<!--          <li class="nav-item">-->
-<!--            <a class="nav-link" routerLink="/register">-->
-<!--              <i class="fas fa-user-plus me-1"></i>Register-->
-<!--            </a>-->
-<!--          </li>-->
-<!--          <li class="nav-item">-->
-<!--            <a class="nav-link" routerLink="/login">-->
-<!--              <i class="fas fa-sign-in-alt me-1"></i>Login-->
-<!--            </a>-->
-<!--          </li>-->
-<!--          <li class="nav-item">-->
-<!--            <a class="nav-link cart-link" routerLink="/cart">-->
-<!--              <i class="fas fa-home me-1"></i>-->
-<!--            </a>-->
-<!--          </li>-->
-<!--          <li class="nav-item">-->
-<!--            <a class="nav-link cart-link" routerLink="/cart">-->
-<!--              <i class="fas fa-shopping-bag"></i>-->
-<!--              <span class="cart-badge">0</span>-->
-<!--            </a>-->
-<!--          </li>-->
-<!--        </ul>-->
-
-<!--      </div>-->
-<!--    </div>-->
-<!--  </nav>-->
-<!--</header>-->
-
 <header class="main-header">
   <div class="container-fluid">
     <!-- Top Row -->
@@ -141,28 +54,76 @@
 
     <!-- Bottom Row -->
     <div class="row bottom-header">
+      <!--  dynamic Categories (Left) -->
+<!--      <div class="col-md-4">-->
+<!--        <ul class="navbar-nav main-nav d-flex flex-row">-->
+<!--          &lt;!&ndash; Show message if no categories are available &ndash;&gt;-->
+<!--          <li class="nav-item" *ngIf="categories.length === 0">-->
+<!--            <span class="nav-link">No Categories</span>-->
+<!--          </li>-->
+<!--          &lt;!&ndash; Otherwise show the categories from database &ndash;&gt;-->
+<!--          <li class="nav-item" *ngFor="let category of categories">-->
+<!--            <a class="nav-link" [routerLink]="['/products']" [queryParams]="{category: category.id}" routerLinkActive="active">-->
+<!--              {{ category.name }}-->
+<!--            </a>-->
+<!--          </li>-->
+<!--        </ul>-->
+<!--      </div>-->
       <!-- Categories (Left) -->
       <div class="col-md-4">
         <ul class="navbar-nav main-nav d-flex flex-row">
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/products" routerLinkActive="active"> Beans </a>
+          <!-- Show message if no categories are available -->
+          <li class="nav-item" *ngIf="categories.length === 0">
+            <span class="nav-link">No Categories</span>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/products" routerLinkActive="active"> Mugs </a>
+
+          <!-- Show main categories (Beans, Mugs, Machines) -->
+          <li class="nav-item" *ngFor="let category of mainCategories">
+            <a class="nav-link" [routerLink]="['/products']" [queryParams]="{category: category.id}" routerLinkActive="active">
+              {{ category.name }}
+            </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/products" routerLinkActive="active"> Machines </a>
+
+          <!-- Dropdown for additional categories -->
+          <li class="nav-item dropdown" *ngIf="additionalCategories.length > 0">
+            <a class="nav-link dropdown-toggle" href="#"
+               (click)="toggleDropdown(); $event.preventDefault()"
+               [class.show]="isDropdownOpen">
+              More+
+            </a>
+            <div class="dropdown-menu" [class.show]="isDropdownOpen">
+              <a class="dropdown-item" *ngFor="let category of additionalCategories"
+                 [routerLink]="['/products']" [queryParams]="{category: category.id}"
+                 (click)="closeDropdown()">
+                {{ category.name }}
+              </a>
+            </div>
           </li>
         </ul>
       </div>
 
+
+      <!-- Search Bar (Center) -->
+<!--      <div class="col-md-4">-->
+<!--        <div class="search-container">-->
+<!--          <div class="input-group search-box">-->
+<!--            <input type="text" class="form-control search-input"-->
+<!--                   placeholder="Search" (input)="onSearch($event)">-->
+<!--            <button class="btn search-btn" type="button">-->
+<!--              <i class="fas fa-search"></i>-->
+<!--            </button>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
       <!-- Search Bar (Center) -->
       <div class="col-md-4">
         <div class="search-container">
           <div class="input-group search-box">
-            <input type="text" class="form-control search-input"
-                   placeholder="Search" (input)="onSearch($event)">
-            <button class="btn search-btn" type="button">
+            <input #searchInput type="text" class="form-control search-input"
+                   placeholder="Search products"
+                   (input)="onSearch($event)"
+                   (keyup)="onSearchKeyUp($event)">
+            <button class="btn search-btn" type="button" (click)="performSearch()">
               <i class="fas fa-search"></i>
             </button>
           </div>
@@ -177,10 +138,12 @@
               <i class="fas fa-home"></i>
             </a>
           </li>
+
+          <!-- dynamic cart item count -->
           <li class="nav-item">
             <a class="nav-link cart-link" routerLink="/cart">
               <i class="fas fa-shopping-bag"></i>
-              <span class="cart-badge">0</span>
+              <span class="cart-badge">{{ cartItemCount }}</span>
             </a>
           </li>
         </ul>
