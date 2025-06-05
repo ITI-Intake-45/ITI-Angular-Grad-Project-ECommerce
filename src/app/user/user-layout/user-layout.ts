@@ -6,12 +6,13 @@ import {DashboardSidebar} from '../dashboard-sidebar/dashboard-sidebar'
 
 @Component({
   selector: 'app-user-layout',
+  standalone: false,
   templateUrl: './user-layout.html',
   styleUrls: ['./user-layout.css'],
-  imports: [
-    DashboardSidebar,
-    OrdersModule,
-    RouterOutlet,
-  ]
+  // imports: [
+  //   OrdersModule,
+  //   RouterOutlet,
+  //   UserModule,
+  // ]
 })
 export class UserLayoutComponent { }

@@ -1,1 +1,40 @@
-<p>dashboard-sidebar works!</p>
+<!--====== Dashboard Features ======-->
+<div class="dash__box dash__box--bg-white dash__box--shadow">
+  <!-- User Info Section -->
+  <div class="dash__user-info" *ngIf="!isLoading && userProfile">
+    <div class="dash__user-avatar">
+      <i class="fas fa-user-circle"></i>
+    </div>
+    <div class="dash__user-details">
+      <h4 class="dash__user-name">{{ userName }}</h4>
+      <p class="dash__user-email">{{ userEmail }}</p>
+      <div class="dash__user-credit">
+        <i class="fas fa-wallet"></i>
+        <span>Balance: ${{ creditBalance.toFixed(2) }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="dash__loading" *ngIf="isLoading">
+    <div class="dash__spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+    </div>
+    <p>Loading profile...</p>
+  </div>
+
+  <!-- Navigation Links -->
+  <div class="dash__pad-1">
+    <ul class="dash__f-list">
+      <li *ngFor="let link of dashboardLinks">
+        <a
+          [class.dash-active]="link.isActive"
+          (click)="onLinkClick(link)"
+          [attr.aria-current]="link.isActive ? 'page' : null">
+          <i [class]="link.icon"></i>
+          <span>{{ link.label }}</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>

@@ -17,8 +17,7 @@ const routes: Routes = [
       { path: 'edit-profile', component: EditProfile },
       { path: 'change-password', component: ChangePassword },
       { path: 'credit-balance', component: CreditBalance },
-      // { path: '', redirectTo: 'profile', pathMatch: 'full' }
-      { path: '', component: Profile },
+      { path: '', redirectTo: 'profile', pathMatch: 'full' }
     ]
   }
 ];
