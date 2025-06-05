@@ -8,6 +8,10 @@ import { ChangePassword } from './change-password/change-password';
 import { CreditBalance } from './credit-balance/credit-balance';
 import {UserLayoutComponent} from './user-layout/user-layout';
 
+// Import Orders Components
+import { OrderList } from '../orders/order-list/order-list';
+import { OrderDetails } from '../orders/order-details/order-details';
+
 const routes: Routes = [
   {
     path: '',
@@ -17,6 +21,8 @@ const routes: Routes = [
       { path: 'edit-profile', component: EditProfile },
       { path: 'change-password', component: ChangePassword },
       { path: 'credit-balance', component: CreditBalance },
+      { path: 'orders', component: OrderList },
+      { path: 'orders/:id', component: OrderDetails },
       { path: '', redirectTo: 'profile', pathMatch: 'full' }
     ]
   }
