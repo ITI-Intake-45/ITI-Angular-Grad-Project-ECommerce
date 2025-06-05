@@ -7,7 +7,7 @@ import { Profile } from './profile/profile';
 import { EditProfile } from './edit-profile/edit-profile';
 import { ChangePassword } from './change-password/change-password';
 import { CreditBalance } from './credit-balance/credit-balance';
-import { DashboardSidebar } from './dashboard-sidebar/dashboard-sidebar';
+// import { DashboardSidebar } from './dashboard-sidebar/dashboard-sidebar';
 import {OrdersModule} from '../orders/orders-module';
 
 
@@ -23,10 +23,6 @@ import {OrdersModule} from '../orders/orders-module';
     CommonModule,
     UserRoutingModule,
     OrdersModule,
-    DashboardSidebar
   ],
-  exports: [
-    DashboardSidebar,
-  ]
 })
 export class UserModule { }
