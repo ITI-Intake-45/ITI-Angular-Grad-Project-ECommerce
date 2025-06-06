@@ -15,7 +15,7 @@ export class Slider implements OnInit, OnDestroy {
       title: 'Premium Collection',
       subtitle: 'Discover Our Finest Blends',
       startCost : "10.00$",
-      image: 'assets/slider/OIP.jpeg',
+      image: 'assets/slider/slider2.jpeg',
       buttonText: 'Shop Now',
       buttonLink: '/products'
     },
@@ -23,7 +23,7 @@ export class Slider implements OnInit, OnDestroy {
       title: 'Elegant Accessories',
       subtitle: 'Complete Your Experience',
       startCost : "50.00$",
-      image: 'assets/slider/tea.jpeg',
+      image: 'assets/slider/slider3.jpeg',
       buttonText: 'Shop Now',
       buttonLink: '/products'
     },
@@ -48,7 +48,7 @@ export class Slider implements OnInit, OnDestroy {
   startAutoSlide() {
     this.autoSlideInterval = setInterval(() => {
       this.nextSlide();
-    }, 2000);
+    }, 3000);
   }
 
   stopAutoSlide() {

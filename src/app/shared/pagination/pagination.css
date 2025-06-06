@@ -1,3 +1,4 @@
+
 .pagination {
   display: flex;
   justify-content: center;
@@ -7,7 +8,7 @@
 }
 
 .pagination button {
-  background-color: #28a745;
+  background-color: #555;
   color: #fff;
   border: none;
   padding: 8px 14px;
@@ -18,11 +19,11 @@
 }
 
 .pagination button:hover:not(:disabled) {
-  background-color: #0b2b13;
+  background-color: #333;
 }
 
 .pagination button:disabled {
-  background-color: #cccccc;
+  background-color: #97a3af;
   cursor: not-allowed;
 }
 
@@ -32,9 +33,9 @@
 }
 
 .pagination button.active {
-  background-color: #0b2b13;
+  background-color: #1b1a1a;
   font-weight: bold;
-  box-shadow: 0 0 0 1px #28a745 inset;
+  box-shadow: 0 0 0 1px #333 inset;
 }
 
 .pagination .ellipsis {

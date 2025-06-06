@@ -2,20 +2,42 @@
   <section class="hero-section">
     <app-slider></app-slider>
     <div class="hero-content">
-
     </div>
   </section>
 
   <section class="featured-products">
-    <!-- Coffee Bags Section (Static representation similar to your image) -->
+    <!-- Coffee Bags Section  -->
     <div class="coffee-showcase">
       <div class="container">
         <h2 class="products">Recent Products</h2>
 
         <div class="coffee-bags-container">
-          <div class="coffee-bag" *ngFor="let bag of coffeeBags; let i = index">
+          <div class="coffee-bag" *ngFor="let bag of recentProducts; let i = index">
+          <div class="bag-image">
+<!--              <img [src]="bag.image" [alt]="bag.name">-->
+            <img [src]="getImageUrl(bag)" [alt]="bag.name">
+              <div class="bag-overlay">
+                <button class="btn btn-shop" routerLink="/products" >Shop Now</button>
+              </div>
+            </div>
+            <div class="bag-info">
+              <h4 class="bag-name">{{ bag.name }}</h4>
+              <p class="bag-price">${{ bag.price }}</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="container">
+        <h2 class="Mugs">Recent Mugs</h2>
+
+        <div class="coffee-bags-container">
+          <!-- For Recent Mugs section -->
+          <div class="coffee-bag" *ngFor="let bag of recentMugs; let i = index">
             <div class="bag-image">
-              <img [src]="bag.image" [alt]="bag.name">
+<!--              <img [src]="bag.image" [alt]="bag.name">-->
+              <img [src]="getImageUrl(bag)" [alt]="bag.name">
               <div class="bag-overlay">
                 <button class="btn btn-shop" routerLink="/products" >Shop Now</button>
               </div>
@@ -27,12 +49,28 @@
           </div>
         </div>
       </div>
+
+      <div class="container">
+        <h2 class="Machines">Recent Machines</h2>
+
+        <div class="coffee-bags-container">
+          <!-- For Recent Machines section -->
+          <div class="coffee-bag" *ngFor="let bag of recentMachines; let i = index">
+            <div class="bag-image">
+<!--              <img [src]="bag.image" [alt]="bag.name">-->
+              <img [src]="getImageUrl(bag)" [alt]="bag.name">
+              <div class="bag-overlay">
+                <button class="btn btn-shop" routerLink="/products" >Shop Now</button>
+              </div>
+            </div>
+            <div class="bag-info">
+              <h4 class="bag-name">{{ bag.name }}</h4>
+              <p class="bag-price">${{ bag.price }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
-
-  </section>
-
-  <section class="categories">
-
-
   </section>
 </div>

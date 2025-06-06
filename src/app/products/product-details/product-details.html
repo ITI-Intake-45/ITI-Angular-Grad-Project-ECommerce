@@ -1,3 +1,4 @@
+
 <div class="container py-4" *ngIf="!loading && product">
   <div class="row g-4">
     <!-- Product Image Column -->
@@ -18,51 +19,51 @@
         <h1 class="mb-2 fw-bold">{{ product.name }}</h1>
         
         <div class="d-flex align-items-center mb-3">
-          <span class="badge bg-info me-2">Category:</span>
-          <a 
-            class="text-decoration-none fw-medium"
+          <span class="badge bg-info mb-2 ">{{ product.category.name }}</span>
+          
            
-          >
-            {{ product.category.name }}
-          </a>
         </div>
         
         <p class="text-muted mb-4 flex-grow-1">{{ product.description }}</p>
 
         <div class="mb-4">
           <h2 class="text-success fw-bold">${{ product.price | number:'1.2-2' }}</h2>
-          <span 
+          <!-- <span 
             [class]="product.stock > 0 ? 'badge bg-success' : 'badge bg-danger'"
             class="fs-6"
           >
             {{ product.stock > 0 ? 'In Stock' : 'Out of Stock' }}
-          </span>
+          </span> -->
+                <span class="stock">Stock: {{ product.stock }}</span>
+
         </div>
 
         <div *ngIf="product.stock > 0" class="mt-auto">
           <div class="d-flex align-items-center mb-3">
             <label class="fw-medium me-3">Quantity:</label>
             <div class="input-group" style="width: 150px;">
-              <button 
-                class="btn btn-outline-secondary"
-                (click)="onQuantityChange(-1)"
-                [disabled]="selectedQuantity <= 1"
-              >
-                <i class="bi bi-dash"></i>
-              </button>
-              <input 
-                type="text" 
-                class="form-control text-center border-secondary"
-                [value]="selectedQuantity"
-                readonly
-              />
-              <button 
-                class="btn btn-outline-secondary"
-                (click)="onQuantityChange(1)"
-                [disabled]="selectedQuantity >= product.stock"
-              >
-                <i class="bi bi-plus"></i>
-              </button>
+              <!-- Quantity Button -->
+<div class="input-group quantity-group">
+  <button 
+    class="btn btn-quantity"
+    (click)="onQuantityChange(-1)"
+    [disabled]="selectedQuantity <= 1"
+  >–</button>
+
+  <input 
+    type="text" 
+    class="form-control text-center quantity-input"
+    [value]="selectedQuantity"
+    readonly
+  />
+
+  <button 
+    class="btn btn-quantity"
+    (click)="onQuantityChange(1)"
+    [disabled]="selectedQuantity >= product.stock"
+  >+</button>
+</div>
+
             </div>
           </div>
           
@@ -73,12 +74,13 @@
             >
               <i class="bi bi-cart-plus me-2"></i>Add to Cart
             </button>
-            <button 
-              class="btn btn-outline-primary btn-lg px-4"
-              (click)="continueShopping()"
-            >
-              <i class="bi bi-arrow-left me-2"></i>Continue Shopping
-            </button>
+            <!-- Continue Shopping Button -->
+<button 
+  class="btn custom-btn-outline btn-lg px-4"
+  (click)="continueShopping()"
+>
+  <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+</button>
           </div>
         </div>
       </div>
