@@ -1,229 +1,229 @@
-<!--<div class="edit-profile-container">-->
-<!--  &lt;!&ndash; Header Section &ndash;&gt;-->
-<!--  <div class="profile-header">-->
-<!--    <div class="header-content">-->
-<!--      <h2 class="page-title">-->
-<!--        <i class="fas fa-user-edit"></i>-->
-<!--        Edit Profile-->
-<!--      </h2>-->
-<!--      <p class="page-subtitle">Update your personal information</p>-->
+<div class="edit-profile-container">
+  <!-- Header Section -->
+  <div class="profile-header">
+    <div class="header-content">
+      <h2 class="page-title">
+        <i class="fas fa-user-edit"></i>
+        Edit Profile
+      </h2>
+      <p class="page-subtitle">Update your personal information</p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Loading profile...</p>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger error-message">
+    <i class="fas fa-exclamation-triangle"></i>
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = null">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="alert alert-success success-message">
+    <i class="fas fa-check-circle"></i>
+    {{ successMessage }}
+    <button type="button" class="btn-close" (click)="successMessage = null">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <!-- Edit Profile Form -->
+  <div *ngIf="!isLoading" class="profile-form-container">
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+
+
+      <!-- Form Fields -->
+      <div class="form-fields">
+
+        <!-- Name Field -->
+        <div class="form-group">
+          <label for="name" class="form-label">
+            <i class="fas fa-user"></i>
+            Full Name
+            <span class="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <input
+              type="text"
+              id="name"
+              formControlName="name"
+              class="form-control"
+              [class]="getFieldClass('name')"
+              placeholder="Enter your full name"
+              autocomplete="name"
+            />
+
+          </div>
+
+          <!-- Real-time Validation Message -->
+          <div class="validation-message" [class]="getValidationMessageClass('name')">
+            {{ getValidationMessage('name') }}
+          </div>
+        </div>
+
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="email" class="form-label">
+            <i class="fas fa-envelope"></i>
+            Email Address
+            <span class="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              class="form-control"
+              [class]="getFieldClass('email')"
+              placeholder="Enter your email address"
+              autocomplete="email"
+            />
+          </div>
+
+          <!-- Real-time Validation Message -->
+          <div class="validation-message" [class]="getValidationMessageClass('email')">
+            {{ getValidationMessage('email') }}
+          </div>
+        </div>
+
+        <!-- Phone Field -->
+        <div class="form-group">
+          <label for="phone" class="form-label">
+            <i class="fas fa-phone"></i>
+            Phone Number
+            <span class="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <input
+              type="tel"
+              id="phone"
+              formControlName="phone"
+              class="form-control"
+              [class]="getFieldClass('phone')"
+              placeholder="01012345678"
+              autocomplete="tel"
+            />
+
+          </div>
+
+          <!-- Real-time Validation Message -->
+          <div class="validation-message" [class]="getValidationMessageClass('phone')">
+            {{ getValidationMessage('phone') }}
+          </div>
+
+          <!-- Phone Format Help -->
+          <small class="field-help">
+            <i class="fas fa-info-circle"></i>
+            Format: 01012345678 (Egyptian mobile number)
+          </small>
+        </div>
+
+        <!-- Address Field -->
+        <div class="form-group">
+          <label for="address" class="form-label">
+            <i class="fas fa-map-marker-alt"></i>
+            Address
+            <span class="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <textarea
+              id="address"
+              formControlName="address"
+              class="form-control textarea-field"
+              [class]="getFieldClass('address')"
+              placeholder="Enter your full address"
+              rows="3"
+              autocomplete="address-line1"
+            ></textarea>
+
+          </div>
+
+          <!-- Real-time Validation Message -->
+          <div class="validation-message" [class]="getValidationMessageClass('address')">
+            {{ getValidationMessage('address') }}
+          </div>
+
+          <!-- Address Help -->
+          <small class="field-help">
+            <i class="fas fa-info-circle"></i>
+            Include street, city, and any relevant details (5-100 characters)
+          </small>
+        </div>
+
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+
+        <!-- Save Button -->
+        <button
+          type="submit"
+          class="btn btn-primary save-btn"
+          [disabled]="!canSubmit()"
+          [class.loading]="isSubmitting"
+        >
+          <span *ngIf="!isSubmitting">
+            <i class="fas fa-save"></i>
+            Save Changes
+          </span>
+          <span *ngIf="isSubmitting">
+            <i class="fas fa-spinner fa-spin"></i>
+            Saving...
+          </span>
+        </button>
+
+
+        <!-- Reset Button -->
+        <button
+          type="button"
+          class="btn btn-secondary reset-btn"
+          (click)="resetForm()"
+          [disabled]="isSubmitting"
+        >
+          <i class="fas fa-undo"></i>
+          Reset
+        </button>
+
+
+
+      </div>
+
+
+    </form>
+  </div>
+
+<!--  &lt;!&ndash; Current Profile Info (for reference) &ndash;&gt;-->
+<!--  <div *ngIf="userProfile && !isLoading" class="current-info-section">-->
+<!--    <h4 class="section-title">-->
+<!--      <i class="fas fa-info-circle"></i>-->
+<!--      Current Information-->
+<!--    </h4>-->
+<!--    <div class="current-info-grid">-->
+<!--      <div class="info-item">-->
+<!--        <strong>Name:</strong> {{ userProfile.name }}-->
+<!--      </div>-->
+<!--      <div class="info-item">-->
+<!--        <strong>Email:</strong> {{ userProfile.email }}-->
+<!--      </div>-->
+<!--      <div class="info-item">-->
+<!--        <strong>Phone:</strong> {{ userProfile.phone }}-->
+<!--      </div>-->
+<!--      <div class="info-item">-->
+<!--        <strong>Address:</strong> {{ userProfile.address }}-->
+<!--      </div>-->
+<!--      <div class="info-item">-->
+<!--        <strong>Credit Balance:</strong> ${{ userProfile.creditBalance | number:'1.2-2' }}-->
+<!--      </div>-->
 <!--    </div>-->
 <!--  </div>-->
 
-<!--  &lt;!&ndash; Loading State &ndash;&gt;-->
-<!--  <div *ngIf="isLoading" class="loading-container">-->
-<!--    <div class="loading-spinner">-->
-<!--      <i class="fas fa-spinner fa-spin"></i>-->
-<!--      <p>Loading profile...</p>-->
-<!--    </div>-->
-<!--  </div>-->
-
-<!--  &lt;!&ndash; Error Message &ndash;&gt;-->
-<!--  <div *ngIf="error" class="alert alert-danger error-message">-->
-<!--    <i class="fas fa-exclamation-triangle"></i>-->
-<!--    {{ error }}-->
-<!--    <button type="button" class="btn-close" (click)="error = null">-->
-<!--      <i class="fas fa-times"></i>-->
-<!--    </button>-->
-<!--  </div>-->
-
-<!--  &lt;!&ndash; Success Message &ndash;&gt;-->
-<!--  <div *ngIf="successMessage" class="alert alert-success success-message">-->
-<!--    <i class="fas fa-check-circle"></i>-->
-<!--    {{ successMessage }}-->
-<!--    <button type="button" class="btn-close" (click)="successMessage = null">-->
-<!--      <i class="fas fa-times"></i>-->
-<!--    </button>-->
-<!--  </div>-->
-
-<!--  &lt;!&ndash; Edit Profile Form &ndash;&gt;-->
-<!--  <div *ngIf="!isLoading" class="profile-form-container">-->
-<!--    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">-->
-
-
-<!--      &lt;!&ndash; Form Fields &ndash;&gt;-->
-<!--      <div class="form-fields">-->
-
-<!--        &lt;!&ndash; Name Field &ndash;&gt;-->
-<!--        <div class="form-group">-->
-<!--          <label for="name" class="form-label">-->
-<!--            <i class="fas fa-user"></i>-->
-<!--            Full Name-->
-<!--            <span class="required">*</span>-->
-<!--          </label>-->
-<!--          <div class="input-wrapper">-->
-<!--            <input-->
-<!--              type="text"-->
-<!--              id="name"-->
-<!--              formControlName="name"-->
-<!--              class="form-control"-->
-<!--              [class]="getFieldClass('name')"-->
-<!--              placeholder="Enter your full name"-->
-<!--              autocomplete="name"-->
-<!--            />-->
-
-<!--          </div>-->
-
-<!--          &lt;!&ndash; Real-time Validation Message &ndash;&gt;-->
-<!--          <div class="validation-message" [class]="getValidationMessageClass('name')">-->
-<!--            {{ getValidationMessage('name') }}-->
-<!--          </div>-->
-<!--        </div>-->
-
-<!--        &lt;!&ndash; Email Field &ndash;&gt;-->
-<!--        <div class="form-group">-->
-<!--          <label for="email" class="form-label">-->
-<!--            <i class="fas fa-envelope"></i>-->
-<!--            Email Address-->
-<!--            <span class="required">*</span>-->
-<!--          </label>-->
-<!--          <div class="input-wrapper">-->
-<!--            <input-->
-<!--              type="email"-->
-<!--              id="email"-->
-<!--              formControlName="email"-->
-<!--              class="form-control"-->
-<!--              [class]="getFieldClass('email')"-->
-<!--              placeholder="Enter your email address"-->
-<!--              autocomplete="email"-->
-<!--            />-->
-<!--          </div>-->
-
-<!--          &lt;!&ndash; Real-time Validation Message &ndash;&gt;-->
-<!--          <div class="validation-message" [class]="getValidationMessageClass('email')">-->
-<!--            {{ getValidationMessage('email') }}-->
-<!--          </div>-->
-<!--        </div>-->
-
-<!--        &lt;!&ndash; Phone Field &ndash;&gt;-->
-<!--        <div class="form-group">-->
-<!--          <label for="phone" class="form-label">-->
-<!--            <i class="fas fa-phone"></i>-->
-<!--            Phone Number-->
-<!--            <span class="required">*</span>-->
-<!--          </label>-->
-<!--          <div class="input-wrapper">-->
-<!--            <input-->
-<!--              type="tel"-->
-<!--              id="phone"-->
-<!--              formControlName="phone"-->
-<!--              class="form-control"-->
-<!--              [class]="getFieldClass('phone')"-->
-<!--              placeholder="01012345678"-->
-<!--              autocomplete="tel"-->
-<!--            />-->
-
-<!--          </div>-->
-
-<!--          &lt;!&ndash; Real-time Validation Message &ndash;&gt;-->
-<!--          <div class="validation-message" [class]="getValidationMessageClass('phone')">-->
-<!--            {{ getValidationMessage('phone') }}-->
-<!--          </div>-->
-
-<!--          &lt;!&ndash; Phone Format Help &ndash;&gt;-->
-<!--          <small class="field-help">-->
-<!--            <i class="fas fa-info-circle"></i>-->
-<!--            Format: 01012345678 (Egyptian mobile number)-->
-<!--          </small>-->
-<!--        </div>-->
-
-<!--        &lt;!&ndash; Address Field &ndash;&gt;-->
-<!--        <div class="form-group">-->
-<!--          <label for="address" class="form-label">-->
-<!--            <i class="fas fa-map-marker-alt"></i>-->
-<!--            Address-->
-<!--            <span class="required">*</span>-->
-<!--          </label>-->
-<!--          <div class="input-wrapper">-->
-<!--            <textarea-->
-<!--              id="address"-->
-<!--              formControlName="address"-->
-<!--              class="form-control textarea-field"-->
-<!--              [class]="getFieldClass('address')"-->
-<!--              placeholder="Enter your full address"-->
-<!--              rows="3"-->
-<!--              autocomplete="address-line1"-->
-<!--            ></textarea>-->
-
-<!--          </div>-->
-
-<!--          &lt;!&ndash; Real-time Validation Message &ndash;&gt;-->
-<!--          <div class="validation-message" [class]="getValidationMessageClass('address')">-->
-<!--            {{ getValidationMessage('address') }}-->
-<!--          </div>-->
-
-<!--          &lt;!&ndash; Address Help &ndash;&gt;-->
-<!--          <small class="field-help">-->
-<!--            <i class="fas fa-info-circle"></i>-->
-<!--            Include street, city, and any relevant details (5-100 characters)-->
-<!--          </small>-->
-<!--        </div>-->
-
-<!--      </div>-->
-
-<!--      &lt;!&ndash; Form Actions &ndash;&gt;-->
-<!--      <div class="form-actions">-->
-
-<!--        &lt;!&ndash; Save Button &ndash;&gt;-->
-<!--        <button-->
-<!--          type="submit"-->
-<!--          class="btn btn-primary save-btn"-->
-<!--          [disabled]="!canSubmit()"-->
-<!--          [class.loading]="isSubmitting"-->
-<!--        >-->
-<!--          <span *ngIf="!isSubmitting">-->
-<!--            <i class="fas fa-save"></i>-->
-<!--            Save Changes-->
-<!--          </span>-->
-<!--          <span *ngIf="isSubmitting">-->
-<!--            <i class="fas fa-spinner fa-spin"></i>-->
-<!--            Saving...-->
-<!--          </span>-->
-<!--        </button>-->
-
-
-<!--        &lt;!&ndash; Reset Button &ndash;&gt;-->
-<!--        <button-->
-<!--          type="button"-->
-<!--          class="btn btn-secondary reset-btn"-->
-<!--          (click)="resetForm()"-->
-<!--          [disabled]="isSubmitting"-->
-<!--        >-->
-<!--          <i class="fas fa-undo"></i>-->
-<!--          Reset-->
-<!--        </button>-->
-
-
-
-<!--      </div>-->
-
-
-<!--    </form>-->
-<!--  </div>-->
-
-<!--&lt;!&ndash;  &lt;!&ndash; Current Profile Info (for reference) &ndash;&gt;&ndash;&gt;-->
-<!--&lt;!&ndash;  <div *ngIf="userProfile && !isLoading" class="current-info-section">&ndash;&gt;-->
-<!--&lt;!&ndash;    <h4 class="section-title">&ndash;&gt;-->
-<!--&lt;!&ndash;      <i class="fas fa-info-circle"></i>&ndash;&gt;-->
-<!--&lt;!&ndash;      Current Information&ndash;&gt;-->
-<!--&lt;!&ndash;    </h4>&ndash;&gt;-->
-<!--&lt;!&ndash;    <div class="current-info-grid">&ndash;&gt;-->
-<!--&lt;!&ndash;      <div class="info-item">&ndash;&gt;-->
-<!--&lt;!&ndash;        <strong>Name:</strong> {{ userProfile.name }}&ndash;&gt;-->
-<!--&lt;!&ndash;      </div>&ndash;&gt;-->
-<!--&lt;!&ndash;      <div class="info-item">&ndash;&gt;-->
-<!--&lt;!&ndash;        <strong>Email:</strong> {{ userProfile.email }}&ndash;&gt;-->
-<!--&lt;!&ndash;      </div>&ndash;&gt;-->
-<!--&lt;!&ndash;      <div class="info-item">&ndash;&gt;-->
-<!--&lt;!&ndash;        <strong>Phone:</strong> {{ userProfile.phone }}&ndash;&gt;-->
-<!--&lt;!&ndash;      </div>&ndash;&gt;-->
-<!--&lt;!&ndash;      <div class="info-item">&ndash;&gt;-->
-<!--&lt;!&ndash;        <strong>Address:</strong> {{ userProfile.address }}&ndash;&gt;-->
-<!--&lt;!&ndash;      </div>&ndash;&gt;-->
-<!--&lt;!&ndash;      <div class="info-item">&ndash;&gt;-->
-<!--&lt;!&ndash;        <strong>Credit Balance:</strong> ${{ userProfile.creditBalance | number:'1.2-2' }}&ndash;&gt;-->
-<!--&lt;!&ndash;      </div>&ndash;&gt;-->
-<!--&lt;!&ndash;    </div>&ndash;&gt;-->
-<!--&lt;!&ndash;  </div>&ndash;&gt;-->
-
-<!--</div>-->
+</div>

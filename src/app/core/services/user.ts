@@ -29,151 +29,151 @@ export class UserService {
 
   constructor(private http: HttpClient) {
   }
-  //
-  // // ===== VALIDATION METHODS (AJAX-like immediate validation) =====
-  //
-  // // Mock name validation (ACTIVE)
-  // getMockValidateName(name: string): Observable<ValidationResult> {
-  //   if (!name || name.trim() === '') {
-  //     return of({ valid: false, message: '❌ Name is required' });
-  //   }
-  //
-  //   const namePattern = /^[A-Za-z ]{2,50}$/;
-  //   if (!namePattern.test(name)) {
-  //     return of({ valid: false, message: '❌ Only letters and spaces (2-50 characters)' });
-  //   }
-  //
-  //   // Simulate checking against restricted names
-  //   const restrictedNames = ['admin', 'administrator', 'root', 'test'];
-  //   if (restrictedNames.includes(name.toLowerCase())) {
-  //     return of({ valid: false, message: '❌ This name is not allowed' }).pipe(delay(200));
-  //   }
-  //
-  //   return of({ valid: true, message: '✅ Name is valid' }).pipe(delay(200));
-  // }
-  //
-  // // Validate name (ACTIVE - using mock)
-  // validateName(name: string): Observable<ValidationResult> {
-  //   return this.getMockValidateName(name);
-  //
-  //   /*
-  //   // Real API implementation (commented out)
-  //   return this.http.post<ValidationResult>(`${this.apiUrl}/validate/name`, { name }).pipe(
-  //     catchError(this.handleValidationError)
-  //   );
-  //   */
-  // }
-  //
-  // // Mock email validation (ACTIVE)
-  // getMockValidateEmail(email: string): Observable<ValidationResult> {
-  //   if (!email || email.trim() === '') {
-  //     return of({ valid: false, message: '❌ Email is required' });
-  //   }
-  //
-  //   const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
-  //   if (!emailPattern.test(email)) {
-  //     return of({ valid: false, message: '❌ Invalid email format' });
-  //   }
-  //
-  //   // Check against existing emails
-  //   const existingEmails = ['test@example.com', 'admin@example.com', 'user@test.com'];
-  //   const currentUser = this.getCurrentUserProfile();
-  //
-  //   // If it's the current user's email, it's available
-  //   if (currentUser && currentUser.email === email) {
-  //     return of({ valid: true, message: '✅ Current email' }).pipe(delay(300));
-  //   }
-  //
-  //   // Check if email exists
-  //   const emailExists = existingEmails.includes(email.toLowerCase());
-  //
-  //   return of({
-  //     valid: !emailExists,
-  //     message: emailExists ? '❌ Email already in use!' : '✅ Email available!'
-  //   }).pipe(delay(300));
-  // }
-  //
-  // // Validate email (ACTIVE - using mock)
-  // validateEmail(email: string): Observable<ValidationResult> {
-  //   return this.getMockValidateEmail(email);
-  //
-  //   /*
-  //   // Real API implementation (commented out)
-  //   return this.http.post<ValidationResult>(`${this.apiUrl}/validate/email`, { email }).pipe(
-  //     catchError(this.handleValidationError)
-  //   );
-  //   */
-  // }
-  //
-  // // Mock phone validation (ACTIVE)
-  // getMockValidatePhone(phone: string): Observable<ValidationResult> {
-  //   if (!phone || phone.trim() === '') {
-  //     return of({ valid: false, message: '❌ Phone is required' });
-  //   }
-  //
-  //   const phonePattern = /^01[0125]\d{8}$/;
-  //   if (!phonePattern.test(phone)) {
-  //     return of({ valid: false, message: '❌ Must start with 010, 011, 012, or 015 followed by 8 digits' });
-  //   }
-  //
-  //   // Simulate checking against existing phone numbers
-  //   const existingPhones = ['01012345678', '01098765432', '01055512345'];
-  //   const currentUser = this.getCurrentUserProfile();
-  //
-  //   // If it's the current user's phone, it's available
-  //   if (currentUser && currentUser.phone === phone) {
-  //     return of({ valid: true, message: '✅ Current phone number' }).pipe(delay(250));
-  //   }
-  //
-  //   // Check if phone exists
-  //   const phoneExists = existingPhones.includes(phone);
-  //
-  //   return of({
-  //     valid: !phoneExists,
-  //     message: phoneExists ? '❌ Phone number already in use!' : '✅ Phone number available!'
-  //   }).pipe(delay(250));
-  // }
-  //
-  // // Validate phone (ACTIVE - using mock)
-  // validatePhone(phone: string): Observable<ValidationResult> {
-  //   return this.getMockValidatePhone(phone);
-  //
-  //   /*
-  //   // Real API implementation (commented out)
-  //   return this.http.post<ValidationResult>(`${this.apiUrl}/validate/phone`, { phone }).pipe(
-  //     catchError(this.handleValidationError)
-  //   );
-  //   */
-  // }
-  //
-  // // Mock address validation (ACTIVE)
-  // getMockValidateAddress(address: string): Observable<ValidationResult> {
-  //   if (!address || address.trim() === '') {
-  //     return of({ valid: false, message: '❌ Address is required' });
-  //   }
-  //
-  //   if (address.length < 5) {
-  //     return of({ valid: false, message: '❌ Address must be at least 5 characters' });
-  //   }
-  //
-  //   if (address.length > 100) {
-  //     return of({ valid: false, message: '❌ Address must be less than 100 characters' });
-  //   }
-  //
-  //   return of({ valid: true, message: '✅ Address is valid' }).pipe(delay(150));
-  // }
-  //
-  // // Validate address (ACTIVE - using mock)
-  // validateAddress(address: string): Observable<ValidationResult> {
-  //   return this.getMockValidateAddress(address);
-  //
-  //   /*
-  //   // Real API implementation (commented out)
-  //   return this.http.post<ValidationResult>(`${this.apiUrl}/validate/address`, { address }).pipe(
-  //     catchError(this.handleValidationError)
-  //   );
-  //   */
-  // }
+
+  // ===== VALIDATION METHODS =====
+
+
+  getMockValidateName(name: string): Observable<ValidationResult> {
+    if (!name || name.trim() === '') {
+      return of({ valid: false, message: '❌ Name is required' });
+    }
+
+    const namePattern = /^[A-Za-z ]{2,50}$/;
+    if (!namePattern.test(name)) {
+      return of({ valid: false, message: '❌ Only letters and spaces (2-50 characters)' });
+    }
+
+    // Simulate checking against restricted names
+    const restrictedNames = ['admin', 'administrator', 'root', 'test'];
+    if (restrictedNames.includes(name.toLowerCase())) {
+      return of({ valid: false, message: '❌ This name is not allowed' }).pipe(delay(200));
+    }
+
+    return of({ valid: true, message: '✅ Name is valid' }).pipe(delay(200));
+  }
+
+  // Validate name (ACTIVE - using mock)
+  validateName(name: string): Observable<ValidationResult> {
+    return this.getMockValidateName(name);
+
+    /*
+    // Real API implementation (commented out)
+    return this.http.post<ValidationResult>(`${this.apiUrl}/validate/name`, { name }).pipe(
+      catchError(this.handleValidationError)
+    );
+    */
+  }
+
+  // Mock email validation (ACTIVE)
+  getMockValidateEmail(email: string): Observable<ValidationResult> {
+    if (!email || email.trim() === '') {
+      return of({ valid: false, message: '❌ Email is required' });
+    }
+
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
+    if (!emailPattern.test(email)) {
+      return of({ valid: false, message: '❌ Invalid email format' });
+    }
+
+    // Check against existing emails
+    const existingEmails = ['test@example.com', 'admin@example.com', 'user@test.com'];
+    const currentUser = this.getCurrentUserProfile();
+
+    // If it's the current user's email, it's available
+    if (currentUser && currentUser.email === email) {
+      return of({ valid: true, message: '✅ Current email' }).pipe(delay(300));
+    }
+
+    // Check if email exists
+    const emailExists = existingEmails.includes(email.toLowerCase());
+
+    return of({
+      valid: !emailExists,
+      message: emailExists ? '❌ Email already in use!' : '✅ Email available!'
+    }).pipe(delay(300));
+  }
+
+  // Validate email (ACTIVE - using mock)
+  validateEmail(email: string): Observable<ValidationResult> {
+    return this.getMockValidateEmail(email);
+
+    /*
+    // Real API implementation (commented out)
+    return this.http.post<ValidationResult>(`${this.apiUrl}/validate/email`, { email }).pipe(
+      catchError(this.handleValidationError)
+    );
+    */
+  }
+
+  // Mock phone validation (ACTIVE)
+  getMockValidatePhone(phone: string): Observable<ValidationResult> {
+    if (!phone || phone.trim() === '') {
+      return of({ valid: false, message: '❌ Phone is required' });
+    }
+
+    const phonePattern = /^01[0125]\d{8}$/;
+    if (!phonePattern.test(phone)) {
+      return of({ valid: false, message: '❌ Must start with 010, 011, 012, or 015 followed by 8 digits' });
+    }
+
+    // Simulate checking against existing phone numbers
+    const existingPhones = ['01012345678', '01098765432', '01055512345'];
+    const currentUser = this.getCurrentUserProfile();
+
+    // If it's the current user's phone, it's available
+    if (currentUser && currentUser.phone === phone) {
+      return of({ valid: true, message: '✅ Current phone number' }).pipe(delay(250));
+    }
+
+    // Check if phone exists
+    const phoneExists = existingPhones.includes(phone);
+
+    return of({
+      valid: !phoneExists,
+      message: phoneExists ? '❌ Phone number already in use!' : '✅ Phone number available!'
+    }).pipe(delay(250));
+  }
+
+  // Validate phone (ACTIVE - using mock)
+  validatePhone(phone: string): Observable<ValidationResult> {
+    return this.getMockValidatePhone(phone);
+
+    /*
+    // Real API implementation (commented out)
+    return this.http.post<ValidationResult>(`${this.apiUrl}/validate/phone`, { phone }).pipe(
+      catchError(this.handleValidationError)
+    );
+    */
+  }
+
+  // Mock address validation (ACTIVE)
+  getMockValidateAddress(address: string): Observable<ValidationResult> {
+    if (!address || address.trim() === '') {
+      return of({ valid: false, message: '❌ Address is required' });
+    }
+
+    if (address.length < 5) {
+      return of({ valid: false, message: '❌ Address must be at least 5 characters' });
+    }
+
+    if (address.length > 100) {
+      return of({ valid: false, message: '❌ Address must be less than 100 characters' });
+    }
+
+    return of({ valid: true, message: '✅ Address is valid' }).pipe(delay(150));
+  }
+
+  // Validate address (ACTIVE - using mock)
+  validateAddress(address: string): Observable<ValidationResult> {
+    return this.getMockValidateAddress(address);
+
+    /*
+    // Real API implementation (commented out)
+    return this.http.post<ValidationResult>(`${this.apiUrl}/validate/address`, { address }).pipe(
+      catchError(this.handleValidationError)
+    );
+    */
+  }
 
   // ===== EXISTING METHODS =====
 
