@@ -1,1 +1,28 @@
-<p>cart-item works!</p>
+<div class="card m-4 p-3 " *ngFor="let item of cartItems">
+  <div class="row g-0 align-items-center p-2">
+    <div class="col-3  p-3">
+      <img [src]="baseImageUrl + item.image" class="img-fluid rounded" [alt]="item.productName" *ngIf="item.image; else noImage">
+      <ng-template #noImage>
+        <img src="assets/placeholder.jpg" class="img-fluid rounded" alt="No Image">
+      </ng-template>
+    </div>
+    <div class="col-3">
+      <h5 class="card-title mb-0">{{ item.productName }}</h5>
+      <p class="mb-0">Price: ${{ item.price | number:'1.2-2' }}</p>
+      <p 
+  class="mb-0 subtotal" 
+  [class.fade]="isSubtotalChanged(item.productId)">
+  Subtotal: ${{ item.subtotal | number:'1.2-2' }}
+</p>
+    </div>
+    <div class="col-3">
+      <input type="number" class="form-control w-50" [(ngModel)]="item.quantity" min="1" (ngModelChange)="updateQuantity(item.productId, item.quantity)" aria-label="Quantity">
+    </div>
+    <div class="col-3">
+      <button class="btn btn-danger w-50" (click)="removeItem(item.productId)">Delete</button>
+    </div>
+  </div>
+</div>
+<div class="text-center m-4" *ngIf="!cartItems.length">
+  <p>Your cart is empty.</p>
+</div>
