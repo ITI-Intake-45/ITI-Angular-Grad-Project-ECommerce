@@ -61,7 +61,9 @@ export class DashboardSidebar implements OnInit {
 
   private loadUserProfile(): void {
     if (this.authService.isAuthenticated()) {
-      this.userService.getProfile().subscribe({
+
+      // this.userService.getProfile().subscribe({
+      this.userService.getMockProfile().subscribe({
         next: (profile) => {
           this.userProfile = profile;
           this.isLoading = false;
