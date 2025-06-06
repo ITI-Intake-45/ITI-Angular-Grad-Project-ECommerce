@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 import { UserService, UserProfile } from '../../core/services/user';
+import { DashboardCommunicationService } from '../../core/services/dashboard-communication-service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 interface DashboardLink {
   route: string;
@@ -16,9 +19,10 @@ interface DashboardLink {
   standalone: false,
   styleUrls: ['./dashboard-sidebar.css']
 })
-export class DashboardSidebar implements OnInit {
+export class DashboardSidebar implements OnInit, OnDestroy {
   userProfile: UserProfile | null = null;
   isLoading = true;
+  private destroy$ = new Subject<void>();
 
   dashboardLinks: DashboardLink[] = [
     {
@@ -51,31 +55,40 @@ export class DashboardSidebar implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private userService: UserService
+    private userService: UserService,
+    private dashboardCommunicationService: DashboardCommunicationService
   ) {}
 
   ngOnInit(): void {
     this.loadUserProfile();
     this.setActiveLink();
+    this.listenForLinkActivations();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private loadUserProfile(): void {
-    if (this.authService.isAuthenticated()) {
+    // DEBUG: Check authentication status
+    const isAuthenticated = this.authService.isAuthenticated();
+    console.log('Sidebar - Is user authenticated?', isAuthenticated);
 
-      // this.userService.getProfile().subscribe({
-      this.userService.getMockProfile().subscribe({
-        next: (profile) => {
-          this.userProfile = profile;
-          this.isLoading = false;
-        },
-        error: (error) => {
-          console.error('Error loading user profile:', error);
-          this.isLoading = false;
-        }
-      });
-    } else {
-      this.isLoading = false;
-    }
+    // TEMPORARY: Load mock data directly (bypassing auth check)
+    console.log('Sidebar - Loading mock profile directly...');
+
+    this.userService.getMockProfile().subscribe({
+      next: (profile) => {
+        console.log('Sidebar - Profile loaded:', profile);
+        this.userProfile = profile;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Sidebar - Error loading user profile:', error);
+        this.isLoading = false;
+      }
+    });
   }
 
   private setActiveLink(): void {
@@ -83,6 +96,32 @@ export class DashboardSidebar implements OnInit {
     this.dashboardLinks.forEach(link => {
       link.isActive = currentRoute === link.route || currentRoute.startsWith(link.route + '/');
     });
+  }
+
+  // Listen for external link activation requests
+  private listenForLinkActivations(): void {
+    this.dashboardCommunicationService.activateLink$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(route => {
+        console.log('Sidebar - Received activation request for route:', route);
+        this.activateLinkByRoute(route);
+      });
+  }
+
+  // Activate link by route (called from external components)
+  private activateLinkByRoute(route: string): void {
+    // Remove active state from all links
+    this.dashboardLinks.forEach(l => l.isActive = false);
+
+    // Find and activate the matching link
+    const targetLink = this.dashboardLinks.find(link => link.route === route);
+    if (targetLink) {
+      targetLink.isActive = true;
+      console.log('Sidebar - Activated link:', targetLink.label);
+    }
+
+    // Navigate to the route
+    this.router.navigate([route]);
   }
 
   onLinkClick(link: DashboardLink): void {

@@ -4,6 +4,7 @@ import { UserService, UserProfile } from '../../core/services/user';
 import { AuthService } from '../../core/services/auth';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import {DashboardCommunicationService} from '../../core/services/dashboard-communication-service';
 
 interface ProfileCard {
   title: string;
@@ -30,7 +31,8 @@ export class Profile implements OnInit, OnDestroy {
   constructor(
     private userService: UserService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private dashboardCommunicationService: DashboardCommunicationService
   ) {}
 
   ngOnInit(): void {
@@ -146,17 +148,21 @@ export class Profile implements OnInit, OnDestroy {
   refreshProfile(): void {
     this.loadUserProfile();
   }
-
+// Updated action methods to activate sidebar links
   editProfile(): void {
-    this.router.navigate(['/user/edit-profile']);
+    console.log('Edit Profile clicked - activating sidebar link');
+    this.dashboardCommunicationService.activateLink('/user/edit-profile');
   }
 
   manageCredit(): void {
-    this.router.navigate(['/user/credit-balance']);
+    console.log('Manage Credit clicked - activating sidebar link');
+    this.dashboardCommunicationService.activateLink('/user/credit-balance');
   }
 
   changePassword(): void {
-    this.router.navigate(['/user/change-password']);
+    console.log('Change Password clicked - activating sidebar link');
+    this.dashboardCommunicationService.activateLink('/user/change-password');
   }
+
 
 }
