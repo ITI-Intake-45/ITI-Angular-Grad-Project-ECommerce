@@ -57,8 +57,8 @@ export class Profile implements OnInit, OnDestroy {
 
     console.log('Loading user profile...');
 
-    // this.userService.getProfile()
-    this.userService.getMockProfile()
+    this.userService.getProfile()
+    // this.userService.getMockProfile()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (profile) => {

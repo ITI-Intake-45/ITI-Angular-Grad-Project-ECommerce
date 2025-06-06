@@ -75,10 +75,8 @@ export class DashboardSidebar implements OnInit, OnDestroy {
     const isAuthenticated = this.authService.isAuthenticated();
     console.log('Sidebar - Is user authenticated?', isAuthenticated);
 
-    // TEMPORARY: Load mock data directly (bypassing auth check)
-    console.log('Sidebar - Loading mock profile directly...');
 
-    this.userService.getMockProfile().subscribe({
+    this.userService.getProfile().subscribe({
       next: (profile) => {
         console.log('Sidebar - Profile loaded:', profile);
         this.userProfile = profile;

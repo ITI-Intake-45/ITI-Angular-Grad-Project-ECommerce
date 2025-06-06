@@ -11,7 +11,8 @@ import { EditProfile } from './edit-profile/edit-profile';
 import { ChangePassword } from './change-password/change-password';
 import { CreditBalance } from './credit-balance/credit-balance';
 import { DashboardSidebar } from './dashboard-sidebar/dashboard-sidebar';
-import { UserLayoutComponent } from './user-layout/user-layout'; // Add this
+import { UserLayoutComponent } from './user-layout/user-layout';
+import {ReactiveFormsModule} from '@angular/forms'; // Add this
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { UserLayoutComponent } from './user-layout/user-layout'; // Add this
     CommonModule,
     RouterModule,
     UserRoutingModule,
-    OrdersModule
+    OrdersModule,
+    ReactiveFormsModule
   ],
   exports: [
     DashboardSidebar,
