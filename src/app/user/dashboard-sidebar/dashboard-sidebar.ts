@@ -23,12 +23,12 @@ export class DashboardSidebar implements OnInit {
   dashboardLinks: DashboardLink[] = [
     {
       route: '/user/profile',
-      label: 'My Account',
+      label: 'Profile Info',
       icon: 'fas fa-user-circle'
     },
     {
       route: '/user/edit-profile',
-      label: 'My Profile',
+      label: 'Edit Profile',
       icon: 'fas fa-user-edit'
     },
     {
