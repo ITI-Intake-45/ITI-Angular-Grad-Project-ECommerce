@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
-import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { switchMap, tap, catchError } from 'rxjs/operators';
 
 // Define the missing interfaces
@@ -13,9 +13,10 @@ export interface LoginRequest {
 export interface RegisterRequest {
   name: string;
   email: string;
+  phone: string;
+  address: string;
+  creditBalance: number;
   password: string;
-  phone?: string;
-  address?: string;
 }
 
 export interface UserLoginDto {
@@ -137,9 +138,93 @@ export class AuthService {
     }
     return null;
   }
+  /*
+    register(userData: RegisterRequest): Observable<any> {
+      return this.http.post<any>(`${this.apiUrl}/register`, userData);
+    }
+      */
 
-  register(userData: RegisterRequest): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/register`, userData);
+  /*
+register(newUser: RegisterRequest) {
+
+  console.log('📝 AuthService: Starting registration process...');
+
+  this.http.post<UserLoginDto>(this.baseUrl + "/register", newUser, { withCredentials: true })
+    .pipe(
+      switchMap((registerResponse) => {
+        console.log('📝 AuthService: Registration successful, response:', registerResponse);
+
+        // Store user data
+        localStorage.setItem('currentUser', JSON.stringify(registerResponse));
+
+        localStorage.setItem('registerTimestamp', Date.now().toString());
+        localStorage.setItem('authToken', 'authenticated');
+        this.currentUserSubject.next(registerResponse);
+
+        console.log('📝 AuthService: Now loading full profile...');
+
+        // Load full profile after registration
+        return this.http.get<any>(`${this.baseUrl}/profile`, { withCredentials: true })
+          .pipe(
+            tap(profile => {
+              console.log('📝 AuthService: Full profile loaded:', profile);
+              localStorage.setItem('userProfile', JSON.stringify(profile));
+            }),
+            catchError(error => {
+              console.error('📝 AuthService: Error loading profile after registration:', error);
+              return new Observable(observer => {
+                observer.next(registerResponse);
+                observer.complete();
+              });
+            })
+          );
+      })
+    )
+    .subscribe({
+      next: (profile) => {
+        console.log('📝 AuthService: Registration and profile loading completed');
+        alert("🎉 Welcome! Your account has been created.");
+
+        setTimeout(() => {
+          console.log('📝 AuthService: Navigating to home...');
+        }, 100);
+        this.router.navigate(['/home']);
+      },
+      error: (error) => {
+        console.error('📝 AuthService: Registration error:', error);
+        if (error.status === 409) {
+          alert('❌ Email or phone number already in use.');
+        } else {
+          alert('⚠️ Something went wrong. Please try again later.');
+
+        }
+
+      }
+    });
+}
+
+*/
+  register(newUser: RegisterRequest) {
+    console.log('📝 AuthService: Starting registration process...');
+    alert("new user: " + newUser.creditBalance);
+    this.http.post<UserLoginDto>(this.baseUrl + "/register", newUser)
+      .subscribe({
+        next: (response) => {
+          console.log('📝 AuthService: Registration successful:', response);
+
+          alert("🎉 Welcome! Your account has been created.");
+          console.log('📝 AuthService: Navigating to home...');
+
+        },
+        error: (error) => {
+          console.error('📝 AuthService: Registration error:', error);
+          if (error.status === 409) {
+            alert('❌ Email or phone number already in use.');
+          } else {
+            alert('⚠️ Something went wrong. Please try again later.');
+          }
+        }
+      });
   }
 
   logout(): void {

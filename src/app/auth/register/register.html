@@ -1,1 +1,64 @@
-<p>register works!</p>
+<div class="register-wrapper">
+    <form #registerForm="ngForm" (ngSubmit)="onRegister(registerForm)" class="register-form" novalidate>
+        <h2>PERSONAL INFORMATION</h2>
+
+        <!-- NAME -->
+        <div class="form-group">
+            <label>Name *</label>
+            <input type="text" class="form-control" name="name" [(ngModel)]="name" required #nameRef="ngModel" />
+            <div class="error" *ngIf="submitted && nameRef.invalid">Name is required.</div>
+        </div>
+
+        <!-- EMAIL -->
+        <div class="form-group">
+            <label>E-MAIL *</label>
+            <input type="email" class="form-control" name="email" [(ngModel)]="email" required email
+                #emailRef="ngModel" />
+            <div class="error" *ngIf="submitted && emailRef.errors?.['required']">Email is required.</div>
+            <div class="error" *ngIf="submitted && emailRef.errors?.['email']">Invalid email format.</div>
+        </div>
+
+        <!-- PHONE -->
+        <div class="form-group">
+            <label>PHONE *</label>
+            <input type="text" class="form-control" name="phone" [(ngModel)]="phone" required pattern="^[0-9]{11}$"
+                #phoneRef="ngModel" />
+            <div class="error" *ngIf="submitted && phoneRef.errors?.['required']">Phone number is required.</div>
+            <div class="error" *ngIf="submitted && phoneRef.errors?.['pattern']">Phone number must be exactly 11 digits.
+            </div>
+        </div>
+
+        <!-- ADDRESS -->
+        <div class="form-group">
+            <label>ADDRESS *</label>
+            <input type="text" class="form-control" name="address" [(ngModel)]="address" required
+                #addressRef="ngModel" />
+            <div class="error" *ngIf="submitted && addressRef.invalid">Address is required.</div>
+        </div>
+
+        <!-- CREDIT -->
+        <div class="form-group">
+            <label>CREDIT BALANCE*</label>
+            <input type="number" class="form-control" name="creditBalence" [(ngModel)]="creditBalence" required
+                #creditRef="ngModel" />
+            <div class="error" *ngIf="submitted && creditRef.invalid">Credit is required.</div>
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="form-group">
+            <label>PASSWORD *</label>
+            <input type="password" class="form-control" name="password" [(ngModel)]="password" required
+                #passRef="ngModel" />
+            <div class="error" *ngIf="submitted && passRef.invalid">Password is required.</div>
+        </div>
+
+        <!-- CONFIRM PASSWORD -->
+        <div class="form-group">
+            <label>CONFIRM PASSWORD *</label>
+            <input type="password" class="form-control" name="confirmPassword" [(ngModel)]="confirmPassword" required />
+            <div class="error" *ngIf="submitted && password !== confirmPassword">Passwords do not match.</div>
+        </div>
+
+        <button type="submit" class="register-btn">REGISTER</button>
+    </form>
+</div>
