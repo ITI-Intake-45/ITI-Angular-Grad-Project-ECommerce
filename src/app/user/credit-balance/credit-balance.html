@@ -1,1 +1,114 @@
-<p>credit-balance works!</p>
+
+<div class="u-s-p-b-60">
+  <div class="section__content">
+    <div class="dash">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="dash__box dash__box--shadow dash__box--radius dash__box--bg-white u-s-m-b-30">
+              <div class="dash__pad-2">
+                <h1 class="dash__h1 u-s-m-b-14">My Credit</h1>
+                <span class="dash__text u-s-m-b-30">Here you can manage your credit balance.</span>
+
+                <!-- Loading State for entire component -->
+                <div *ngIf="profileLoading" class="loading-container u-s-m-b-30">
+                  <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                  </div>
+                  <p>Loading profile information...</p>
+                </div>
+
+                <!-- Main Content - Only show when profile is loaded -->
+                <div *ngIf="!profileLoading">
+                  <!-- Success/Error Messages -->
+                  <div *ngIf="successMessage" class="notification notification-success u-s-m-b-20">
+                    {{ successMessage }}
+                  </div>
+
+                  <div *ngIf="errorMessage" class="notification notification-error u-s-m-b-20">
+                    {{ errorMessage }}
+                  </div>
+
+                  <form [formGroup]="creditForm" (ngSubmit)="onSubmit()" class="dash-edit-p">
+                    <div class="row">
+                      <!-- Add Credit Balance Input -->
+                      <div class="col-lg-4 u-s-m-b-30">
+                        <label class="gl-label" for="reg-credit">Add Credit Balance</label>
+                        <input
+                          class="input-text input-text--primary-style"
+                          [class.input-error]="creditControl?.invalid && (creditControl?.dirty || creditControl?.touched)"
+                          type="text"
+                          id="reg-credit"
+                          formControlName="credit"
+                          placeholder="Enter amount (e.g., 50.00)"
+                          autocomplete="off">
+
+                        <!-- Field-specific error message -->
+                        <div
+                          *ngIf="creditControl?.invalid && (creditControl?.dirty || creditControl?.touched)"
+                          class="error-message">
+                          <span *ngIf="creditControl?.errors?.['required']">Credit amount is required</span>
+                          <span *ngIf="creditControl?.errors?.['pattern']">Please enter a valid number with up to 2 decimal places</span>
+                          <span *ngIf="creditControl?.errors?.['min']">Amount must be greater than 0</span>
+                        </div>
+                      </div>
+
+                      <!-- Current Credit Balance Display -->
+                      <div class="col-lg-4 u-s-m-b-30">
+                        <div class="dash__box dash__box--bg-grey dash__box--shadow-2 u-h-100">
+                          <div class="dash__pad-3">
+                            <h2 class="dash__h2 u-s-m-b-8">Current Credit Balance</h2>
+                            <span class="dash__text current-balance" id="current-credit">
+                              <span *ngIf="userProfile && userProfile.creditBalance !== undefined && userProfile.creditBalance !== null; else noBalance">
+                                ${{ formatCurrency(userProfile.creditBalance) }}
+                              </span>
+                              <ng-template #noBalance>
+                                <span class="loading-text">$0.00</span>
+                              </ng-template>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Submit Button -->
+                      <div class="col-lg-12 u-s-m-b-30">
+                        <button
+                          type="submit"
+                          class="btn btn--e-brand-b-2"
+                          [disabled]="isLoading || creditForm.invalid || !userProfile"
+                          [class.btn-loading]="isLoading">
+                          <span *ngIf="!isLoading">ADD CREDIT</span>
+                          <span *ngIf="isLoading">
+                            <i class="loading-spinner"></i>
+                            PROCESSING...
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+
+                  <!-- Additional Credit Information -->
+                  <div class="credit-info u-s-m-t-30">
+                    <div class="row">
+                      <div class="col-lg-12">
+                        <div class="info-box">
+                          <h3 class="info-title">Credit Balance Information</h3>
+                          <ul class="info-list">
+                            <li>• Add funds to your account for quick and easy purchases</li>
+                            <li>• Your credit balance can be used for any purchase on our platform</li>
+                            <li>• Minimum addition amount is $0.01</li>
+                            <li>• Credit balance never expires</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

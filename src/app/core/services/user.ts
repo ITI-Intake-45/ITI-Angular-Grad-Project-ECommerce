@@ -28,6 +28,16 @@ export interface PasswordChangeResponse {
   message: string;
 }
 
+export interface AddBalanceRequest {
+  credit: number;
+}
+
+export interface AddBalanceResponse {
+  success: boolean;
+  message: string;
+  newBalance: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -37,6 +47,69 @@ export class UserService {
   public userProfile$ = this.userProfileSubject.asObservable();
 
   constructor(private http: HttpClient) {
+  }
+
+  // ===== CREDIT BALANCE METHODS =====
+
+  // Add credit balance (mock implementation)
+  getMockAddBalance(amount: number): Observable<AddBalanceResponse> {
+    if (!amount || amount <= 0) {
+      return throwError(() => new Error('Invalid amount'));
+    }
+
+    const currentUser = this.getCurrentUserProfile();
+    if (!currentUser) {
+      return throwError(() => new Error('User not found'));
+    }
+
+    const newBalance = currentUser.creditBalance + amount;
+
+    return of({
+      success: true,
+      message: `Successfully added $${amount.toFixed(2)} to your credit balance!`,
+      newBalance: newBalance
+    }).pipe(delay(800));
+  }
+
+  // Add credit balance (ACTIVE - using mock)
+  addBalance(amount: number): Observable<AddBalanceResponse> {
+    // return this.getMockAddBalance(amount);
+
+
+    // Real API implementation (commented out)
+    return this.http.post<AddBalanceResponse>(`${this.apiUrl}/changeBalance`, { credit: amount }).pipe(
+      tap(response => {
+        if (response.success) {
+          // Update the local user profile with new balance
+          const currentProfile = this.getCurrentUserProfile();
+          if (currentProfile) {
+            const updatedProfile = { ...currentProfile, creditBalance: response.newBalance };
+            this.userProfileSubject.next(updatedProfile);
+          }
+        }
+      }),
+      catchError(this.handleError)
+    );
+
+  }
+
+  // Validate credit amount
+  validateCreditAmount(amount: number): Observable<ValidationResult> {
+    if (!amount || amount <= 0) {
+      return of({ valid: false, message: '❌ Amount must be greater than 0' });
+    }
+
+    if (amount > 10000) {
+      return of({ valid: false, message: '❌ Maximum amount per transaction is $10,000' });
+    }
+
+    // Check if amount has more than 2 decimal places
+    const decimalPlaces = (amount.toString().split('.')[1] || '').length;
+    if (decimalPlaces > 2) {
+      return of({ valid: false, message: '❌ Amount can have maximum 2 decimal places' });
+    }
+
+    return of({ valid: true, message: '✅ Valid amount' }).pipe(delay(200));
   }
 
   // ===== VALIDATION METHODS =====

@@ -1,0 +1,304 @@
+/* Credit Balance Component Styles */
+
+/* Form Styles */
+.dash-edit-p {
+  margin-top: 20px;
+}
+
+.gl-label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #333;
+  font-size: 14px;
+}
+
+.input-text {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  background-color: #fff;
+}
+
+.input-text:focus {
+  outline: none;
+  border-color: #ff4500;
+  box-shadow: 0 0 0 2px rgba(255, 69, 0, 0.1);
+}
+
+.input-text--primary-style {
+  border: 1px solid #e1e1e1;
+}
+
+.input-error {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.1) !important;
+}
+
+/* Error Message Styles */
+.error-message {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #dc3545;
+  font-weight: 500;
+}
+
+/* Notification Styles */
+.notification {
+  padding: 12px 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  animation: slideDown 0.3s ease-out;
+}
+
+.notification-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  border-left: 4px solid #28a745;
+}
+
+.notification-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-left: 4px solid #dc3545;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Credit Balance Display */
+.dash__box--bg-grey {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+}
+
+.dash__box--shadow-2 {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dash__h2 {
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.current-balance {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ff4500;
+  display: block;
+}
+
+.loading-text {
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Button Styles */
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+
+.btn--e-brand-b-2 {
+  background-color: #ff4500;
+  color: white;
+  border: 2px solid #ff4500;
+}
+
+.btn--e-brand-b-2:hover:not(:disabled) {
+  background-color: #e63e00;
+  border-color: #e63e00;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(255, 69, 0, 0.2);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-loading {
+  position: relative;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Credit Information Section */
+.credit-info {
+  border-top: 1px solid #e9ecef;
+  padding-top: 30px;
+}
+
+.info-box {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 6px;
+  border-left: 4px solid #ff4500;
+}
+
+.info-title {
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info-list li {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 8px;
+  padding-left: 10px;
+}
+
+/* Dashboard Box Styles */
+.dash__box {
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.dash__box--shadow {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.dash__box--radius {
+  border-radius: 6px;
+}
+
+.dash__box--bg-white {
+  background-color: #ffffff;
+}
+
+.dash__pad-2 {
+  padding: 30px;
+}
+
+.dash__pad-3 {
+  padding: 20px;
+}
+
+.dash__h1 {
+  color: #333;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.dash__text {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Utility Classes */
+.u-s-m-b-30 {
+  margin-bottom: 30px;
+}
+
+.u-s-m-b-20 {
+  margin-bottom: 20px;
+}
+
+.u-s-m-b-14 {
+  margin-bottom: 14px;
+}
+
+.u-s-m-b-8 {
+  margin-bottom: 8px;
+}
+
+.u-s-m-t-30 {
+  margin-top: 30px;
+}
+
+.u-s-p-b-60 {
+  padding-bottom: 60px;
+}
+
+.u-h-100 {
+  height: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dash__pad-2 {
+    padding: 20px;
+  }
+
+  .dash__h1 {
+    font-size: 24px;
+  }
+
+  .current-balance {
+    font-size: 20px;
+  }
+
+  .col-lg-4 {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dash__pad-2 {
+    padding: 15px;
+  }
+
+  .row {
+    margin: 0;
+  }
+
+  .col-lg-4,
+  .col-lg-12 {
+    padding: 0 10px;
+  }
+}
