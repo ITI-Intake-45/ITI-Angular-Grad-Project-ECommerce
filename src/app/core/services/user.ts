@@ -4,7 +4,7 @@ import {Observable, BehaviorSubject, throwError, of} from 'rxjs';
 import {tap, catchError, delay, map, switchMap} from 'rxjs/operators';
 
 export interface UserProfile {
-  id: number;
+  userId: number;  // ← Changed from 'id' to 'userId' to match backend
   name: string;
   email: string;
   phone?: string;
@@ -105,7 +105,6 @@ export class UserService {
     );
   }
 
-
   // Force refresh profile from API
   refreshProfile(): Observable<UserProfile> {
     console.log('📁 UserService: Force refreshing profile from API');
@@ -135,8 +134,7 @@ export class UserService {
     );
   }
 
-
-// Update profile method with better error handling
+  // Update profile method with better error handling
   updateProfile(profile: Partial<UserProfile>): Observable<UserProfile> {
     console.log('🔄 UserService: Updating profile with data:', profile);
 
@@ -218,7 +216,12 @@ export class UserService {
     localStorage.removeItem('userProfile');
   }
 
-// ===== CREDIT BALANCE METHODS =====
+  // Get current user profile (synchronous)
+  getCurrentUserProfile(): UserProfile | null {
+    return this.userProfileSubject.value;
+  }
+
+  // ===== CREDIT BALANCE METHODS =====
   addBalance(newTotalBalance: number): Observable<UserProfile> {
     console.log('💳 UserService: Updating balance to new total via real API:', newTotalBalance);
 
@@ -387,70 +390,48 @@ export class UserService {
     return of({valid: true, message: '✅ Address is valid'}).pipe(delay(150));
   }
 
-// ===== PASSWORD METHODS =====
+  // ===== PASSWORD METHODS =====
   validateCurrentPassword(password: string): Observable<ValidationResult> {
     if (!password || password.trim() === '') {
       return of({valid: false, message: '❌ Current password is required'});
     }
+    return of({valid: true, message: '✅ Valid'}).pipe(delay(200));
+  }
 
-    console.log('🔐 UserService: Validating current password via existing API...');
+  validateNewPassword(password: string): Observable<ValidationResult> {
+    if (!password || password.trim() === '') {
+      return of({valid: false, message: '❌ New password is required'});
+    }
 
-    // Use the existing change-password endpoint with the same password for both old and new
-    // This will validate the current password without actually changing it
-    return this.http.patch(`${this.apiUrl}/change-password`, {
-      oldPassword: password,
-      newPassword: password // Using same password to test validation
-    }, {
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      observe: 'response',
-      responseType: 'text'
-    }).pipe(
-      map(response => {
-        // If we get a successful response, the current password is correct
-        if (response.status === 200) {
-          return {
-            valid: true,
-            message: '✅ Current password is correct',
-            loading: false
-          };
-        } else {
-          return {
-            valid: false,
-            message: '❌ Current password is incorrect',
-            loading: false
-          };
-        }
-      }),
-      catchError((error: HttpErrorResponse) => {
-        console.error('🔐 UserService: Current password validation error:', error);
+    if (password.length < 8) {
+      return of({valid: false, message: '❌ Password must be at least 8 characters'});
+    }
 
-        let message = '❌ Current password is incorrect';
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-        // Check error status and response body
-        if (error.status === 400) {
-          // Bad request usually means invalid credentials (wrong current password)
-          message = '❌ Current password is incorrect';
-        } else if (error.status === 401) {
-          message = '❌ User not authenticated';
-        } else if (error.error && typeof error.error === 'string') {
-          if (error.error.includes('Invalid') || error.error.includes('incorrect')) {
-            message = '❌ Current password is incorrect';
-          } else {
-            message = `❌ ${error.error}`;
-          }
-        }
+    if (!hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialChar) {
+      return of({
+        valid: false,
+        message: '❌ Password must contain uppercase, lowercase, number, and special character'
+      });
+    }
 
-        return of({
-          valid: false,
-          message: message,
-          loading: false
-        });
-      }),
-      delay(300) // Add slight delay to simulate server processing
-    );
+    return of({valid: true, message: '✅ Strong password'}).pipe(delay(300));
+  }
+
+  validateConfirmPassword(newPassword: string, confirmPassword: string): Observable<ValidationResult> {
+    if (!confirmPassword || confirmPassword.trim() === '') {
+      return of({valid: false, message: '❌ Confirm password is required'});
+    }
+
+    if (newPassword !== confirmPassword) {
+      return of({valid: false, message: '❌ Passwords do not match'});
+    }
+
+    return of({valid: true, message: '✅ Passwords match'}).pipe(delay(150));
   }
 
   changePassword(oldPassword: string, newPassword: string): Observable<PasswordChangeResponse> {
@@ -496,11 +477,6 @@ export class UserService {
     );
   }
 
-  // ===== UTILITY METHODS =====
-  getCurrentUserProfile(): UserProfile | null {
-    return this.userProfileSubject.value;
-  }
-
   // Error handling
   private handleError(error: HttpErrorResponse): Observable<never> {
     console.error('UserService error:', error);
@@ -510,23 +486,25 @@ export class UserService {
     if (error.error instanceof ErrorEvent) {
       errorMessage = error.error.message;
     } else {
-      errorMessage = error.error?.message || `Server error: ${error.status}`;
+      switch (error.status) {
+        case 401:
+          errorMessage = 'Authentication required. Please log in again.';
+          break;
+        case 403:
+          errorMessage = 'Access denied.';
+          break;
+        case 404:
+          errorMessage = 'User profile not found.';
+          break;
+        case 500:
+          errorMessage = 'Server error. Please try again later.';
+          break;
+        default:
+          errorMessage = error.error?.message || `Server error: ${error.status}`;
+          break;
+      }
     }
 
     return throwError(() => new Error(errorMessage));
-  }
-
-  private handleValidationError(error: HttpErrorResponse): Observable<ValidationResult> {
-    console.error('Validation error:', error);
-
-    let message = 'Validation failed';
-
-    if (error.error instanceof ErrorEvent) {
-      message = error.error.message;
-    } else {
-      message = error.error?.message || 'Server validation error';
-    }
-
-    return of({valid: false, message: `❌ ${message}`});
   }
 }
