@@ -49,11 +49,11 @@ export class Profile implements OnInit, OnDestroy {
     this.error = null;
 
     // Check if user is authenticated [commented out for mocking until the login functionality works well ]
-    // if (!this.authService.isAuthenticated()) {
-    //   this.error = 'Please log in to view your profile';
-    //   this.isLoading = false;
-    //   return;
-    // }
+    if (!this.authService.isAuthenticated()) {
+      this.error = 'Please log in to view your profile';
+      this.isLoading = false;
+      return;
+    }
 
     console.log('Loading user profile...');
 
