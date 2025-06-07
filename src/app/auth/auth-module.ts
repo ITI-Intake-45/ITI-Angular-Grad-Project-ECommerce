@@ -20,5 +20,9 @@ import { VerifyOtp } from './verify-otp/verify-otp';
     SharedModule,
     AuthRoutingModule
   ]
+  ,
+  exports: [
+    Login
+  ]
 })
 export class AuthModule { }
