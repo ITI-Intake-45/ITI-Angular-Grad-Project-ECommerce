@@ -3,8 +3,9 @@ import { Router } from '@angular/router';
 import { UserService, UserProfile } from '../../core/services/user';
 import { AuthService } from '../../core/services/auth';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import {DashboardCommunicationService} from '../../core/services/dashboard-communication-service';
+import { takeUntil, catchError } from 'rxjs/operators';
+import { DashboardCommunicationService } from '../../core/services/dashboard-communication-service';
+import { of } from 'rxjs';
 
 interface ProfileCard {
   title: string;
@@ -45,30 +46,63 @@ export class Profile implements OnInit, OnDestroy {
   }
 
   private loadUserProfile(): void {
+    console.log('🔵 Profile Component: loadUserProfile called');
     this.isLoading = true;
     this.error = null;
 
-    // Check if user is authenticated [commented out for mocking until the login functionality works well ]
+    // Check if user is authenticated locally first
     if (!this.authService.isAuthenticated()) {
+      console.log('🔵 Profile Component: Not authenticated locally');
       this.error = 'Please log in to view your profile';
+      this.isLoading = false;
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+
+    // First try to get stored profile
+    const storedProfile = this.authService.getStoredProfile();
+    if (storedProfile) {
+      console.log('🔵 Profile Component: Using stored profile:', storedProfile);
+      this.userProfile = storedProfile;
+      this.updateProfileCards();
       this.isLoading = false;
       return;
     }
 
-    console.log('Loading user profile...');
-
+    // If no stored profile, load from API
+    console.log('🔵 Profile Component: Loading profile from API...');
     this.userService.getProfile()
-    // this.userService.getMockProfile()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError((error) => {
+          console.error('🔵 Profile Component: Error loading profile:', error);
+
+          // If it's a 401 error, the session has expired
+          if (error?.status === 401) {
+            console.log('🔵 Profile Component: Session expired, clearing auth and redirecting');
+            this.authService.clearAuthData();
+            this.router.navigate(['/auth/login']);
+            return of(null);
+          }
+
+          // For other errors, show error message
+          throw error;
+        })
+      )
       .subscribe({
         next: (profile) => {
-          console.log('Profile loaded successfully:', profile);
-          this.userProfile = profile;
-          this.updateProfileCards();
+          if (profile) {
+            console.log('🔵 Profile Component: Profile loaded successfully:', profile);
+            this.userProfile = profile;
+            this.updateProfileCards();
+
+            // Store profile for future use
+            localStorage.setItem('userProfile', JSON.stringify(profile));
+          }
           this.isLoading = false;
         },
         error: (error) => {
-          console.error('Error loading user profile:', error);
+          console.error('🔵 Profile Component: Final error handling:', error);
           this.error = this.getErrorMessage(error);
           this.isLoading = false;
         }
@@ -146,9 +180,24 @@ export class Profile implements OnInit, OnDestroy {
   }
 
   refreshProfile(): void {
-    this.loadUserProfile();
+    // Force refresh from API
+    this.userService.refreshProfile().subscribe({
+      next: (profile) => {
+        this.userProfile = profile;
+        this.updateProfileCards();
+        localStorage.setItem('userProfile', JSON.stringify(profile));
+      },
+      error: (error) => {
+        if (error?.status === 401) {
+          this.authService.clearAuthData();
+          this.router.navigate(['/auth/login']);
+        } else {
+          this.error = this.getErrorMessage(error);
+        }
+      }
+    });
   }
-// Updated action methods to activate sidebar links
+
   editProfile(): void {
     console.log('Edit Profile clicked - activating sidebar link');
     this.dashboardCommunicationService.activateLink('/user/edit-profile');
@@ -163,6 +212,4 @@ export class Profile implements OnInit, OnDestroy {
     console.log('Change Password clicked - activating sidebar link');
     this.dashboardCommunicationService.activateLink('/user/change-password');
   }
-
-
 }

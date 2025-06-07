@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError, of } from 'rxjs';
-import { tap, catchError, delay, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { tap, catchError, delay } from 'rxjs/operators';
 
 export interface UserProfile {
   id: number;
@@ -47,36 +47,80 @@ export class UserService {
   public userProfile$ = this.userProfileSubject.asObservable();
 
   constructor(private http: HttpClient) {
+    // Check if there's a stored profile from login
+    this.loadStoredProfile();
+  }
+
+  // Load profile from localStorage if available
+  private loadStoredProfile(): void {
+    const profileData = localStorage.getItem('userProfile');
+    if (profileData) {
+      try {
+        const profile = JSON.parse(profileData);
+        console.log('📁 UserService: Loaded stored profile:', profile);
+        this.userProfileSubject.next(profile);
+      } catch (error) {
+        console.error('📁 UserService: Error parsing stored profile:', error);
+        localStorage.removeItem('userProfile');
+      }
+    }
+  }
+
+  // Get user profile - first check if we have it in memory, otherwise fetch from API
+  getProfile(): Observable<UserProfile> {
+    const currentProfile = this.getCurrentUserProfile();
+
+    // If we already have the profile in memory, return it
+    if (currentProfile) {
+      console.log('📁 UserService: Returning cached profile');
+      return of(currentProfile);
+    }
+
+    // Otherwise fetch from API
+    console.log('📁 UserService: Fetching profile from API');
+    return this.http.get<UserProfile>(`${this.apiUrl}/profile`).pipe(
+      tap(profile => {
+        console.log('📁 UserService: Profile loaded from API:', profile);
+        this.userProfileSubject.next(profile);
+        // Store in localStorage for persistence
+        localStorage.setItem('userProfile', JSON.stringify(profile));
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  // Force refresh profile from API
+  refreshProfile(): Observable<UserProfile> {
+    console.log('📁 UserService: Force refreshing profile from API');
+    return this.http.get<UserProfile>(`${this.apiUrl}/profile`).pipe(
+      tap(profile => {
+        console.log('📁 UserService: Profile refreshed from API:', profile);
+        this.userProfileSubject.next(profile);
+        localStorage.setItem('userProfile', JSON.stringify(profile));
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  // Update profile
+  updateProfile(profile: Partial<UserProfile>): Observable<UserProfile> {
+    return this.http.put<UserProfile>(`${this.apiUrl}/1`, profile).pipe(
+      tap(updatedProfile => {
+        this.userProfileSubject.next(updatedProfile);
+        localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  // Clear profile data (called on logout)
+  clearProfile(): void {
+    this.userProfileSubject.next(null);
+    localStorage.removeItem('userProfile');
   }
 
   // ===== CREDIT BALANCE METHODS =====
-
-  // Add credit balance (mock implementation)
-  getMockAddBalance(amount: number): Observable<AddBalanceResponse> {
-    if (!amount || amount <= 0) {
-      return throwError(() => new Error('Invalid amount'));
-    }
-
-    const currentUser = this.getCurrentUserProfile();
-    if (!currentUser) {
-      return throwError(() => new Error('User not found'));
-    }
-
-    const newBalance = currentUser.creditBalance + amount;
-
-    return of({
-      success: true,
-      message: `Successfully added $${amount.toFixed(2)} to your credit balance!`,
-      newBalance: newBalance
-    }).pipe(delay(800));
-  }
-
-  // Add credit balance (ACTIVE - using mock)
   addBalance(amount: number): Observable<AddBalanceResponse> {
-    // return this.getMockAddBalance(amount);
-
-
-    // Real API implementation (commented out)
     return this.http.post<AddBalanceResponse>(`${this.apiUrl}/changeBalance`, { credit: amount }).pipe(
       tap(response => {
         if (response.success) {
@@ -85,15 +129,14 @@ export class UserService {
           if (currentProfile) {
             const updatedProfile = { ...currentProfile, creditBalance: response.newBalance };
             this.userProfileSubject.next(updatedProfile);
+            localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
           }
         }
       }),
       catchError(this.handleError)
     );
-
   }
 
-  // Validate credit amount
   validateCreditAmount(amount: number): Observable<ValidationResult> {
     if (!amount || amount <= 0) {
       return of({ valid: false, message: '❌ Amount must be greater than 0' });
@@ -103,7 +146,6 @@ export class UserService {
       return of({ valid: false, message: '❌ Maximum amount per transaction is $10,000' });
     }
 
-    // Check if amount has more than 2 decimal places
     const decimalPlaces = (amount.toString().split('.')[1] || '').length;
     if (decimalPlaces > 2) {
       return of({ valid: false, message: '❌ Amount can have maximum 2 decimal places' });
@@ -113,8 +155,11 @@ export class UserService {
   }
 
   // ===== VALIDATION METHODS =====
+  validateName(name: string): Observable<ValidationResult> {
+    return this.getMockValidateName(name);
+  }
 
-  getMockValidateName(name: string): Observable<ValidationResult> {
+  private getMockValidateName(name: string): Observable<ValidationResult> {
     if (!name || name.trim() === '') {
       return of({ valid: false, message: '❌ Name is required' });
     }
@@ -124,7 +169,6 @@ export class UserService {
       return of({ valid: false, message: '❌ Only letters and spaces (2-50 characters)' });
     }
 
-    // Simulate checking against restricted names
     const restrictedNames = ['admin', 'administrator', 'root', 'test'];
     if (restrictedNames.includes(name.toLowerCase())) {
       return of({ valid: false, message: '❌ This name is not allowed' }).pipe(delay(200));
@@ -133,20 +177,11 @@ export class UserService {
     return of({ valid: true, message: '✅ Name is valid' }).pipe(delay(200));
   }
 
-  // Validate name (ACTIVE - using mock)
-  validateName(name: string): Observable<ValidationResult> {
-    return this.getMockValidateName(name);
-
-    /*
-    // Real API implementation (commented out)
-    return this.http.post<ValidationResult>(`${this.apiUrl}/validate/name`, { name }).pipe(
-      catchError(this.handleValidationError)
-    );
-    */
+  validateEmail(email: string): Observable<ValidationResult> {
+    return this.getMockValidateEmail(email);
   }
 
-  // Mock email validation (ACTIVE)
-  getMockValidateEmail(email: string): Observable<ValidationResult> {
+  private getMockValidateEmail(email: string): Observable<ValidationResult> {
     if (!email || email.trim() === '') {
       return of({ valid: false, message: '❌ Email is required' });
     }
@@ -156,16 +191,13 @@ export class UserService {
       return of({ valid: false, message: '❌ Invalid email format' });
     }
 
-    // Check against existing emails
     const existingEmails = ['test@example.com', 'admin@example.com', 'user@test.com'];
     const currentUser = this.getCurrentUserProfile();
 
-    // If it's the current user's email, it's available
     if (currentUser && currentUser.email === email) {
       return of({ valid: true, message: '✅ Current email' }).pipe(delay(300));
     }
 
-    // Check if email exists
     const emailExists = existingEmails.includes(email.toLowerCase());
 
     return of({
@@ -174,20 +206,11 @@ export class UserService {
     }).pipe(delay(300));
   }
 
-  // Validate email (ACTIVE - using mock)
-  validateEmail(email: string): Observable<ValidationResult> {
-    return this.getMockValidateEmail(email);
-
-    /*
-    // Real API implementation (commented out)
-    return this.http.post<ValidationResult>(`${this.apiUrl}/validate/email`, { email }).pipe(
-      catchError(this.handleValidationError)
-    );
-    */
+  validatePhone(phone: string): Observable<ValidationResult> {
+    return this.getMockValidatePhone(phone);
   }
 
-  // Mock phone validation (ACTIVE)
-  getMockValidatePhone(phone: string): Observable<ValidationResult> {
+  private getMockValidatePhone(phone: string): Observable<ValidationResult> {
     if (!phone || phone.trim() === '') {
       return of({ valid: false, message: '❌ Phone is required' });
     }
@@ -197,16 +220,13 @@ export class UserService {
       return of({ valid: false, message: '❌ Must start with 010, 011, 012, or 015 followed by 8 digits' });
     }
 
-    // Simulate checking against existing phone numbers
     const existingPhones = ['01012345678', '01098765432', '01055512345'];
     const currentUser = this.getCurrentUserProfile();
 
-    // If it's the current user's phone, it's available
     if (currentUser && currentUser.phone === phone) {
       return of({ valid: true, message: '✅ Current phone number' }).pipe(delay(250));
     }
 
-    // Check if phone exists
     const phoneExists = existingPhones.includes(phone);
 
     return of({
@@ -215,20 +235,11 @@ export class UserService {
     }).pipe(delay(250));
   }
 
-  // Validate phone (ACTIVE - using mock)
-  validatePhone(phone: string): Observable<ValidationResult> {
-    return this.getMockValidatePhone(phone);
-
-    /*
-    // Real API implementation (commented out)
-    return this.http.post<ValidationResult>(`${this.apiUrl}/validate/phone`, { phone }).pipe(
-      catchError(this.handleValidationError)
-    );
-    */
+  validateAddress(address: string): Observable<ValidationResult> {
+    return this.getMockValidateAddress(address);
   }
 
-  // Mock address validation (ACTIVE)
-  getMockValidateAddress(address: string): Observable<ValidationResult> {
+  private getMockValidateAddress(address: string): Observable<ValidationResult> {
     if (!address || address.trim() === '') {
       return of({ valid: false, message: '❌ Address is required' });
     }
@@ -244,110 +255,27 @@ export class UserService {
     return of({ valid: true, message: '✅ Address is valid' }).pipe(delay(150));
   }
 
-  // Validate address (ACTIVE - using mock)
-  validateAddress(address: string): Observable<ValidationResult> {
-    return this.getMockValidateAddress(address);
-
-    /*
-    // Real API implementation (commented out)
-    return this.http.post<ValidationResult>(`${this.apiUrl}/validate/address`, { address }).pipe(
-      catchError(this.handleValidationError)
-    );
-    */
+  // ===== PASSWORD METHODS =====
+  validateCurrentPassword(password: string): Observable<ValidationResult> {
+    return this.getMockValidateCurrentPassword(password);
   }
 
-  // ===== PASSWORD METHODS =====
-
-  // Mock current password validation
-  getMockValidateCurrentPassword(password: string): Observable<ValidationResult> {
+  private getMockValidateCurrentPassword(password: string): Observable<ValidationResult> {
     if (!password || password.trim() === '') {
       return of({ valid: false, message: '❌ Current password is required' });
     }
 
-    // Simulate server validation delay
     return of({ valid: true, message: '✅ Password is valid' }).pipe(delay(400));
-
-    /*
-    // For real implementation, you might want to simulate some failed cases:
-    const mockCurrentPassword = 'currentPass123'; // This would come from server
-    if (password === mockCurrentPassword) {
-      return of({ valid: true, message: '✅ Password is valid' }).pipe(delay(400));
-    } else {
-      return of({ valid: false, message: '❌ Invalid current password' }).pipe(delay(400));
-    }
-    */
   }
 
-  // Validate current password (ACTIVE - using mock)
-  validateCurrentPassword(password: string): Observable<ValidationResult> {
-    return this.getMockValidateCurrentPassword(password);
-
-    /*
-    // Real API implementation (commented out)
-    return this.http.post<ValidationResult>(`${this.apiUrl}/validate/current-password`, { password }).pipe(
-      catchError(this.handleValidationError)
-    );
-    */
-  }
-
-  // Mock change password
-  getMockChangePassword(oldPassword: string, newPassword: string): Observable<PasswordChangeResponse> {
-    // Simulate validation
-    if (!oldPassword || !newPassword) {
-      return throwError(() => new Error('Both passwords are required'));
-    }
-
-    if (newPassword.length < 8) {
-      return throwError(() => new Error('New password must be at least 8 characters'));
-    }
-
-    if (oldPassword === newPassword) {
-      return throwError(() => new Error('New password must be different from current password'));
-    }
-
-    // Simulate successful password change
-    return of({
-      success: true,
-      message: 'Password changed successfully'
-    }).pipe(delay(600));
-  }
-
-  // Change password (ACTIVE - using mock)
   changePassword(oldPassword: string, newPassword: string): Observable<PasswordChangeResponse> {
-    // return this.getMockChangePassword(oldPassword, newPassword);
-
-
-    // Real API implementation (commented out)
     return this.http.post<PasswordChangeResponse>(`${this.apiUrl}/change-password`, {
       oldPassword,
       newPassword
     }).pipe(catchError(this.handleError));
-
-  }
-
-  // ===== EXISTING METHODS =====
-
-  // Get user profile (ACTIVE - using real API)
-  getProfile(): Observable<UserProfile> {
-    return this.http.get<UserProfile>(`${this.apiUrl}/1`).pipe(
-      tap(profile => {
-        console.log('Profile loaded from API:', profile);
-        this.userProfileSubject.next(profile);
-      }),
-      catchError(this.handleError)
-    );
-  }
-
-  // Update profile (ACTIVE - using real API)
-  updateProfile(profile: Partial<UserProfile>): Observable<UserProfile> {
-    return this.http.put<UserProfile>(`${this.apiUrl}/1`, profile).pipe(
-      tap(updatedProfile => this.userProfileSubject.next(updatedProfile)),
-      catchError(this.handleError)
-    );
   }
 
   // ===== UTILITY METHODS =====
-
   getCurrentUserProfile(): UserProfile | null {
     return this.userProfileSubject.value;
   }
@@ -359,17 +287,14 @@ export class UserService {
     let errorMessage = 'An unexpected error occurred';
 
     if (error.error instanceof ErrorEvent) {
-      // Client-side error
       errorMessage = error.error.message;
     } else {
-      // Server-side error
       errorMessage = error.error?.message || `Server error: ${error.status}`;
     }
 
     return throwError(() => new Error(errorMessage));
   }
 
-  // Validation error handling
   private handleValidationError(error: HttpErrorResponse): Observable<ValidationResult> {
     console.error('Validation error:', error);
 
