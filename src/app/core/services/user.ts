@@ -184,21 +184,54 @@ export class UserService {
     localStorage.removeItem('userProfile');
   }
 
-  // ===== CREDIT BALANCE METHODS =====
-  addBalance(amount: number): Observable<AddBalanceResponse> {
-    return this.http.post<AddBalanceResponse>(`${this.apiUrl}/changeBalance`, {credit: amount}).pipe(
-      tap(response => {
-        if (response.success) {
-          // Update the local user profile with new balance
-          const currentProfile = this.getCurrentUserProfile();
-          if (currentProfile) {
-            const updatedProfile = {...currentProfile, creditBalance: response.newBalance};
-            this.userProfileSubject.next(updatedProfile);
-            localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
+// ===== CREDIT BALANCE METHODS =====
+  addBalance(newTotalBalance: number): Observable<UserProfile> {
+    console.log('💳 UserService: Updating balance to new total via real API:', newTotalBalance);
+
+    return this.http.patch<UserProfile>(`${this.apiUrl}/change-balance`, {
+      balance: newTotalBalance // Send the new total balance to backend
+    }, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).pipe(
+      tap(updatedUserProfile => {
+        console.log('💳 UserService: Balance updated successfully:', updatedUserProfile);
+
+        // Update the BehaviorSubject with the new profile data from backend
+        this.userProfileSubject.next(updatedUserProfile);
+
+        // Update localStorage with the new profile
+        localStorage.setItem('userProfile', JSON.stringify(updatedUserProfile));
+
+        // Also update currentUser in localStorage if it exists
+        const currentUser = localStorage.getItem('currentUser');
+        if (currentUser) {
+          try {
+            const user = JSON.parse(currentUser);
+            const updatedUser = { ...user, creditBalance: updatedUserProfile.creditBalance };
+            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+          } catch (error) {
+            console.error('Error updating currentUser in localStorage:', error);
           }
         }
       }),
-      catchError(this.handleError)
+      catchError((error: HttpErrorResponse) => {
+        console.error('💳 UserService: Add balance error:', error);
+
+        let errorMessage = 'Failed to add balance';
+
+        if (error.status === 400) {
+          errorMessage = error.error || 'Invalid amount';
+        } else if (error.status === 401) {
+          errorMessage = 'User not authenticated';
+        } else if (error.error && typeof error.error === 'string') {
+          errorMessage = error.error;
+        }
+
+        return throwError(() => new Error(errorMessage));
+      })
     );
   }
 

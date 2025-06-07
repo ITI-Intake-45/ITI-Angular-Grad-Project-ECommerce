@@ -3,12 +3,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService, UserProfile } from '../../core/services/user';
 import { Subject, takeUntil } from 'rxjs';
 
-export interface AddBalanceResponse {
-  success: boolean;
-  message: string;
-  newBalance?: number;
-}
-
 @Component({
   selector: 'app-credit-balance',
   standalone: false,
@@ -19,7 +13,7 @@ export class CreditBalance implements OnInit, OnDestroy {
   creditForm!: FormGroup;
   userProfile: UserProfile | null = null;
   isLoading = false;
-  profileLoading = true; // Add separate loading state for profile
+  profileLoading = true;
   successMessage: string | null = null;
   errorMessage: string | null = null;
   private destroy$ = new Subject<void>();
@@ -45,7 +39,8 @@ export class CreditBalance implements OnInit, OnDestroy {
       credit: ['', [
         Validators.required,
         Validators.pattern(/^[+]?\d+(\.\d{1,2})?$/),
-        Validators.min(0.01)
+        Validators.min(0.01),
+        Validators.max(10000) // Add max validation as per backend logic
       ]]
     });
 
@@ -63,6 +58,14 @@ export class CreditBalance implements OnInit, OnDestroy {
             cleanValue = cleanValue.substring(0, cleanValue.lastIndexOf('.'));
           }
 
+          // Limit to 2 decimal places
+          if (cleanValue.includes('.')) {
+            const parts = cleanValue.split('.');
+            if (parts[1] && parts[1].length > 2) {
+              cleanValue = parts[0] + '.' + parts[1].substring(0, 2);
+            }
+          }
+
           // Update the form control if the value was changed
           if (cleanValue !== value) {
             this.creditForm.get('credit')?.setValue(cleanValue, { emitEvent: false });
@@ -72,30 +75,28 @@ export class CreditBalance implements OnInit, OnDestroy {
   }
 
   private loadUserProfile(): void {
-    console.log('Credit balance component: Loading user profile...');
+    console.log('💳 Credit balance component: Loading user profile...');
     this.profileLoading = true;
 
-    // First, subscribe to the user profile observable
+    // Subscribe to the user profile observable for real-time updates
     this.userService.userProfile$
       .pipe(takeUntil(this.destroy$))
       .subscribe(profile => {
-        console.log('Credit balance component: Profile from observable:', profile);
+        console.log('💳 Credit balance component: Profile from observable:', profile);
         this.userProfile = profile;
         this.profileLoading = false;
       });
 
-    // Always try to fetch the profile from the API
-    // This ensures we have the latest data even if it's already cached
+    // Fetch the profile from the API to ensure we have the latest data
     this.userService.getProfile()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (profile) => {
-          console.log('Credit balance component: Profile loaded from API:', profile);
-          this.userProfile = profile;
-          this.profileLoading = false;
+          console.log('💳 Credit balance component: Profile loaded from API:', profile);
+          // Profile will be updated via the observable above
         },
         error: (error) => {
-          console.error('Credit balance component: Error loading profile', error);
+          console.error('💳 Credit balance component: Error loading profile', error);
           this.showError('Failed to load user profile. Please try again.');
           this.profileLoading = false;
         }
@@ -106,50 +107,85 @@ export class CreditBalance implements OnInit, OnDestroy {
     if (this.creditForm.valid && !this.isLoading) {
       const creditAmount = parseFloat(this.creditForm.value.credit);
 
+      // Client-side validation
       if (creditAmount <= 0) {
-        this.showError('Please enter a valid positive number with two decimal places (e.g., 50.00)');
+        this.showError('Please enter a valid positive amount');
+        return;
+      }
+
+      if (creditAmount > 10000) {
+        this.showError('Maximum amount per transaction is $10,000');
+        return;
+      }
+
+      // Check decimal places
+      const decimalPlaces = (creditAmount.toString().split('.')[1] || '').length;
+      if (decimalPlaces > 2) {
+        this.showError('Amount can have maximum 2 decimal places');
         return;
       }
 
       this.isLoading = true;
       this.clearMessages();
 
-      // Simulate API call for adding balance
+      // Call the real API
       this.addBalance(creditAmount);
     } else {
-      this.showError('Please enter a valid positive number with two decimal places (e.g., 50.00)');
+      this.showError('Please enter a valid amount (0.01 - 10,000.00)');
+      this.markFormControlsTouched();
     }
   }
 
   private addBalance(amount: number): void {
-    // Mock implementation - replace with actual API call
-    setTimeout(() => {
-      const response: AddBalanceResponse = {
-        success: true,
-        message: `Successfully added $${amount.toFixed(2)} to your credit balance!`,
-        newBalance: (this.userProfile?.creditBalance || 0) + amount
-      };
+    console.log('💳 Adding balance amount:', amount);
+    console.log('💳 Current balance:', this.userProfile?.creditBalance || 0);
 
-      if (response.success && response.newBalance !== undefined) {
-        // Update the user profile with new balance
-        if (this.userProfile) {
-          const updatedProfile = { ...this.userProfile, creditBalance: response.newBalance };
-          this.userService.updateProfile(updatedProfile).subscribe({
-            next: () => {
-              this.showSuccess(response.message);
-              this.creditForm.reset();
-            },
-            error: (error) => {
-              this.showError('Error updating balance: ' + error.message);
+    // Calculate the new total balance (current + added amount)
+    const currentBalance = this.userProfile?.creditBalance || 0;
+    const newTotalBalance = currentBalance + amount;
+
+    console.log('💳 New total balance to send to backend:', newTotalBalance);
+
+    const addBalanceSub = this.userService.addBalance(newTotalBalance)
+      .subscribe({
+        next: (updatedProfile) => {
+          console.log('💳 Balance updated successfully:', updatedProfile);
+
+          // Show success message with the amount that was added
+          this.showSuccess(`Successfully added $${amount.toFixed(2)} to your credit balance! New balance: $${updatedProfile.creditBalance.toFixed(2)}`);
+
+          // Reset the form
+          this.creditForm.reset();
+
+          // Update local profile reference (though it should already be updated via the observable)
+          this.userProfile = updatedProfile;
+
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('💳 Error adding balance:', error);
+
+          let errorMessage = 'Failed to add balance. Please try again.';
+
+          if (error.message) {
+            if (error.message.includes('zero or less')) {
+              errorMessage = 'Amount must be greater than zero';
+            } else if (error.message.includes('authenticated')) {
+              errorMessage = 'Please log in again';
+            } else {
+              errorMessage = error.message;
             }
-          });
-        }
-      } else {
-        this.showError(response.message || 'Failed to add balance');
-      }
+          }
 
-      this.isLoading = false;
-    }, 1000);
+          this.showError(errorMessage);
+          this.isLoading = false;
+        }
+      });
+
+    // Clean up subscription
+    this.destroy$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      addBalanceSub.unsubscribe();
+    });
   }
 
   private showSuccess(message: string): void {
@@ -171,11 +207,23 @@ export class CreditBalance implements OnInit, OnDestroy {
     if (creditInput) {
       creditInput.focus();
     }
+
+    // Clear error message after 8 seconds
+    setTimeout(() => {
+      this.errorMessage = null;
+    }, 8000);
   }
 
   private clearMessages(): void {
     this.successMessage = null;
     this.errorMessage = null;
+  }
+
+  private markFormControlsTouched(): void {
+    Object.keys(this.creditForm.controls).forEach(key => {
+      const control = this.creditForm.get(key);
+      control?.markAsTouched();
+    });
   }
 
   // Getter for easy access to form controls in template
@@ -188,4 +236,20 @@ export class CreditBalance implements OnInit, OnDestroy {
     return (amount || 0).toFixed(2);
   }
 
+  // Helper methods for template
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.creditForm.get(fieldName);
+    return !!(field?.invalid && field?.touched);
+  }
+
+  getFieldErrorMessage(fieldName: string): string {
+    const field = this.creditForm.get(fieldName);
+    if (field?.errors && field.touched) {
+      if (field.errors['required']) return 'Amount is required';
+      if (field.errors['min']) return 'Amount must be at least $0.01';
+      if (field.errors['max']) return 'Amount cannot exceed $10,000';
+      if (field.errors['pattern']) return 'Please enter a valid number with up to 2 decimal places';
+    }
+    return '';
+  }
 }
