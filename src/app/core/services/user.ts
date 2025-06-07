@@ -141,7 +141,7 @@ export class UserService {
               if (currentUser) {
                 try {
                   const user = JSON.parse(currentUser);
-                  const updatedUser = { ...user, ...profile };
+                  const updatedUser = {...user, ...profile};
                   localStorage.setItem('currentUser', JSON.stringify(updatedUser));
                 } catch (error) {
                   console.error('Error updating currentUser in localStorage:', error);
@@ -320,24 +320,113 @@ export class UserService {
     return of({valid: true, message: '✅ Address is valid'}).pipe(delay(150));
   }
 
-  // ===== PASSWORD METHODS =====
+// ===== PASSWORD METHODS =====
   validateCurrentPassword(password: string): Observable<ValidationResult> {
-    return this.getMockValidateCurrentPassword(password);
-  }
-
-  private getMockValidateCurrentPassword(password: string): Observable<ValidationResult> {
     if (!password || password.trim() === '') {
       return of({valid: false, message: '❌ Current password is required'});
     }
 
-    return of({valid: true, message: '✅ Password is valid'}).pipe(delay(400));
+    console.log('🔐 UserService: Validating current password via existing API...');
+
+    // Use the existing change-password endpoint with the same password for both old and new
+    // This will validate the current password without actually changing it
+    return this.http.patch(`${this.apiUrl}/change-password`, {
+      oldPassword: password,
+      newPassword: password // Using same password to test validation
+    }, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      observe: 'response',
+      responseType: 'text'
+    }).pipe(
+      map(response => {
+        // If we get a successful response, the current password is correct
+        if (response.status === 200) {
+          return {
+            valid: true,
+            message: '✅ Current password is correct',
+            loading: false
+          };
+        } else {
+          return {
+            valid: false,
+            message: '❌ Current password is incorrect',
+            loading: false
+          };
+        }
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('🔐 UserService: Current password validation error:', error);
+
+        let message = '❌ Current password is incorrect';
+
+        // Check error status and response body
+        if (error.status === 400) {
+          // Bad request usually means invalid credentials (wrong current password)
+          message = '❌ Current password is incorrect';
+        } else if (error.status === 401) {
+          message = '❌ User not authenticated';
+        } else if (error.error && typeof error.error === 'string') {
+          if (error.error.includes('Invalid') || error.error.includes('incorrect')) {
+            message = '❌ Current password is incorrect';
+          } else {
+            message = `❌ ${error.error}`;
+          }
+        }
+
+        return of({
+          valid: false,
+          message: message,
+          loading: false
+        });
+      }),
+      delay(300) // Add slight delay to simulate server processing
+    );
   }
 
   changePassword(oldPassword: string, newPassword: string): Observable<PasswordChangeResponse> {
-    return this.http.post<PasswordChangeResponse>(`${this.apiUrl}/change-password`, {
+    return this.http.patch(`${this.apiUrl}/change-password`, {
       oldPassword,
       newPassword
-    }).pipe(catchError(this.handleError));
+    }, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      observe: 'response',
+      responseType: 'text'
+    }).pipe(
+      map(response => {
+        if (response.status === 200 && response.body?.includes('successfully')) {
+          return {
+            success: true,
+            message: 'Password changed successfully'
+          };
+        } else {
+          throw new Error(response.body || 'Failed to change password');
+        }
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('🔐 UserService: Change password error:', error);
+
+        let message = 'Failed to change password';
+
+        if (error.status === 400) {
+          message = error.error || 'Invalid current password';
+        } else if (error.status === 401) {
+          message = 'User not authenticated';
+        } else if (error.error && typeof error.error === 'string') {
+          message = error.error;
+        }
+
+        return throwError(() => ({
+          success: false,
+          message: message
+        }));
+      })
+    );
   }
 
   // ===== UTILITY METHODS =====
