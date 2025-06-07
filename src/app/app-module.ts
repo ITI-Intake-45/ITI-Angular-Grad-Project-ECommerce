@@ -16,7 +16,6 @@ import { FormsModule } from '@angular/forms';
 import { Home } from './home/home';
 import { NotFound } from './not-found/not-found';
 import { ProductFilterPipe } from './pipes/product-filter-pipe';
-import { Login } from './auth/login/login';
 import { AuthModule } from './auth/auth-module';
 
 @NgModule({

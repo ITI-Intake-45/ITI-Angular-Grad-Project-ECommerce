@@ -11,11 +11,8 @@ import { UserService } from './services/user';
 
 // Guards
 import { AuthGuard } from './guards/auth-guard';
-import { AdminGuard } from './guards/admin-guard';
 
-// Interceptors
-import { AuthInterceptor } from './interceptors/auth-interceptor';
-import { ErrorInterceptor } from './interceptors/error-interceptor';
+
 
 @NgModule({
   declarations: [],
@@ -30,22 +27,10 @@ import { ErrorInterceptor } from './interceptors/error-interceptor';
     CartService,
     OrderService,
     UserService,
-    
+
     // Guards
     AuthGuard,
-    AdminGuard,
-    
-    // Interceptors
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: ErrorInterceptor,
-      multi: true
-    }
+
   ]
 })
 export class CoreModule {

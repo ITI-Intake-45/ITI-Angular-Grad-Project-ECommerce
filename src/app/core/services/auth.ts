@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs';
+import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
 import { switchMap, tap, catchError } from 'rxjs/operators';
 
 // Define the missing interfaces
@@ -145,21 +145,44 @@ export class AuthService {
   logout(): void {
     console.log('🔐 AuthService: Logging out...');
 
-    // Call backend logout endpoint
-    this.http.post(`${this.baseUrl}/logout`, {}, { withCredentials: true })
+    // First clear local data
+    this.clearAuthData();
+
+    // Then call the backend logout endpoint
+    this.http.post(`${this.baseUrl}/logout`, {}, {
+      withCredentials: true,
+      // Force browser to clear HTTP Basic credentials by sending invalid credentials
+      headers: new HttpHeaders({
+        'Authorization': 'Basic '
+      })
+    })
       .subscribe({
         next: () => {
           console.log('🔐 AuthService: Server logout successful');
+          this.router.navigate(['/home']);
         },
         error: (error) => {
           console.error('🔐 AuthService: Server logout error:', error);
-        },
-        complete: () => {
-          this.clearAuthData();
+          // Even if there's an error, navigate away
           this.router.navigate(['/home']);
         }
       });
   }
+
+  isSessionValid(): Observable<boolean> {
+    return this.http.get<boolean>(`${this.baseUrl}/check-session`, {
+      withCredentials: true
+    }).pipe(
+      catchError(err => {
+        if (err.status === 401) {
+          this.clearAuthData();
+          return of(false);
+        }
+        return throwError(err);
+      })
+    );
+  }
+
 
   // Make this method public so AuthGuard can use it
   public clearAuthData(): void {
