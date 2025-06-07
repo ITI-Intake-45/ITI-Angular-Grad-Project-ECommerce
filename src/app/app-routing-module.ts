@@ -4,7 +4,7 @@ import { Home } from './home/home';
 import { NotFound } from './not-found/not-found';
 import { AuthGuard } from './core/guards/auth-guard';
 import { AdminGuard } from './core/guards/admin-guard';
-import {Slider} from './layout/slider/slider';
+import { Slider } from './layout/slider/slider';
 
 
 const routes: Routes = [
@@ -37,6 +37,11 @@ const routes: Routes = [
     loadChildren: () => import('./admin/admin-module').then(m => m.AdminModule),
     canActivate: [AdminGuard]
   },
+  {
+    path: 'auth',
+    loadChildren: () => import('./auth/auth-module').then(m => m.AuthModule)
+  },
+
   { path: '404', component: NotFound },
   { path: '**', redirectTo: '/404' }
 ];

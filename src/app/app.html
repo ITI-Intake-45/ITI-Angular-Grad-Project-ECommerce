@@ -1,11 +1,11 @@
 <!-- app.component.html -->
+
 <!--
 <div class="app-container">
 
   <app-header></app-header>
 
-  
-  
+
   <main class="main-content">
     <router-outlet></router-outlet>
     <app-sidebar></app-sidebar>
@@ -13,6 +13,18 @@
   <app-footer></app-footer>
 
 
+
 </div>
 -->
-<app-login></app-login>
+<!-- app.component.html -->
+<div class="app-container" *ngIf="showLayout">
+  <app-header></app-header>
+  <main class="main-content">
+    <router-outlet></router-outlet>
+    <app-sidebar></app-sidebar>
+  </main>
+  <app-footer></app-footer>
+</div>
+
+<!-- Always render router outlet in case it's a full-page route like login -->
+<router-outlet *ngIf="!showLayout"></router-outlet>

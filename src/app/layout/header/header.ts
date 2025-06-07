@@ -128,7 +128,7 @@ export class Header implements OnInit, OnDestroy {
     private productService: ProductService,
     private cartService: CartService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Fetch categories from database
@@ -232,5 +232,10 @@ export class Header implements OnInit, OnDestroy {
 
   closeMenu(): void {
     this.isMenuOpen = false;
+  }
+
+
+  logout(): void {
+    this.authService.logout();
   }
 }

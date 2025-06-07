@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
+import { Router } from '@angular/router';
 export interface User {
   id: number;
   email: string;
@@ -14,8 +14,12 @@ export interface UserLoginDto {
   userId: number;
   name: string;
   email: string;
+  address: string;
+  phone: string;
+  creditBalance: number;
 
 }
+
 
 
 export interface LoginRequest {
@@ -39,7 +43,7 @@ export class AuthService {
 
   private baseUrl = 'http://localhost:8080/api/v1/users';
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     // Check if user is already logged in
     const userData = localStorage.getItem('currentUser');
     if (userData) {
@@ -47,21 +51,15 @@ export class AuthService {
     }
   }
   login(credentials: LoginRequest) {
-    alert("login service")
-    alert(credentials.email);
-    alert(credentials.password);
-    /*
-    return this.http.post<UserLoginDto>(`${this.baseUrl}/login`, credentials, {
-      withCredentials: true // important to include session cookie
-    });
-    */
 
-    this.http.post<UserLoginDto>("http://localhost:8080/api/v1/users/login", credentials)
+    this.http.post<UserLoginDto>(this.baseUrl + "/login", credentials, { withCredentials: true })
       .subscribe({
         next: (response) => {
+          //redirect to home page
+          localStorage.setItem('currentUser', JSON.stringify(response));
+          alert("hello: " + response.name);
 
-          alert(response)
-
+          this.router.navigate(['/home']);
 
         }
         ,
@@ -77,30 +75,29 @@ export class AuthService {
 
 
   }
-  /*
-    login(credentials: LoginRequest): Observable<any> {
-      return this.http.post<any>(`${this.apiUrl}/login`, credentials)
-        .pipe(map(response => {
-          if (response && response.token) {
-            localStorage.setItem('token', response.token);
-            localStorage.setItem('currentUser', JSON.stringify(response.user));
-            this.currentUserSubject.next(response.user);
-          }
-          return response;
-        }));
-    }
-        */
-
 
   register(userData: RegisterRequest): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/register`, userData);
   }
 
+  /*
+
   logout(): void {
-    localStorage.removeItem('token');
+    // localStorage.removeItem('token');
+    
     localStorage.removeItem('currentUser');
+    alert("logout");
     this.currentUserSubject.next(null);
+
   }
+    */
+  logout(): void {
+
+    localStorage.removeItem('currentUser');
+
+    this.router.navigate(['/home']);
+  }
+
 
   forgotPassword(email: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/forgot-password`, { email });
@@ -115,7 +112,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('token');
+    return !!localStorage.getItem('currentUser');
   }
 
   isAdmin(): boolean {

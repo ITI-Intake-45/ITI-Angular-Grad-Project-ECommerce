@@ -22,7 +22,7 @@ import { VerifyOtp } from './verify-otp/verify-otp';
   ]
   ,
   exports: [
-    Login
+
   ]
 })
 export class AuthModule { }
