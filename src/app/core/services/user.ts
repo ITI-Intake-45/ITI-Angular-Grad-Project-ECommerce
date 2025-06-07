@@ -78,29 +78,63 @@ export class UserService {
 
     // Otherwise fetch from API
     console.log('📁 UserService: Fetching profile from API');
-    return this.http.get<UserProfile>(`${this.apiUrl}/profile`).pipe(
+    return this.http.get<UserProfile>(`${this.apiUrl}/profile`, {
+      withCredentials: true, // Add this to include session cookies
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).pipe(
       tap(profile => {
         console.log('📁 UserService: Profile loaded from API:', profile);
         this.userProfileSubject.next(profile);
         // Store in localStorage for persistence
         localStorage.setItem('userProfile', JSON.stringify(profile));
       }),
-      catchError(this.handleError)
+      catchError((error: HttpErrorResponse) => {
+        console.error('📁 UserService: Get profile error:', error);
+
+        if (error.status === 401) {
+          // Session expired - clear all auth data
+          this.clearProfile();
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('userProfile');
+        }
+
+        return this.handleError(error);
+      })
     );
   }
+
 
   // Force refresh profile from API
   refreshProfile(): Observable<UserProfile> {
     console.log('📁 UserService: Force refreshing profile from API');
-    return this.http.get<UserProfile>(`${this.apiUrl}/profile`).pipe(
+    return this.http.get<UserProfile>(`${this.apiUrl}/profile`, {
+      withCredentials: true, // Add this to include session cookies
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).pipe(
       tap(profile => {
         console.log('📁 UserService: Profile refreshed from API:', profile);
         this.userProfileSubject.next(profile);
         localStorage.setItem('userProfile', JSON.stringify(profile));
       }),
-      catchError(this.handleError)
+      catchError((error: HttpErrorResponse) => {
+        console.error('📁 UserService: Refresh profile error:', error);
+
+        if (error.status === 401) {
+          // Session expired - clear all auth data
+          this.clearProfile();
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('userProfile');
+        }
+
+        return this.handleError(error);
+      })
     );
   }
+
 
 // Update profile method with better error handling
   updateProfile(profile: Partial<UserProfile>): Observable<UserProfile> {
