@@ -7,6 +7,7 @@ import { ForgotPassword } from './forgot-password/forgot-password';
 import { ResetPassword } from './reset-password/reset-password';
 import { VerifyOtp } from './verify-otp/verify-otp';
 
+
 const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'register', component: Register },

@@ -1,0 +1,101 @@
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+    background: #fff;
+    min-height: 100vh;
+}
+
+.login-form {
+    width: 100%;
+    max-width: 450px;
+    border: 1px solid #e0e0e0;
+    padding: 30px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-form h2 {
+    font-weight: bold;
+    text-align: left;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #fc5c03;
+    border-radius: 4px;
+}
+
+.valid-msg {
+    color: green;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+.login-btn {
+    background-color: white;
+    border: 2px solid #fc5c03;
+    color: #fc5c03;
+    padding: 10px 20px;
+    font-weight: bold;
+    width: 100%;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.login-btn:hover {
+    background-color: #fc5c03;
+    color: white;
+}
+
+.extra-links {
+    text-align: right;
+    margin-top: 10px;
+}
+
+.extra-links a {
+    color: #fc5c03;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.remember-me {
+    margin-top: 20px;
+}
+
+.new-customer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+}
+
+.new-customer h4 {
+    font-weight: bold;
+}
+
+.create-account-btn {
+    background-color: white;
+    border: 2px solid #fc5c03;
+    color: #fc5c03;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.create-account-btn:hover {
+    background-color: #fc5c03;
+    color: white;
+}

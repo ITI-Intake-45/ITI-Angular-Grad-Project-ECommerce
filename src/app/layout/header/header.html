@@ -34,7 +34,7 @@
             </a>
           </li>
           <li class="nav-item" *ngIf="!authService.isAuthenticated()">
-            <a class="nav-link" routerLink="/login">
+            <a class="nav-link" routerLink="/auth/login">
               <i class="fas fa-sign-in-alt me-1"></i>Login
             </a>
           </li>
@@ -44,7 +44,8 @@
             </a>
           </li>
           <li class="nav-item" *ngIf="authService.isAuthenticated()">
-            <a class="nav-link" routerLink="/logout">
+
+            <a class="nav-link" (click)="logout()" style="cursor: pointer;">
               <i class="fas fa-sign-out-alt me-1"></i>Logout
             </a>
           </li>
@@ -55,20 +56,20 @@
     <!-- Bottom Row -->
     <div class="row bottom-header">
       <!--  dynamic Categories (Left) -->
-<!--      <div class="col-md-4">-->
-<!--        <ul class="navbar-nav main-nav d-flex flex-row">-->
-<!--          &lt;!&ndash; Show message if no categories are available &ndash;&gt;-->
-<!--          <li class="nav-item" *ngIf="categories.length === 0">-->
-<!--            <span class="nav-link">No Categories</span>-->
-<!--          </li>-->
-<!--          &lt;!&ndash; Otherwise show the categories from database &ndash;&gt;-->
-<!--          <li class="nav-item" *ngFor="let category of categories">-->
-<!--            <a class="nav-link" [routerLink]="['/products']" [queryParams]="{category: category.id}" routerLinkActive="active">-->
-<!--              {{ category.name }}-->
-<!--            </a>-->
-<!--          </li>-->
-<!--        </ul>-->
-<!--      </div>-->
+      <!--      <div class="col-md-4">-->
+      <!--        <ul class="navbar-nav main-nav d-flex flex-row">-->
+      <!--          &lt;!&ndash; Show message if no categories are available &ndash;&gt;-->
+      <!--          <li class="nav-item" *ngIf="categories.length === 0">-->
+      <!--            <span class="nav-link">No Categories</span>-->
+      <!--          </li>-->
+      <!--          &lt;!&ndash; Otherwise show the categories from database &ndash;&gt;-->
+      <!--          <li class="nav-item" *ngFor="let category of categories">-->
+      <!--            <a class="nav-link" [routerLink]="['/products']" [queryParams]="{category: category.id}" routerLinkActive="active">-->
+      <!--              {{ category.name }}-->
+      <!--            </a>-->
+      <!--          </li>-->
+      <!--        </ul>-->
+      <!--      </div>-->
       <!-- Categories (Left) -->
       <div class="col-md-4">
         <ul class="navbar-nav main-nav d-flex flex-row">
@@ -79,22 +80,21 @@
 
           <!-- Show main categories (Beans, Mugs, Machines) -->
           <li class="nav-item" *ngFor="let category of mainCategories">
-            <a class="nav-link" [routerLink]="['/products']" [queryParams]="{category: category.id}" routerLinkActive="active">
+            <a class="nav-link" [routerLink]="['/products']" [queryParams]="{category: category.id}"
+              routerLinkActive="active">
               {{ category.name }}
             </a>
           </li>
 
           <!-- Dropdown for additional categories -->
           <li class="nav-item dropdown" *ngIf="additionalCategories.length > 0">
-            <a class="nav-link dropdown-toggle" href="#"
-               (click)="toggleDropdown(); $event.preventDefault()"
-               [class.show]="isDropdownOpen">
+            <a class="nav-link dropdown-toggle" href="#" (click)="toggleDropdown(); $event.preventDefault()"
+              [class.show]="isDropdownOpen">
               More+
             </a>
             <div class="dropdown-menu" [class.show]="isDropdownOpen">
-              <a class="dropdown-item" *ngFor="let category of additionalCategories"
-                 [routerLink]="['/products']" [queryParams]="{category: category.id}"
-                 (click)="closeDropdown()">
+              <a class="dropdown-item" *ngFor="let category of additionalCategories" [routerLink]="['/products']"
+                [queryParams]="{category: category.id}" (click)="closeDropdown()">
                 {{ category.name }}
               </a>
             </div>
@@ -104,25 +104,23 @@
 
 
       <!-- Search Bar (Center) -->
-<!--      <div class="col-md-4">-->
-<!--        <div class="search-container">-->
-<!--          <div class="input-group search-box">-->
-<!--            <input type="text" class="form-control search-input"-->
-<!--                   placeholder="Search" (input)="onSearch($event)">-->
-<!--            <button class="btn search-btn" type="button">-->
-<!--              <i class="fas fa-search"></i>-->
-<!--            </button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
+      <!--      <div class="col-md-4">-->
+      <!--        <div class="search-container">-->
+      <!--          <div class="input-group search-box">-->
+      <!--            <input type="text" class="form-control search-input"-->
+      <!--                   placeholder="Search" (input)="onSearch($event)">-->
+      <!--            <button class="btn search-btn" type="button">-->
+      <!--              <i class="fas fa-search"></i>-->
+      <!--            </button>-->
+      <!--          </div>-->
+      <!--        </div>-->
+      <!--      </div>-->
       <!-- Search Bar (Center) -->
       <div class="col-md-4">
         <div class="search-container">
           <div class="input-group search-box">
-            <input #searchInput type="text" class="form-control search-input"
-                   placeholder="Search products"
-                   (input)="onSearch($event)"
-                   (keyup)="onSearchKeyUp($event)">
+            <input #searchInput type="text" class="form-control search-input" placeholder="Search products"
+              (input)="onSearch($event)" (keyup)="onSearchKeyUp($event)">
             <button class="btn search-btn" type="button" (click)="performSearch()">
               <i class="fas fa-search"></i>
             </button>
@@ -152,8 +150,8 @@
   </div>
 
   <!-- Mobile menu toggle button -->
-  <button class="navbar-toggler d-lg-none" type="button" (click)="toggleMenu()"
-          [class.collapsed]="!isMenuOpen" aria-expanded="false">
+  <button class="navbar-toggler d-lg-none" type="button" (click)="toggleMenu()" [class.collapsed]="!isMenuOpen"
+    aria-expanded="false">
     <span class="navbar-toggler-icon"></span>
   </button>
 
