@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, BehaviorSubject, throwError, of } from 'rxjs';
-import { tap, catchError, delay } from 'rxjs/operators';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {Observable, BehaviorSubject, throwError, of} from 'rxjs';
+import {tap, catchError, delay, map, switchMap} from 'rxjs/operators';
 
 export interface UserProfile {
   id: number;
@@ -102,14 +102,79 @@ export class UserService {
     );
   }
 
-  // Update profile
+// Update profile method with better error handling
   updateProfile(profile: Partial<UserProfile>): Observable<UserProfile> {
-    return this.http.put<UserProfile>(`${this.apiUrl}/1`, profile).pipe(
-      tap(updatedProfile => {
-        this.userProfileSubject.next(updatedProfile);
-        localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
+    console.log('🔄 UserService: Updating profile with data:', profile);
+
+    return this.http.patch(`${this.apiUrl}/update-profile`, profile, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      observe: 'response', // Get full response
+      responseType: 'text' // Expect text response
+    }).pipe(
+      map((response) => {
+        console.log('✅ UserService: Update profile response:', response);
+
+        if (response.status === 200) {
+          const responseBody = response.body;
+
+          // Check if response indicates success
+          if (responseBody && responseBody.includes('successfully')) {
+            console.log('✅ Profile update successful');
+
+            // Create updated profile object from the form data and current profile
+            const currentProfile = this.getCurrentUserProfile();
+            if (currentProfile) {
+              const updatedProfile: UserProfile = {
+                ...currentProfile,
+                ...profile // Merge the updated fields
+              };
+
+              // Update the BehaviorSubject and localStorage immediately
+              this.userProfileSubject.next(updatedProfile);
+              localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
+
+              // Also update currentUser in localStorage if it exists
+              const currentUser = localStorage.getItem('currentUser');
+              if (currentUser) {
+                try {
+                  const user = JSON.parse(currentUser);
+                  const updatedUser = { ...user, ...profile };
+                  localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                } catch (error) {
+                  console.error('Error updating currentUser in localStorage:', error);
+                }
+              }
+
+              return updatedProfile;
+            } else {
+              throw new Error('No current profile found');
+            }
+          } else if (responseBody && (responseBody.includes('exists') || responseBody.includes('error'))) {
+            // Error response
+            throw new Error(responseBody);
+          } else {
+            throw new Error('Unknown response from server');
+          }
+        } else {
+          throw new Error('Update failed');
+        }
       }),
-      catchError(this.handleError)
+      catchError((error: any) => {
+        console.error('❌ UserService: Update profile error:', error);
+
+        let errorMessage = 'Failed to update profile';
+
+        if (error.message) {
+          errorMessage = error.message;
+        } else if (error.error) {
+          errorMessage = error.error;
+        }
+
+        return throwError(() => new Error(errorMessage));
+      })
     );
   }
 
@@ -121,13 +186,13 @@ export class UserService {
 
   // ===== CREDIT BALANCE METHODS =====
   addBalance(amount: number): Observable<AddBalanceResponse> {
-    return this.http.post<AddBalanceResponse>(`${this.apiUrl}/changeBalance`, { credit: amount }).pipe(
+    return this.http.post<AddBalanceResponse>(`${this.apiUrl}/changeBalance`, {credit: amount}).pipe(
       tap(response => {
         if (response.success) {
           // Update the local user profile with new balance
           const currentProfile = this.getCurrentUserProfile();
           if (currentProfile) {
-            const updatedProfile = { ...currentProfile, creditBalance: response.newBalance };
+            const updatedProfile = {...currentProfile, creditBalance: response.newBalance};
             this.userProfileSubject.next(updatedProfile);
             localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
           }
@@ -139,19 +204,19 @@ export class UserService {
 
   validateCreditAmount(amount: number): Observable<ValidationResult> {
     if (!amount || amount <= 0) {
-      return of({ valid: false, message: '❌ Amount must be greater than 0' });
+      return of({valid: false, message: '❌ Amount must be greater than 0'});
     }
 
     if (amount > 10000) {
-      return of({ valid: false, message: '❌ Maximum amount per transaction is $10,000' });
+      return of({valid: false, message: '❌ Maximum amount per transaction is $10,000'});
     }
 
     const decimalPlaces = (amount.toString().split('.')[1] || '').length;
     if (decimalPlaces > 2) {
-      return of({ valid: false, message: '❌ Amount can have maximum 2 decimal places' });
+      return of({valid: false, message: '❌ Amount can have maximum 2 decimal places'});
     }
 
-    return of({ valid: true, message: '✅ Valid amount' }).pipe(delay(200));
+    return of({valid: true, message: '✅ Valid amount'}).pipe(delay(200));
   }
 
   // ===== VALIDATION METHODS =====
@@ -161,20 +226,20 @@ export class UserService {
 
   private getMockValidateName(name: string): Observable<ValidationResult> {
     if (!name || name.trim() === '') {
-      return of({ valid: false, message: '❌ Name is required' });
+      return of({valid: false, message: '❌ Name is required'});
     }
 
     const namePattern = /^[A-Za-z ]{2,50}$/;
     if (!namePattern.test(name)) {
-      return of({ valid: false, message: '❌ Only letters and spaces (2-50 characters)' });
+      return of({valid: false, message: '❌ Only letters and spaces (2-50 characters)'});
     }
 
     const restrictedNames = ['admin', 'administrator', 'root', 'test'];
     if (restrictedNames.includes(name.toLowerCase())) {
-      return of({ valid: false, message: '❌ This name is not allowed' }).pipe(delay(200));
+      return of({valid: false, message: '❌ This name is not allowed'}).pipe(delay(200));
     }
 
-    return of({ valid: true, message: '✅ Name is valid' }).pipe(delay(200));
+    return of({valid: true, message: '✅ Name is valid'}).pipe(delay(200));
   }
 
   validateEmail(email: string): Observable<ValidationResult> {
@@ -183,19 +248,19 @@ export class UserService {
 
   private getMockValidateEmail(email: string): Observable<ValidationResult> {
     if (!email || email.trim() === '') {
-      return of({ valid: false, message: '❌ Email is required' });
+      return of({valid: false, message: '❌ Email is required'});
     }
 
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
     if (!emailPattern.test(email)) {
-      return of({ valid: false, message: '❌ Invalid email format' });
+      return of({valid: false, message: '❌ Invalid email format'});
     }
 
     const existingEmails = ['test@example.com', 'admin@example.com', 'user@test.com'];
     const currentUser = this.getCurrentUserProfile();
 
     if (currentUser && currentUser.email === email) {
-      return of({ valid: true, message: '✅ Current email' }).pipe(delay(300));
+      return of({valid: true, message: '✅ Current email'}).pipe(delay(300));
     }
 
     const emailExists = existingEmails.includes(email.toLowerCase());
@@ -212,19 +277,19 @@ export class UserService {
 
   private getMockValidatePhone(phone: string): Observable<ValidationResult> {
     if (!phone || phone.trim() === '') {
-      return of({ valid: false, message: '❌ Phone is required' });
+      return of({valid: false, message: '❌ Phone is required'});
     }
 
     const phonePattern = /^01[0125]\d{8}$/;
     if (!phonePattern.test(phone)) {
-      return of({ valid: false, message: '❌ Must start with 010, 011, 012, or 015 followed by 8 digits' });
+      return of({valid: false, message: '❌ Must start with 010, 011, 012, or 015 followed by 8 digits'});
     }
 
     const existingPhones = ['01012345678', '01098765432', '01055512345'];
     const currentUser = this.getCurrentUserProfile();
 
     if (currentUser && currentUser.phone === phone) {
-      return of({ valid: true, message: '✅ Current phone number' }).pipe(delay(250));
+      return of({valid: true, message: '✅ Current phone number'}).pipe(delay(250));
     }
 
     const phoneExists = existingPhones.includes(phone);
@@ -241,18 +306,18 @@ export class UserService {
 
   private getMockValidateAddress(address: string): Observable<ValidationResult> {
     if (!address || address.trim() === '') {
-      return of({ valid: false, message: '❌ Address is required' });
+      return of({valid: false, message: '❌ Address is required'});
     }
 
     if (address.length < 5) {
-      return of({ valid: false, message: '❌ Address must be at least 5 characters' });
+      return of({valid: false, message: '❌ Address must be at least 5 characters'});
     }
 
     if (address.length > 100) {
-      return of({ valid: false, message: '❌ Address must be less than 100 characters' });
+      return of({valid: false, message: '❌ Address must be less than 100 characters'});
     }
 
-    return of({ valid: true, message: '✅ Address is valid' }).pipe(delay(150));
+    return of({valid: true, message: '✅ Address is valid'}).pipe(delay(150));
   }
 
   // ===== PASSWORD METHODS =====
@@ -262,10 +327,10 @@ export class UserService {
 
   private getMockValidateCurrentPassword(password: string): Observable<ValidationResult> {
     if (!password || password.trim() === '') {
-      return of({ valid: false, message: '❌ Current password is required' });
+      return of({valid: false, message: '❌ Current password is required'});
     }
 
-    return of({ valid: true, message: '✅ Password is valid' }).pipe(delay(400));
+    return of({valid: true, message: '✅ Password is valid'}).pipe(delay(400));
   }
 
   changePassword(oldPassword: string, newPassword: string): Observable<PasswordChangeResponse> {
@@ -306,6 +371,6 @@ export class UserService {
       message = error.error?.message || 'Server validation error';
     }
 
-    return of({ valid: false, message: `❌ ${message}` });
+    return of({valid: false, message: `❌ ${message}`});
   }
 }

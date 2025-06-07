@@ -60,6 +60,7 @@ export class DashboardSidebar implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.subscribeToProfileUpdates();
     this.loadUserProfile();
     this.setActiveLink();
     this.listenForLinkActivations();
@@ -70,23 +71,41 @@ export class DashboardSidebar implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  // Subscribe to real-time profile updates
+  private subscribeToProfileUpdates(): void {
+    this.userService.userProfile$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (profile) => {
+          console.log('🔄 Sidebar - Profile updated via subscription:', profile);
+          this.userProfile = profile;
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('❌ Sidebar - Error in profile subscription:', error);
+          this.isLoading = false;
+        }
+      });
+  }
+
   private loadUserProfile(): void {
     // DEBUG: Check authentication status
     const isAuthenticated = this.authService.isAuthenticated();
-    console.log('Sidebar - Is user authenticated?', isAuthenticated);
+    console.log('📋 Sidebar - Is user authenticated?', isAuthenticated);
 
-
-    this.userService.getProfile().subscribe({
-      next: (profile) => {
-        console.log('Sidebar - Profile loaded:', profile);
-        this.userProfile = profile;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Sidebar - Error loading user profile:', error);
-        this.isLoading = false;
-      }
-    });
+    // Only load if we don't already have a profile from the subscription
+    if (!this.userProfile) {
+      this.userService.getProfile().subscribe({
+        next: (profile) => {
+          console.log('📋 Sidebar - Profile loaded via getProfile:', profile);
+          // Profile will be updated via the subscription above
+        },
+        error: (error) => {
+          console.error('❌ Sidebar - Error loading user profile:', error);
+          this.isLoading = false;
+        }
+      });
+    }
   }
 
   private setActiveLink(): void {
@@ -101,7 +120,7 @@ export class DashboardSidebar implements OnInit, OnDestroy {
     this.dashboardCommunicationService.activateLink$
       .pipe(takeUntil(this.destroy$))
       .subscribe(route => {
-        console.log('Sidebar - Received activation request for route:', route);
+        console.log('📋 Sidebar - Received activation request for route:', route);
         this.activateLinkByRoute(route);
       });
   }
@@ -115,7 +134,7 @@ export class DashboardSidebar implements OnInit, OnDestroy {
     const targetLink = this.dashboardLinks.find(link => link.route === route);
     if (targetLink) {
       targetLink.isActive = true;
-      console.log('Sidebar - Activated link:', targetLink.label);
+      console.log('📋 Sidebar - Activated link:', targetLink.label);
     }
 
     // Navigate to the route
