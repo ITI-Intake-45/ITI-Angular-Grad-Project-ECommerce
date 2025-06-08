@@ -1,99 +1,3 @@
-// import { Component, OnInit, OnDestroy } from '@angular/core';
-// import { AuthService } from '../../core/services/auth';
-// import { ProductService } from '../../core/services/product';
-// import { CartService } from '../../core/services/cart';
-// import { ProductCategory } from '../../shared/models';
-// import { Subscription } from 'rxjs';
-//
-// @Component({
-//   selector: 'app-header',
-//   templateUrl: './header.html',
-//   styleUrls: ['./header.css'],
-//   standalone: false
-// })
-// export class Header implements OnInit, OnDestroy {
-//   isMenuOpen = false;
-//   isDropdownOpen = false;
-//   categories: ProductCategory[] = [];
-//   mainCategories: ProductCategory[] = [];
-//   additionalCategories: ProductCategory[] = [];
-//   cartItemCount: number = 0;
-//   private cartSubscription: Subscription | undefined;
-//
-//   // Names of main categories to display directly in the navbar
-//   private mainCategoryNames: string[] = ['Beans', 'Mugs', 'Machines'];
-//
-//   constructor(
-//     public authService: AuthService,
-//     private productService: ProductService,
-//     private cartService: CartService
-//   ) {}
-//
-//   ngOnInit(): void {
-//     // Fetch categories from database
-//     this.loadCategories();
-//
-//     // Subscribe to cart changes to update badge
-//     this.cartSubscription = this.cartService.cart$.subscribe(() => {
-//       this.cartItemCount = this.cartService.getCartItemCount();
-//     });
-//   }
-//
-//   ngOnDestroy(): void {
-//     // Clean up subscription to prevent memory leaks
-//     if (this.cartSubscription) {
-//       this.cartSubscription.unsubscribe();
-//     }
-//   }
-//
-//   loadCategories(): void {
-//     this.productService.getCategories().subscribe({
-//       next: (data) => {
-//         this.categories = data;
-//
-//         // Split categories into main and additional
-//         this.mainCategories = this.categories.filter(category =>
-//           this.mainCategoryNames.includes(category.name)
-//         );
-//
-//         // Get additional categories (not in main)
-//         this.additionalCategories = this.categories.filter(category =>
-//           !this.mainCategoryNames.includes(category.name)
-//         );
-//       },
-//       error: (error) => {
-//         console.error('Error fetching categories:', error);
-//         // Fallback to empty arrays if there's an error
-//         this.categories = [];
-//         this.mainCategories = [];
-//         this.additionalCategories = [];
-//       }
-//     });
-//   }
-//
-//   toggleMenu(): void {
-//     this.isMenuOpen = !this.isMenuOpen;
-//   }
-//
-//   toggleDropdown(): void {
-//     this.isDropdownOpen = !this.isDropdownOpen;
-//   }
-//
-//   closeDropdown(): void {
-//     this.isDropdownOpen = false;
-//   }
-//
-//   onSearch(event: any): void {
-//     const searchTerm = event.target.value;
-//     console.log('Searching for:', searchTerm);
-//     // Implement your search logic here
-//   }
-//
-//   closeMenu(): void {
-//     this.isMenuOpen = false;
-//   }
-// }
-// header.ts
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
@@ -183,11 +87,7 @@ export class Header implements OnInit, OnDestroy {
   closeDropdown(): void {
     this.isDropdownOpen = false;
   }
-  //
-  // onSearch(event: any): void {
-  //   // Just keep this method for backward compatibility
-  //   console.log('Search input changed:', event.target.value);
-  // }
+
   onSearch(event: any): void {
     const searchTerm = event.target.value.trim();
 
@@ -204,7 +104,8 @@ export class Header implements OnInit, OnDestroy {
     if (matchedCategory) {
       // If matches a category, navigate with category filter
       this.router.navigate(['/products'], {
-        queryParams: { category: matchedCategory.id }
+        queryParams: { category: matchedCategory.name
+        }
       });
     } else {
       // Otherwise, navigate with name filter
@@ -213,13 +114,25 @@ export class Header implements OnInit, OnDestroy {
       });
     }
   }
-
   performSearch(): void {
     const searchTerm = this.searchInput.nativeElement.value.trim();
     if (searchTerm) {
-      this.router.navigate(['/products'], {
-        queryParams: { search: searchTerm }
-      });
+      // Check if the search term matches any category name (case-insensitive)
+      const matchedCategory = this.categories.find(category =>
+        category.name.toLowerCase() === searchTerm.toLowerCase()
+      );
+
+      if (matchedCategory) {
+        // If matches a category, navigate with category filter
+        this.router.navigate(['/products'], {
+          queryParams: { category: matchedCategory.name }
+        });
+      } else {
+        // Otherwise, navigate with name filter
+        this.router.navigate(['/products'], {
+          queryParams: { name: searchTerm }
+        });
+      }
     }
   }
 

@@ -1,0 +1,89 @@
+/* About Us Section Styling */
+.section__content {
+  padding: 80px 0;
+  background-color: #f8f9fa;
+}
+
+.about {
+  text-align: center;
+}
+
+.about__container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.about__info {
+  padding: 20px;
+}
+
+.about__h2 {
+  color: #f39c12;
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.about__h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background-color: #f39c12; /* Lighter coffee brown */
+
+}
+
+.about__p-wrap {
+  margin-bottom: 40px;
+}
+
+.about__p {
+  color: #555555;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+
+.about__link {
+  display: inline-block;
+  padding: 12px 30px;
+  background-color: #f39c12; /* Coffee brown */
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.about__link:hover {
+  background-color: #f39c12; /* Lighter coffee brown */
+
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .section__content {
+    padding: 50px 0;
+  }
+
+  .about__h2 {
+    font-size: 2rem;
+  }
+
+  .about__p {
+    font-size: 1rem;
+  }
+}

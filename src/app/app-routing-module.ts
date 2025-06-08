@@ -4,11 +4,19 @@ import { Home } from './home/home';
 import { NotFound } from './not-found/not-found';
 import { AuthGuard } from './core/guards/auth-guard';
 import { Slider } from './layout/slider/slider';
+import { AboutUs } from './layout/header/AboutUs';
+import { FAQ } from './layout/header/FAQ';
+import { ContactUS } from './layout/header/ContactUS';
+
 
 
 const routes: Routes = [
   { path: '', component: Home },
   { path: 'home', component: Slider },
+  { path: 'about', component: AboutUs },
+  { path: 'faq', component: FAQ },
+  { path: 'contact', component: ContactUS },
+
   {
     path: 'auth',
     loadChildren: () => import('./auth/auth-module').then(m => m.AuthModule)
@@ -24,7 +32,9 @@ const routes: Routes = [
   },
   {
     path: 'cart',
-    loadChildren: () => import('./cart/cart-module').then(m => m.CartModule)
+    loadChildren: () => import('./cart/cart-module').then(m => m.CartModule),
+    canActivate: [AuthGuard]
+
   },
   {
     path: 'orders',

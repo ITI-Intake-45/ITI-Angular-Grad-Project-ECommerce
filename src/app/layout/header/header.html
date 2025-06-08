@@ -120,10 +120,11 @@
         <div class="search-container">
           <div class="input-group search-box">
             <input #searchInput type="text" class="form-control search-input" placeholder="Search products"
-              (input)="onSearch($event)" (keyup)="onSearchKeyUp($event)">
+                   (input)="onSearch($event)" (keyup)="onSearchKeyUp($event)">
             <button class="btn search-btn" type="button" (click)="performSearch()">
               <i class="fas fa-search"></i>
             </button>
+
           </div>
         </div>
       </div>
@@ -138,8 +139,8 @@
           </li>
 
           <!-- dynamic cart item count -->
-          <li class="nav-item">
-            <a class="nav-link cart-link" routerLink="/cart">
+          <li class="nav-item" >
+            <a class="nav-link cart-link" routerLink="/cart" >
               <i class="fas fa-shopping-bag"></i>
               <span class="cart-badge">{{ cartItemCount }}</span>
             </a>
