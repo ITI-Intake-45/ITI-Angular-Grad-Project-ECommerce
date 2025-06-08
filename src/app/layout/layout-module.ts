@@ -7,6 +7,7 @@ import { Footer } from './footer/footer';
 import { Sidebar } from './sidebar/sidebar';
 import { Slider } from './slider/slider';
 import {RouterLink, RouterLinkActive} from '@angular/router';
+import {FormsModule} from '@angular/forms';
 
 
 @NgModule({
@@ -27,6 +28,7 @@ import {RouterLink, RouterLinkActive} from '@angular/router';
     RouterModule,
     RouterLink,
     RouterLinkActive,
+    FormsModule,
   ]
 })
 export class LayoutModule { }

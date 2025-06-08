@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import {Component, OnInit, OnDestroy, ElementRef, ViewChild, Output, EventEmitter} from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 import { ProductService } from '../../core/services/product';
@@ -19,6 +19,7 @@ export class Header implements OnInit, OnDestroy {
   mainCategories: ProductCategory[] = [];
   additionalCategories: ProductCategory[] = [];
   cartItemCount: number = 0;
+  searchQuery: string = ''; // Add this property to store search input
 
   @ViewChild('searchInput') searchInput!: ElementRef;
 
@@ -32,7 +33,8 @@ export class Header implements OnInit, OnDestroy {
     private productService: ProductService,
     private cartService: CartService,
     private router: Router
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     // Fetch categories from database
@@ -88,51 +90,29 @@ export class Header implements OnInit, OnDestroy {
     this.isDropdownOpen = false;
   }
 
+  // Update search query as user types
   onSearch(event: any): void {
-    const searchTerm = event.target.value.trim();
+    this.searchQuery = event.target.value;
+  }
 
-    // If search term is empty, don't navigate
-    if (!searchTerm) {
-      return;
-    }
+  // Perform search and navigate to products page
+  performSearch(): void {
+    const searchTerm = this.searchQuery.trim();
 
-    // Check if the search term matches any category name (case-insensitive)
-    const matchedCategory = this.categories.find(category =>
-      category.name.toLowerCase() === searchTerm.toLowerCase()
-    );
-
-    if (matchedCategory) {
-      // If matches a category, navigate with category filter
-      this.router.navigate(['/products'], {
-        queryParams: { category: matchedCategory.name
-        }
-      });
-    } else {
-      // Otherwise, navigate with name filter
+    if (searchTerm) {
+      // Navigate to products page with search query parameter
       this.router.navigate(['/products'], {
         queryParams: { name: searchTerm }
       });
+    } else {
+      // If search is empty, just navigate to products page without filter
+      this.router.navigate(['/products']);
     }
-  }
-  performSearch(): void {
-    const searchTerm = this.searchInput.nativeElement.value.trim();
-    if (searchTerm) {
-      // Check if the search term matches any category name (case-insensitive)
-      const matchedCategory = this.categories.find(category =>
-        category.name.toLowerCase() === searchTerm.toLowerCase()
-      );
 
-      if (matchedCategory) {
-        // If matches a category, navigate with category filter
-        this.router.navigate(['/products'], {
-          queryParams: { category: matchedCategory.name }
-        });
-      } else {
-        // Otherwise, navigate with name filter
-        this.router.navigate(['/products'], {
-          queryParams: { name: searchTerm }
-        });
-      }
+    // Clear the search input after search
+    this.searchQuery = '';
+    if (this.searchInput) {
+      this.searchInput.nativeElement.value = '';
     }
   }
 
@@ -146,7 +126,6 @@ export class Header implements OnInit, OnDestroy {
   closeMenu(): void {
     this.isMenuOpen = false;
   }
-
 
   logout(): void {
     this.authService.logout();
