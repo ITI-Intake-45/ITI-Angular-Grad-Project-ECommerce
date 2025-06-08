@@ -1,1 +1,17 @@
-<p>verify-otp works!</p>
+<div class="auth-wrapper">
+    <form (ngSubmit)="onVerify()" class="auth-form">
+        <h2>ENTER VERIFICATION CODE</h2>
+        <p>A verification code has been sent to your email</p>
+
+        <div class="form-group">
+            <label>VERIFICATION CODE *</label>
+            <div class="code-inputs">
+                <input type="text" maxlength="1" *ngFor="let d of code; let i = index" [(ngModel)]="code[i]"
+                    name="otp{{i}}" class="code-box" required />
+            </div>
+        </div>
+
+        <button class="btn-submit" type="submit">VERIFY</button>
+        <a routerLink="/auth/forgot-password" class="back-link">Back to Password Reset</a>
+    </form>
+</div>
