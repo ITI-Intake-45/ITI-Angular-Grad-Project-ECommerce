@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OrderService } from '../../core/services/order';
-import { AuthService } from '../../core/services/auth';
-import { Order, OrderStatus } from '../../shared/order-models';
+import { UserService } from '../../core/services/user';
+import { Order, OrderStatus, OrderItem } from '../../shared/order-models';
 
 @Component({
   standalone: false,
@@ -14,97 +14,105 @@ export class OrderDetails implements OnInit {
   order: Order | null = null;
   loading = true;
   error = '';
-  OrderStatus = OrderStatus;
-
+  OrderStatus = OrderStatus; // Enum for status mapping
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private orderService: OrderService,
-    private authService: AuthService
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      const orderId = parseInt(params.get('id') || '0', 10);
-      if (orderId) {
-        this.loadOrderDetails(orderId);
-      } else {
-        this.error = 'Invalid order ID';
-        this.loading = false;
-      }
-    });
+    this.loadOrderDetails();
   }
 
-  loadOrderDetails(orderId: number): void {
-    const user = this.authService.getCurrentUser();
+  private loadOrderDetails(): void {
+    this.loading = true;
 
-    if (!user) {
-      this.error = 'You must be logged in to view order details';
-      this.loading = false;
-      return;
-    }
+    // Fetch user profile from user service
+    this.userService.userProfile$.subscribe({
+      next: (profile) => {
+        if (!profile?.userId) {
+          this.error = 'You must be logged in to view order details.';
+          this.loading = false;
+          return;
+        }
 
-    this.orderService.getOrderDetails(user.userId, orderId).subscribe({
-      next: (order) => {
-        this.order = order;
-        this.loading = false;
+        // Get orderId from route parameters
+        const orderId = this.getOrderIdFromRoute();
+        if (!orderId) {
+          this.error = 'Invalid order ID';
+          this.loading = false;
+          return;
+        }
+
+        // Fetch order details using OrderService
+        this.orderService.getOrderDetails(profile.userId, orderId).subscribe({
+          next: (order) => {
+            this.order = order;
+            this.loading = false;
+          },
+          error: (err) => {
+            console.error('Error fetching order details:', err);
+            this.error = 'Failed to load order details. ' +
+              (err.status === 404 ? 'Order not found.' : 'Please try again.');
+            this.loading = false;
+          }
+        });
       },
-      error: (err) => {
-        this.error = 'Failed to load order details. ' +
-          (err.status === 404 ? 'Order not found.' : 'Please try again.');
+      error: () => {
+        this.error = 'Failed to retrieve user profile. Please try again.';
         this.loading = false;
       }
     });
   }
 
-  formatDate(dateString: string | Date): string {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  private getOrderIdFromRoute(): number | null {
+    const orderId = this.route.snapshot.paramMap.get('id');
+    return orderId ? parseInt(orderId, 10) : null;
   }
-
-  getStatusClass(status: string): string {
-    switch (status) {
-      case 'pending': return 'status-pending';
-      case 'accepted': return 'status-accepted';
-      case 'cancelled': return 'status-cancelled';
-      default: return '';
-    }
-  }
-
 
   cancelOrder(): void {
-    if (!this.order) return;
-    const orderId = this.order.orderId || this.order.orderId;
-
-    if (!orderId) {
-      console.error('Cannot cancel order: Missing order ID');
+    if (!this.order || this.order.status !== OrderStatus.PENDING) {
       return;
     }
 
-    if (confirm('Are you sure you want to cancel this order?')) {
-      this.orderService.cancelOrder(orderId).subscribe({
-        next: () => {
-          if (this.order) {
-            this.order.status = OrderStatus.CANCELLED;
-            this.order.status = OrderStatus.CANCELLED;
-          }
-        },
-        error: (err) => {
-          console.error('Error cancelling order:', err);
-          alert('Failed to cancel order. ' +
-            (err.error || 'Please try again later.'));
+    const confirmCancel = confirm('Are you sure you want to cancel this order?');
+    if (!confirmCancel) {
+      return;
+    }
+
+    this.orderService.cancelOrder(this.order.orderId).subscribe({
+      next: () => {
+        if (this.order) {
+          this.order.status = OrderStatus.CANCELLED;
         }
-      });
+        alert('Order cancelled successfully.');
+      },
+      error: (err) => {
+        console.error('Error cancelling order:', err);
+        alert('Failed to cancel order. Please try again.');
+      }
+    });
+  }
+
+
+
+  getStatusClass(status: OrderStatus): string {
+    switch (status) {
+      case OrderStatus.PENDING:
+        return 'status-pending';
+      case OrderStatus.ACCEPTED:
+        return 'status-accepted';
+      case OrderStatus.CANCELLED:
+        return 'status-cancelled';
+      default:
+        return '';
     }
   }
 
   goBack(): void {
-    this.router.navigate(['/orders']);
+    this.router.navigate(['user/orders']);
   }
 }
