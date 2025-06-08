@@ -180,22 +180,36 @@ export class Profile implements OnInit, OnDestroy {
   }
 
   refreshProfile(): void {
+    console.log('🔄 Profile: Refreshing profile...');
+    this.isLoading = true;
+    this.error = null;
+
     // Force refresh from API
-    this.userService.refreshProfile().subscribe({
-      next: (profile) => {
-        this.userProfile = profile;
-        this.updateProfileCards();
-        localStorage.setItem('userProfile', JSON.stringify(profile));
-      },
-      error: (error) => {
-        if (error?.status === 401) {
-          this.authService.clearAuthData();
-          this.router.navigate(['/auth/login']);
-        } else {
-          this.error = this.getErrorMessage(error);
+    this.userService.refreshProfile()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (profile) => {
+          console.log('🔄 Profile: Profile refreshed successfully:', profile);
+          this.userProfile = profile;
+          this.updateProfileCards();
+          this.isLoading = false;
+
+          // Update stored profile
+          localStorage.setItem('userProfile', JSON.stringify(profile));
+        },
+        error: (error) => {
+          console.error('🔄 Profile: Error refreshing profile:', error);
+          this.isLoading = false;
+
+          if (error?.status === 401) {
+            console.log('🔄 Profile: Session expired, clearing auth and redirecting');
+            this.authService.clearAuthData();
+            this.router.navigate(['/auth/login']);
+          } else {
+            this.error = this.getErrorMessage(error);
+          }
         }
-      }
-    });
+      });
   }
 
   editProfile(): void {
