@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../../core/services/product';
-import { Product, ProductCategory, Page } from '../../shared/models';
+import { Product, ProductCategory, Page } from '../../shared/product-model';
 
 @Component({
   standalone:false,

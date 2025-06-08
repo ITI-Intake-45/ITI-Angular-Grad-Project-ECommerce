@@ -99,7 +99,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 import { ProductService } from '../../core/services/product';
 import { CartService } from '../../core/services/cart';
-import { ProductCategory } from '../../shared/models';
+import { ProductCategory } from '../../shared/product-model';
 import { Subscription } from 'rxjs';
 
 @Component({

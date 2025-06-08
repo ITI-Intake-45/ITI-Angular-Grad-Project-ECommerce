@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ProductCategory } from '../../shared/models';
+import { ProductCategory } from '../../shared/product-model';
 
 @Component({
   standalone:false,

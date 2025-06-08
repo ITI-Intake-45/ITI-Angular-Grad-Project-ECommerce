@@ -1,1 +1,37 @@
-<p>order-status works!</p>
+<!-- src/app/orders/order-status/order-status.component.html -->
+
+<div class="order-status-progress">
+  <div class="progress-container">
+    <div class="progress">
+      <div class="progress-bar"
+           [ngClass]="{'bg-danger': status === 'CANCELLED'}"
+           [ngStyle]="{
+             'width': status === 'PROCESSING' ? '33%' :
+                      status === 'SHIPPED' ? '66%' :
+                      status === 'DELIVERED' ? '100%' :
+                      status === 'CANCELLED' ? '100%' : '0%'
+           }">
+      </div>
+    </div>
+
+    <div class="step-indicators">
+      <div *ngFor="let step of statusSteps; let i = index"
+           class="step"
+           [ngClass]="{
+             'completed': step.completed,
+             'active': step.active,
+             'cancelled': status === 'CANCELLED'
+           }">
+        <div class="step-icon">
+          <i *ngIf="step.completed && status !== 'CANCELLED'" class="fas fa-check"></i>
+          <i *ngIf="status === 'CANCELLED'" class="fas fa-times"></i>
+        </div>
+        <div class="step-label">{{ step.label }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="status === 'CANCELLED'" class="cancelled-notice">
+    <i class="fas fa-exclamation-circle"></i> This order has been cancelled
+  </div>
+</div>

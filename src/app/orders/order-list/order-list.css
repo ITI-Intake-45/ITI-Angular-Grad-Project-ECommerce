@@ -1,0 +1,71 @@
+.orders-container {
+  padding: 2rem 0;
+}
+
+.section-title {
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.section-divider {
+  height: 3px;
+  background: linear-gradient(90deg, #3498db, #2ecc71);
+  border-radius: 2px;
+  margin-bottom: 2rem;
+  width: 100px;
+}
+
+.empty-orders {
+  padding: 3rem 1rem;
+}
+
+.order-row:hover {
+  background-color: #f8f9fa;
+}
+
+.status-badge {
+  font-size: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 1rem;
+}
+
+.status-pending {
+  background-color: #ffeaa7 !important;
+  color: #2d3436 !important;
+}
+
+.status-accepted {
+  background-color: #00b894 !important;
+  color: white !important;
+}
+
+.status-cancelled {
+  background-color: #e17055 !important;
+  color: white !important;
+}
+
+.table th {
+  border-top: none;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.btn-group .btn {
+  margin: 0 2px;
+}
+
+.pagination .page-link {
+  color: #3498db;
+  border-color: #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #3498db;
+  border-color: #3498db;
+}
+
+.table-responsive {
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}

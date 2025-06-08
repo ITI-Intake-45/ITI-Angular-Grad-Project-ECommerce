@@ -1,7 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../core/services/product';
-import { Product } from '../../shared/models';
+import { Product } from '../../shared/product-model';
 
 @Component({
   standalone: false,
@@ -76,7 +76,7 @@ export class ProductDetails implements OnInit {
 
   private updateSliderSettings(): void {
     const windowWidth = window.innerWidth;
-    
+
     if (windowWidth < 576) {
       // Mobile: 1 item per slide
       this.itemsPerSlide = 1;
@@ -104,7 +104,7 @@ export class ProductDetails implements OnInit {
       this.maxSlideIndex = Math.ceil(this.relatedProducts.length / this.itemsPerSlide) - 1;
       this.indicators = Array(this.maxSlideIndex + 1).fill(0).map((_, i) => i);
     }
-    
+
     // Reset to first slide if current index is out of bounds
     if (this.currentSlideIndex > this.maxSlideIndex) {
       this.currentSlideIndex = 0;

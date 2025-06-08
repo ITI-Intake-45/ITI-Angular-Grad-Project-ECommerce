@@ -1,92 +1,95 @@
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import {CreateOrderRequest, Order, OrderStatistics, OrderStatus, Page} from "../../shared/order-models";
+import {map} from 'rxjs/operators';
 
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-
-export interface Order {
-  id: number;
-  userId: number;
-  items: any[];
-  total: number;
-  status: string;
-  createdAt: Date;
-  shippingAddress: any;
-}
-
-export interface CreateOrderRequest {
-  items: any[];
-  total: number;
-  shippingAddress: any;
-  paymentMethod: string;
-}
-
-export interface OrderStatistics {
-  pending: number;
-  accepted: number;
-  cancelled: number;
-}
-
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class OrderService {
   private apiUrl = 'http://localhost:8080/api/v1/orders';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   createOrder(orderData: CreateOrderRequest): Observable<Order> {
     return this.http.post<Order>(this.apiUrl, orderData);
   }
 
-  getUserOrders(): Observable<Order[]> {
-    return this.http.get<Order[]>(`${this.apiUrl}/user/1`);
+  getUserOrders(userId: number, page?: number, size?: number): Observable<Page<Order>> {
+    let params = new HttpParams();
+
+    if (page !== undefined) {
+      params = params.set('page', page.toString());
+    }
+    if (size !== undefined) {
+      params = params.set('size', size.toString());
+    }
+
+    console.log('OrderService: Making request to:', `${this.apiUrl}/user/${userId}`, 'with params:', params.toString());
+
+    return this.http.get<Page<Order>>(`${this.apiUrl}/user/${userId}`, {
+      params,
+      withCredentials: true // Add this for session-based auth
+    });
   }
 
-  getOrder(id: number): Observable<Order> {
-    return this.http.get<Order>(`${this.apiUrl}/${id}`);
+  getOrder(orderId: number): Observable<Order> {
+    return this.http.get<Order>(`${this.apiUrl}/${orderId}`, { withCredentials: true });
   }
 
-  getAllOrders(): Observable<Order[]> {
-    return this.http.get<Order[]>(`${this.apiUrl}/admin`);
+  getOrderDetails(userId: number, orderId: number): Observable<Order> {
+    return this.http.get<Order>(`${this.apiUrl}/user/${userId}/${orderId}`, { withCredentials: true });
   }
 
-  updateOrderStatus(id: number, status: string): Observable<Order> {
-    return this.http.patch<Order>(`${this.apiUrl}/${id}/status`, { status });
+  getAllOrders(page?: number, size?: number): Observable<Page<Order>> {
+    let params = new HttpParams();
+
+    if (page !== undefined) {
+      params = params.set('page', page.toString());
+    }
+    if (size !== undefined) {
+      params = params.set('size', size.toString());
+    }
+
+    return this.http.get<Page<Order>>(this.apiUrl, {
+      params,
+      withCredentials: true
+    });
   }
 
-  // New method to get user order statistics
-  getUserOrderStatistics(): Observable<OrderStatistics> {
-    return this.getUserOrders().pipe(
-      map(orders => this.calculateOrderStatistics(orders))
+  updateOrderStatus(orderId: number, status: OrderStatus): Observable<Order> {
+    return this.http.patch<Order>(`${this.apiUrl}/${orderId}/status`, { status }, { withCredentials: true });
+  }
+
+  cancelOrder(orderId: number): Observable<string> {
+    return this.http.put<string>(`${this.apiUrl}/${orderId}/cancel`, null, {
+      withCredentials: true,
+      responseType: 'text' as 'json' // Backend returns string response
+    });
+  }
+
+  getUserOrderStatistics(userId: number): Observable<OrderStatistics> {
+    return this.getUserOrders(userId).pipe(
+      map(page => this.calculateOrderStatistics(page.content))
     );
   }
 
-  // Method to get order statistics for admin
-  getOrderStatistics(): Observable<OrderStatistics> {
-    return this.getAllOrders().pipe(
-      map(orders => this.calculateOrderStatistics(orders))
-    );
-  }
-
-  // Helper method to calculate statistics from orders array
   private calculateOrderStatistics(orders: Order[]): OrderStatistics {
     const stats: OrderStatistics = {
       pending: 0,
       accepted: 0,
-      cancelled: 0,
+      cancelled: 0
     };
 
     orders.forEach(order => {
-      const status = order.status.toLowerCase();
+      const status = order.status;
       switch (status) {
-        case 'pending':
+        case OrderStatus.PENDING:
           stats.pending++;
           break;
-        case 'accepted':
+        case OrderStatus.ACCEPTED:
           stats.accepted++;
           break;
-        case 'cancelled':
+        case OrderStatus.CANCELLED:
           stats.cancelled++;
           break;
       }

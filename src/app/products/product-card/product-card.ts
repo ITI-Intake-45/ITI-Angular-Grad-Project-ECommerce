@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { Product } from '../../shared/models';
+import { Product } from '../../shared/product-model';
 import { CartService } from '../../core/services/cart';
 
 
@@ -24,14 +24,14 @@ export class ProductCard {
   addToCart() {
     this.cartService.addToCart(this.product.productId, this.quantity).subscribe({
       next: (cart) => {
-        
+
         // Emit event for parent component
         this.addToCartEvent.emit({ product: this.product, quantity: this.quantity });
         console.log('Product added to cart:', cart);
         // Optionally: this.notifyUser('Product added to cart!');
       },
       error: (err) => {
-        
+
         console.error('Error adding to cart:', err);
         // Optionally: this.notifyUser('Failed to add product to cart. Please try again.');
       }
@@ -54,7 +54,7 @@ export class ProductCard {
 
     if (target.classList.contains('card-title')) {
       target.classList.add('clicked');
-      
+
     }
     setTimeout(() => target.classList.remove('clicked'), 100);
   }

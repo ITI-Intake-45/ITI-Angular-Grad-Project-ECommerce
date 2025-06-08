@@ -1,7 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { OrderService, OrderStatistics } from '../../core/services/order';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { OrderService } from '../../core/services/order';
+import { UserService } from '../../core/services/user';
+import {Subject, take} from 'rxjs';
+import { takeUntil, filter, switchMap } from 'rxjs/operators';
+import { OrderStatistics } from '../../shared/order-models'; // Import from shared models
+import { AuthService } from '../../core/services/auth';
+
 
 interface StatisticCard {
   icon: string;
@@ -25,7 +29,11 @@ export class OrdersStatistics implements OnInit, OnDestroy {
 
   statisticCards: StatisticCard[] = [];
 
-  constructor(private orderService: OrderService) {}
+  constructor(
+    private orderService: OrderService,
+    private authService: AuthService,
+    private userService: UserService
+  ) {}
 
   private loadMockStatistics(): void {
     // Mock data for testing
@@ -38,15 +46,28 @@ export class OrdersStatistics implements OnInit, OnDestroy {
     this.isLoading = false;
   }
 
-
   ngOnInit(): void {
-
-    // to load from the mock data
-    this.loadMockStatistics();
-
-
-    //to load from the api
-    // this.loadOrderStatistics();
+    this.authService.currentUser$.pipe(
+      filter(user => !!user),
+      take(1),
+      switchMap(user => {
+        if (!user?.userId) {
+          throw new Error('User ID not available');
+        }
+        return this.orderService.getUserOrderStatistics(user.userId);
+      })
+    ).subscribe({
+      next: (stats) => {
+        this.statistics = stats;
+        this.updateStatisticCards();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading order statistics:', error);
+        this.error = 'Failed to load order statistics';
+        this.isLoading = false;
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -58,20 +79,25 @@ export class OrdersStatistics implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = null;
 
-    this.orderService.getUserOrderStatistics()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (stats) => {
-          this.statistics = stats;
-          this.updateStatisticCards();
-          this.isLoading = false;
-        },
-        error: (error) => {
-          console.error('Error loading order statistics:', error);
-          this.error = 'Failed to load order statistics';
-          this.isLoading = false;
-        }
-      });
+    // Option 1: Get current user profile and use its ID
+    this.userService.userProfile$.pipe(
+      takeUntil(this.destroy$),
+      filter(profile => !!profile),
+      switchMap(profile => {
+        return this.orderService.getUserOrderStatistics(profile!.userId);
+      })
+    ).subscribe({
+      next: (stats) => {
+        this.statistics = stats;
+        this.updateStatisticCards();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading order statistics:', error);
+        this.error = 'Failed to load order statistics';
+        this.isLoading = false;
+      }
+    });
   }
 
   private updateStatisticCards(): void {

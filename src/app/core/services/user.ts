@@ -2,9 +2,11 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Observable, BehaviorSubject, throwError, of} from 'rxjs';
 import {tap, catchError, delay, map, switchMap} from 'rxjs/operators';
+import {User} from './auth';
 
 export interface UserProfile {
-  id: number;
+  userId: number; // Rename or add userId here
+  id?: number;    // Optional, for flexibility
   name: string;
   email: string;
   phone?: string;
@@ -45,6 +47,9 @@ export class UserService {
   private apiUrl = 'http://localhost:8080/api/v1/users';
   private userProfileSubject = new BehaviorSubject<UserProfile | null>(null);
   public userProfile$ = this.userProfileSubject.asObservable();
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  public currentUser$ = this.currentUserSubject.asObservable();
+
 
   constructor(private http: HttpClient) {
     // Check if there's a stored profile from login
@@ -67,27 +72,50 @@ export class UserService {
   }
 
   // Get user profile - first check if we have it in memory, otherwise fetch from API
+  // getProfile(): Observable<UserProfile> {
+  //   const currentProfile = this.getCurrentUserProfile();
+  //
+  //   // If we already have the profile in memory, return it
+  //   if (currentProfile) {
+  //     console.log('📁 UserService: Returning cached profile');
+  //     return of(currentProfile);
+  //   }
+  //
+  //   // Otherwise fetch from API
+  //   console.log('📁 UserService: Fetching profile from API');
+  //   return this.http.get<UserProfile>(`${this.apiUrl}/profile`).pipe(
+  //     tap(profile => {
+  //       console.log('📁 UserService: Profile loaded from API:', profile);
+  //       this.userProfileSubject.next(profile);
+  //       // Store in localStorage for persistence
+  //       localStorage.setItem('userProfile', JSON.stringify(profile));
+  //     }),
+  //     catchError(this.handleError)
+  //   );
+  // }
+
+  // UserService: Map userId to id to resolve mismatched expectations
   getProfile(): Observable<UserProfile> {
     const currentProfile = this.getCurrentUserProfile();
 
-    // If we already have the profile in memory, return it
     if (currentProfile) {
       console.log('📁 UserService: Returning cached profile');
       return of(currentProfile);
     }
 
-    // Otherwise fetch from API
-    console.log('📁 UserService: Fetching profile from API');
     return this.http.get<UserProfile>(`${this.apiUrl}/profile`).pipe(
-      tap(profile => {
+      map(profile => {
         console.log('📁 UserService: Profile loaded from API:', profile);
-        this.userProfileSubject.next(profile);
-        // Store in localStorage for persistence
-        localStorage.setItem('userProfile', JSON.stringify(profile));
+        // Map userId to id for consistency
+        const mappedProfile = { ...profile, id: profile.userId };
+        this.userProfileSubject.next(mappedProfile);
+        localStorage.setItem('userProfile', JSON.stringify(mappedProfile));
+        return mappedProfile;
       }),
       catchError(this.handleError)
     );
   }
+
 
   // Force refresh profile from API
   refreshProfile(): Observable<UserProfile> {

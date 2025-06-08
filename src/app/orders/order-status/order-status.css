@@ -1,0 +1,83 @@
+/* src/app/orders/order-status/order-status.component.css */
+
+.order-status-progress {
+  margin: 2rem 0;
+}
+
+.progress-container {
+  position: relative;
+  padding: 2rem 0;
+}
+
+.progress {
+  height: 4px;
+  background-color: #e0e0e0;
+}
+
+.progress-bar {
+  background-color: #4b70e2;
+  transition: width 0.6s ease;
+}
+
+.step-indicators {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.step-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 2px solid #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.step.completed .step-icon {
+  background-color: #4b70e2;
+  border-color: #4b70e2;
+  color: white;
+}
+
+.step.active .step-icon {
+  border-color: #4b70e2;
+  border-width: 3px;
+}
+
+.step.cancelled .step-icon {
+  background-color: #f44336;
+  border-color: #f44336;
+  color: white;
+}
+
+.step-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #666;
+}
+
+.step.completed .step-label,
+.step.active .step-label {
+  color: #333;
+}
+
+.cancelled-notice {
+  text-align: center;
+  color: #f44336;
+  font-weight: 500;
+  margin-top: 1rem;
+}

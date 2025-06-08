@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../core/services/product';
-import { Product } from '../shared/models';
+import { Product } from '../shared/product-model';
 import { catchError, of } from 'rxjs';
 
 @Component({

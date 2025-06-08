@@ -1,1 +1,156 @@
-<p>order-list works!</p>
+<!-- order-list.html -->
+<div class="container orders-container">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="section-title">My Orders</h2>
+      <div class="section-divider"></div>
+    </div>
+  </div>
+
+  <!-- Loading states -->
+  <div *ngIf="profileLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading profile...</span>
+    </div>
+    <p class="mt-2">Loading user profile...</p>
+  </div>
+
+  <div *ngIf="loading && !profileLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading orders...</span>
+    </div>
+    <p class="mt-2">Loading your orders...</p>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-2" (click)="refreshOrders()">
+      <i class="fas fa-refresh"></i> Try Again
+    </button>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!loading && !profileLoading && !error && orders.length === 0" class="text-center py-5">
+    <div class="empty-orders">
+      <i class="fas fa-shopping-bag fa-4x mb-3 text-muted"></i>
+      <h3>No Orders Yet</h3>
+      <p class="text-muted">You haven't placed any orders yet. Start shopping to see your orders here!</p>
+      <a routerLink="/products" class="btn btn-primary mt-3">
+        <i class="fas fa-shopping-cart"></i> Shop Now
+      </a>
+    </div>
+  </div>
+
+  <!-- Orders list -->
+  <div *ngIf="!loading && !profileLoading && orders.length > 0" class="orders-list">
+    <!-- Summary info -->
+    <div class="row mb-3">
+      <div class="col-12">
+        <p class="text-muted mb-0">
+          Showing {{ orders.length }} of {{ totalElements }} orders
+        </p>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead class="table-light">
+        <tr>
+          <th scope="col">Order ID</th>
+          <th scope="col">Email</th>
+          <th scope="col">Items</th>
+          <th scope="col">Total</th>
+          <th scope="col">Status</th>
+          <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let order of orders; trackBy: trackByOrderId" class="order-row">
+          <td>
+            <strong>#{{ order.orderId }}</strong>
+          </td>
+          <td>
+            <small class="text-muted">{{ order.email }}</small>
+          </td>
+          <td>
+            <span class="badge bg-info">{{ getItemCount(order) }} items</span>
+          </td>
+          <td>
+            <strong>${{ formatPrice(order.totalPrice) }}</strong>
+          </td>
+          <td>
+              <span class="status-badge badge" [ngClass]="getStatusClass(order.status)">
+                {{ order.status }}
+              </span>
+          </td>
+          <td>
+            <div class="btn-group" role="group">
+              <button
+                class="btn btn-sm btn-outline-primary"
+                (click)="viewOrderDetails(order.orderId)"
+                title="View order details">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <button
+                *ngIf="order.status === OrderStatus.PENDING"
+                class="btn btn-sm btn-outline-danger"
+                (click)="cancelOrder(order.orderId, $event)"
+                title="Cancel order">
+                <i class="fas fa-times"></i> Cancel
+              </button>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="totalPages > 1" class="d-flex justify-content-center mt-4">
+      <nav aria-label="Order pagination">
+        <ul class="pagination">
+          <!-- First page -->
+          <li class="page-item" [class.disabled]="currentPage === 0">
+            <button class="page-link" (click)="goToPage(0)" [disabled]="currentPage === 0" aria-label="First">
+              <span aria-hidden="true">&laquo;&laquo;</span>
+            </button>
+          </li>
+
+          <!-- Previous page -->
+          <li class="page-item" [class.disabled]="currentPage === 0">
+            <button class="page-link" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 0" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </button>
+          </li>
+
+          <!-- Page numbers -->
+          <ng-container *ngFor="let page of [].constructor(totalPages); let i = index">
+            <li class="page-item" [class.active]="i === currentPage"
+                *ngIf="i >= currentPage - 2 && i <= currentPage + 2">
+              <button class="page-link" (click)="goToPage(i)" [disabled]="i === currentPage">
+                {{ i + 1 }}
+              </button>
+            </li>
+          </ng-container>
+
+          <!-- Next page -->
+          <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+            <button class="page-link" (click)="goToPage(currentPage + 1)"
+                    [disabled]="currentPage === totalPages - 1" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </button>
+          </li>
+
+          <!-- Last page -->
+          <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+            <button class="page-link" (click)="goToPage(totalPages - 1)"
+                    [disabled]="currentPage === totalPages - 1" aria-label="Last">
+              <span aria-hidden="true">&raquo;&raquo;</span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>

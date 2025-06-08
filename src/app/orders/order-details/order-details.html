@@ -1,1 +1,138 @@
-<p>order-details works!</p>
+<!--&lt;!&ndash; src/app/orders/order-details/order-details.component.html &ndash;&gt;-->
+
+<!--<div class="container order-details-container">-->
+<!--  <div class="row mb-4">-->
+<!--    <div class="col-12">-->
+<!--      <button class="btn btn-link text-decoration-none" (click)="goBack()">-->
+<!--        <i class="fas fa-arrow-left"></i> Back to Orders-->
+<!--      </button>-->
+<!--      <h2 class="section-title">Order Details</h2>-->
+<!--      <div class="section-divider"></div>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  <div *ngIf="loading" class="text-center py-5">-->
+<!--    <div class="spinner-border text-primary" role="status">-->
+<!--      <span class="visually-hidden">Loading...</span>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>-->
+
+<!--  <div *ngIf="!loading && order" class="order-details">-->
+<!--    <div class="card mb-4">-->
+<!--      <div class="card-header d-flex justify-content-between align-items-center">-->
+<!--        <h5 class="mb-0">Order #{{ order.orderId }}</h5>-->
+<!--        <span class="status-badge" [ngClass]="getStatusClass(order.status)">-->
+<!--          {{ order.status }}-->
+<!--        </span>-->
+<!--      </div>-->
+<!--      <div class="card-body">-->
+<!--        <div class="row mb-3">-->
+<!--          <div class="col-md-6">-->
+<!--            <p class="mb-1"><strong>Order Date:</strong></p>-->
+<!--            <p>{{ formatDate(order.createdAt) }}</p>-->
+<!--          </div>-->
+<!--          <div class="col-md-6 text-md-end">-->
+<!--            <p class="mb-1"><strong>Total Amount:</strong></p>-->
+<!--            <p class="order-total">${{ order.totalPrice.toFixed(2) || '0.00' }}</p>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        <div *ngIf="order.shippingAddress" class="mb-3">-->
+<!--          <p class="mb-1"><strong>Shipping Address:</strong></p>-->
+<!--          <p>{{ order.shippingAddress }}</p>-->
+<!--        </div>-->
+
+<!--        <div *ngIf="order.status === OrderStatus.PENDING"-->
+<!--             class="d-grid gap-2 d-md-flex justify-content-md-end mb-3">-->
+<!--          <button class="btn btn-danger" (click)="cancelOrder()">-->
+<!--            <i class="fas fa-times"></i> Cancel Order-->
+<!--          </button>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div class="card">-->
+<!--      <div class="card-header">-->
+<!--        <h5 class="mb-0">Order Items ({{ order.items.length || 0 }})</h5>-->
+<!--      </div>-->
+<!--      <div class="card-body p-0">-->
+<!--        <div class="table-responsive">-->
+<!--          <table class="table mb-0">-->
+<!--            <thead>-->
+<!--            <tr>-->
+<!--              <th>Product</th>-->
+<!--              <th>Price</th>-->
+<!--              <th>Quantity</th>-->
+<!--              <th class="text-end">Subtotal</th>-->
+<!--            </tr>-->
+<!--            </thead>-->
+<!--            <tbody>-->
+<!--            <tr *ngFor="let item of order.items">-->
+<!--              <td>-->
+<!--                <div class="d-flex align-items-center">-->
+<!--                  <div class="product-image me-3" *ngIf="item.productImage">-->
+<!--                    <img [src]="item.productImage" [alt]="item.productName" class="img-thumbnail">-->
+<!--                  </div>-->
+<!--                  <div>-->
+<!--                    <h6 class="mb-0">{{ item.productName }}</h6>-->
+<!--                    <small class="text-muted">Product ID: {{ item.productId }}</small>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </td>-->
+<!--              <td>${{ item.price.toFixed(2) || '0.00' }}</td>-->
+<!--              <td>{{ item.quantity }}</td>-->
+<!--              <td class="text-end">${{ item.subtotal.toFixed(2) || '0.00' }}</td>-->
+<!--            </tr>-->
+<!--            </tbody>-->
+<!--            <tfoot>-->
+<!--            <tr>-->
+<!--              <td colspan="3" class="text-end"><strong>Total:</strong></td>-->
+<!--              <td class="text-end"><strong>${{ order.totalPrice.toFixed(2) || '0.00' }}</strong></td>-->
+<!--            </tr>-->
+<!--            </tfoot>-->
+<!--          </table>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Order Timeline for status tracking &ndash;&gt;-->
+<!--    <div class="card mt-4">-->
+<!--      <div class="card-header">-->
+<!--        <h5 class="mb-0">Order Timeline</h5>-->
+<!--      </div>-->
+<!--      <div class="card-body">-->
+<!--        <div class="order-timeline">-->
+<!--          &lt;!&ndash; Order Placed &ndash;&gt;-->
+<!--          <div class="timeline-item" [class.active]="order.status !== OrderStatus.CANCELLED">-->
+<!--            <div class="timeline-point"></div>-->
+<!--            <div class="timeline-content">-->
+<!--              <h6>Order Placed</h6>-->
+<!--              <p>{{ formatDate(order.createdAt) }}</p>-->
+<!--            </div>-->
+<!--          </div>-->
+
+<!--          &lt;!&ndash; Order Accepted &ndash;&gt;-->
+<!--          <div class="timeline-item" [class.active]="order.status === OrderStatus.ACCEPTED">-->
+<!--            <div class="timeline-point"></div>-->
+<!--            <div class="timeline-content">-->
+<!--              <h6>Order Accepted</h6>-->
+<!--              <p *ngIf="order.status === OrderStatus.ACCEPTED">Your order has been accepted!</p>-->
+<!--              <p *ngIf="order.status !== OrderStatus.PENDING">Pending</p>-->
+<!--            </div>-->
+<!--          </div>-->
+
+<!--          &lt;!&ndash; Order Cancelled (only shown if cancelled) &ndash;&gt;-->
+<!--          <div *ngIf="order.status === OrderStatus.CANCELLED" class="timeline-item cancelled">-->
+<!--            <div class="timeline-point"></div>-->
+<!--            <div class="timeline-content">-->
+<!--              <h6>Order Cancelled</h6>-->
+<!--              <p>This order has been cancelled</p>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
