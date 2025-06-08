@@ -103,8 +103,15 @@ export class UserService {
       return of(currentProfile);
     }
 
-    return this.http.get<UserProfile>(`${this.apiUrl}/profile`).pipe(
-      map(profile => {
+    // Otherwise fetch from API
+    console.log('📁 UserService: Fetching profile from API');
+    return this.http.get<UserProfile>(`${this.apiUrl}/profile`, {
+      withCredentials: true, // Add this to include session cookies
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).pipe(
+      tap(profile => {
         console.log('📁 UserService: Profile loaded from API:', profile);
         // Map userId to id for consistency
         const mappedProfile = { ...profile, id: profile.userId };
@@ -112,7 +119,18 @@ export class UserService {
         localStorage.setItem('userProfile', JSON.stringify(mappedProfile));
         return mappedProfile;
       }),
-      catchError(this.handleError)
+      catchError((error: HttpErrorResponse) => {
+        console.error('📁 UserService: Get profile error:', error);
+
+        if (error.status === 401) {
+          // Session expired - clear all auth data
+          this.clearProfile();
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('userProfile');
+        }
+
+        return this.handleError(error);
+      })
     );
   }
 
@@ -120,17 +138,33 @@ export class UserService {
   // Force refresh profile from API
   refreshProfile(): Observable<UserProfile> {
     console.log('📁 UserService: Force refreshing profile from API');
-    return this.http.get<UserProfile>(`${this.apiUrl}/profile`).pipe(
+    return this.http.get<UserProfile>(`${this.apiUrl}/profile`, {
+      withCredentials: true, // Add this to include session cookies
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).pipe(
       tap(profile => {
         console.log('📁 UserService: Profile refreshed from API:', profile);
         this.userProfileSubject.next(profile);
         localStorage.setItem('userProfile', JSON.stringify(profile));
       }),
-      catchError(this.handleError)
+      catchError((error: HttpErrorResponse) => {
+        console.error('📁 UserService: Refresh profile error:', error);
+
+        if (error.status === 401) {
+          // Session expired - clear all auth data
+          this.clearProfile();
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('userProfile');
+        }
+
+        return this.handleError(error);
+      })
     );
   }
 
-// Update profile method with better error handling
+  // Update profile method with better error handling
   updateProfile(profile: Partial<UserProfile>): Observable<UserProfile> {
     console.log('🔄 UserService: Updating profile with data:', profile);
 
@@ -169,7 +203,7 @@ export class UserService {
               if (currentUser) {
                 try {
                   const user = JSON.parse(currentUser);
-                  const updatedUser = { ...user, ...profile };
+                  const updatedUser = {...user, ...profile};
                   localStorage.setItem('currentUser', JSON.stringify(updatedUser));
                 } catch (error) {
                   console.error('Error updating currentUser in localStorage:', error);
@@ -212,21 +246,59 @@ export class UserService {
     localStorage.removeItem('userProfile');
   }
 
+  // Get current user profile (synchronous)
+  getCurrentUserProfile(): UserProfile | null {
+    return this.userProfileSubject.value;
+  }
+
   // ===== CREDIT BALANCE METHODS =====
-  addBalance(amount: number): Observable<AddBalanceResponse> {
-    return this.http.post<AddBalanceResponse>(`${this.apiUrl}/changeBalance`, {credit: amount}).pipe(
-      tap(response => {
-        if (response.success) {
-          // Update the local user profile with new balance
-          const currentProfile = this.getCurrentUserProfile();
-          if (currentProfile) {
-            const updatedProfile = {...currentProfile, creditBalance: response.newBalance};
-            this.userProfileSubject.next(updatedProfile);
-            localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
+  addBalance(newTotalBalance: number): Observable<UserProfile> {
+    console.log('💳 UserService: Updating balance to new total via real API:', newTotalBalance);
+
+    return this.http.patch<UserProfile>(`${this.apiUrl}/change-balance`, {
+      balance: newTotalBalance // Send the new total balance to backend
+    }, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).pipe(
+      tap(updatedUserProfile => {
+        console.log('💳 UserService: Balance updated successfully:', updatedUserProfile);
+
+        // Update the BehaviorSubject with the new profile data from backend
+        this.userProfileSubject.next(updatedUserProfile);
+
+        // Update localStorage with the new profile
+        localStorage.setItem('userProfile', JSON.stringify(updatedUserProfile));
+
+        // Also update currentUser in localStorage if it exists
+        const currentUser = localStorage.getItem('currentUser');
+        if (currentUser) {
+          try {
+            const user = JSON.parse(currentUser);
+            const updatedUser = { ...user, creditBalance: updatedUserProfile.creditBalance };
+            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+          } catch (error) {
+            console.error('Error updating currentUser in localStorage:', error);
           }
         }
       }),
-      catchError(this.handleError)
+      catchError((error: HttpErrorResponse) => {
+        console.error('💳 UserService: Add balance error:', error);
+
+        let errorMessage = 'Failed to add balance';
+
+        if (error.status === 400) {
+          errorMessage = error.error || 'Invalid amount';
+        } else if (error.status === 401) {
+          errorMessage = 'User not authenticated';
+        } else if (error.error && typeof error.error === 'string') {
+          errorMessage = error.error;
+        }
+
+        return throwError(() => new Error(errorMessage));
+      })
     );
   }
 
@@ -350,27 +422,89 @@ export class UserService {
 
   // ===== PASSWORD METHODS =====
   validateCurrentPassword(password: string): Observable<ValidationResult> {
-    return this.getMockValidateCurrentPassword(password);
-  }
-
-  private getMockValidateCurrentPassword(password: string): Observable<ValidationResult> {
     if (!password || password.trim() === '') {
       return of({valid: false, message: '❌ Current password is required'});
     }
+    return of({valid: true, message: '✅ Valid'}).pipe(delay(200));
+  }
 
-    return of({valid: true, message: '✅ Password is valid'}).pipe(delay(400));
+  validateNewPassword(password: string): Observable<ValidationResult> {
+    if (!password || password.trim() === '') {
+      return of({valid: false, message: '❌ New password is required'});
+    }
+
+    if (password.length < 8) {
+      return of({valid: false, message: '❌ Password must be at least 8 characters'});
+    }
+
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (!hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialChar) {
+      return of({
+        valid: false,
+        message: '❌ Password must contain uppercase, lowercase, number, and special character'
+      });
+    }
+
+    return of({valid: true, message: '✅ Strong password'}).pipe(delay(300));
+  }
+
+  validateConfirmPassword(newPassword: string, confirmPassword: string): Observable<ValidationResult> {
+    if (!confirmPassword || confirmPassword.trim() === '') {
+      return of({valid: false, message: '❌ Confirm password is required'});
+    }
+
+    if (newPassword !== confirmPassword) {
+      return of({valid: false, message: '❌ Passwords do not match'});
+    }
+
+    return of({valid: true, message: '✅ Passwords match'}).pipe(delay(150));
   }
 
   changePassword(oldPassword: string, newPassword: string): Observable<PasswordChangeResponse> {
-    return this.http.post<PasswordChangeResponse>(`${this.apiUrl}/change-password`, {
+    return this.http.patch(`${this.apiUrl}/change-password`, {
       oldPassword,
       newPassword
-    }).pipe(catchError(this.handleError));
-  }
+    }, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      observe: 'response',
+      responseType: 'text'
+    }).pipe(
+      map(response => {
+        if (response.status === 200 && response.body?.includes('successfully')) {
+          return {
+            success: true,
+            message: 'Password changed successfully'
+          };
+        } else {
+          throw new Error(response.body || 'Failed to change password');
+        }
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('🔐 UserService: Change password error:', error);
 
-  // ===== UTILITY METHODS =====
-  getCurrentUserProfile(): UserProfile | null {
-    return this.userProfileSubject.value;
+        let message = 'Failed to change password';
+
+        if (error.status === 400) {
+          message = error.error || 'Invalid current password';
+        } else if (error.status === 401) {
+          message = 'User not authenticated';
+        } else if (error.error && typeof error.error === 'string') {
+          message = error.error;
+        }
+
+        return throwError(() => ({
+          success: false,
+          message: message
+        }));
+      })
+    );
   }
 
   // Error handling
@@ -382,23 +516,25 @@ export class UserService {
     if (error.error instanceof ErrorEvent) {
       errorMessage = error.error.message;
     } else {
-      errorMessage = error.error?.message || `Server error: ${error.status}`;
+      switch (error.status) {
+        case 401:
+          errorMessage = 'Authentication required. Please log in again.';
+          break;
+        case 403:
+          errorMessage = 'Access denied.';
+          break;
+        case 404:
+          errorMessage = 'User profile not found.';
+          break;
+        case 500:
+          errorMessage = 'Server error. Please try again later.';
+          break;
+        default:
+          errorMessage = error.error?.message || `Server error: ${error.status}`;
+          break;
+      }
     }
 
     return throwError(() => new Error(errorMessage));
-  }
-
-  private handleValidationError(error: HttpErrorResponse): Observable<ValidationResult> {
-    console.error('Validation error:', error);
-
-    let message = 'Validation failed';
-
-    if (error.error instanceof ErrorEvent) {
-      message = error.error.message;
-    } else {
-      message = error.error?.message || 'Server validation error';
-    }
-
-    return of({valid: false, message: `❌ ${message}`});
   }
 }
