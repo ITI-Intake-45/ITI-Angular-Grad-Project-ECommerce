@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable, Injector } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Router } from '@angular/router';
-import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { switchMap, tap, catchError } from 'rxjs/operators';
 import { CartService } from './cart';
 
@@ -14,9 +14,10 @@ export interface LoginRequest {
 export interface RegisterRequest {
   name: string;
   email: string;
+  phone: string;
+  address: string;
+  creditBalance: number;
   password: string;
-  phone?: string;
-  address?: string;
 }
 
 export interface UserLoginDto {
@@ -156,8 +157,27 @@ login(credentials: LoginRequest) {
     return null;
   }
 
-  register(userData: RegisterRequest): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/register`, userData);
+  register(newUser: RegisterRequest) {
+    console.log('📝 AuthService: Starting registration process...');
+
+    this.http.post<UserLoginDto>(this.baseUrl + "/register", newUser)
+      .subscribe({
+        next: (response) => {
+          console.log('📝 AuthService: Registration successful:', response);
+
+          alert("🎉 Welcome! Your account has been created.");
+          console.log('📝 AuthService: Navigating to home...');
+
+        },
+        error: (error) => {
+          console.error('📝 AuthService: Registration error:', error);
+          if (error.status === 409) {
+            alert('❌ Email or phone number already in use.');
+          } else {
+            alert('⚠️ Something went wrong. Please try again later.');
+          }
+        }
+      });
   }
 
   logout(): void {
@@ -222,18 +242,22 @@ login(credentials: LoginRequest) {
     this.currentUserSubject.next(null);
   }
 
-  forgotPassword(email: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/forgot-password`, { email });
+
+  forgotPassword(email: string): Observable<string> {
+    return this.http.post(`${this.baseUrl}/forgot-password`, { email }, { responseType: 'text' });
   }
 
-  resetPassword(token: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/reset-password`, { token, password });
+
+
+  verifyOtp(email: string, otp: string): Observable<string> {
+
+    return this.http.post(`${this.baseUrl}/verify-otp`, { email, otp }, { responseType: 'text' });
   }
 
-  verifyOtp(otp: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/verify-otp`, { otp });
-  }
 
+  resetPassword(email: string, password: string): Observable<string> {
+    return this.http.post(`${this.baseUrl}/reset-password`, { email, password }, { responseType: 'text' });
+  }
   isAuthenticated(): boolean {
     const user = localStorage.getItem('currentUser');
     const authToken = localStorage.getItem('authToken');
