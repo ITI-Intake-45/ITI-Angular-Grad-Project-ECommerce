@@ -62,8 +62,11 @@ export class OrderService {
     });
   }
 
-  updateOrderStatus(orderId: number, status: OrderStatus): Observable<Order> {
-    return this.http.patch<Order>(`${this.apiUrl}/${orderId}/status`, { status }, { withCredentials: true });
+  acceptOrder(orderId: number): Observable<string> {
+    return this.http.put<string>(`${this.apiUrl}/${orderId}/accept`, null, {
+      withCredentials: true,
+      responseType: 'text' as 'json' // Backend returns string response
+    });
   }
 
   cancelOrder(orderId: number): Observable<string> {

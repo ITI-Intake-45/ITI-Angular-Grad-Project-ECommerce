@@ -264,6 +264,23 @@ export class OrderList implements OnInit {
     }
   }
 
+    // Cancel an order
+  acceptOrder(orderId: number, event: Event): void {
+    event.stopPropagation(); // Prevent triggering other events
+    if (confirm('Are you sure you want to accept this order?')) {
+      this.orderService.acceptOrder(orderId).subscribe({
+        next: () => {
+          alert('Order accepted successfully.');
+          this.loadOrders(); // Refresh orders after cancellation
+        },
+        error: (err) => {
+          console.error('Error accepting order:', err);
+          alert('Failed to accept the order. Please try again.');
+        }
+      });
+    }
+  }
+
   // Display order item count
   getItemCount(order: Order): number {
     return order.items.reduce((count, item) => count + item.quantity, 0);
