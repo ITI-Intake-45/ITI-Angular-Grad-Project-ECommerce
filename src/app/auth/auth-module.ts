@@ -8,6 +8,8 @@ import { ForgotPassword } from './forgot-password/forgot-password';
 import { ResetPassword } from './reset-password/reset-password';
 import { VerifyOtp } from './verify-otp/verify-otp';
 import {LayoutModule} from '../layout/layout-module';
+import { FormsModule } from '@angular/forms';
+
 
 @NgModule({
   declarations: [
@@ -20,7 +22,8 @@ import {LayoutModule} from '../layout/layout-module';
   imports: [
     SharedModule,
     AuthRoutingModule,
-    LayoutModule
+    LayoutModule,
+    FormsModule
   ]
   ,
   exports: [
