@@ -78,9 +78,9 @@
                 <span>{{ item.productName }}</span>
               </div>
             </td>
-            <td>${{ item.price.toFixed(2) }}</td>
+            <td>${{item.itemPrice.toFixed(2)}}</td>
             <td>{{ item.quantity }}</td>
-            <td class="text-end">${{ item.subtotal.toFixed(2) }}</td>
+            <td class="text-end">${{ (item.itemPrice * item.quantity).toFixed(2) }}</td>
           </tr>
           </tbody>
           <tfoot>

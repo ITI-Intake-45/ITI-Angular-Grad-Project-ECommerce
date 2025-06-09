@@ -14,7 +14,7 @@ export class OrderDetails implements OnInit {
   order: Order | null = null;
   loading = true;
   error = '';
-  OrderStatus = OrderStatus; // Enum for status mapping
+  OrderStatus = OrderStatus;
 
   constructor(
     private route: ActivatedRoute,
@@ -30,7 +30,6 @@ export class OrderDetails implements OnInit {
   private loadOrderDetails(): void {
     this.loading = true;
 
-    // Fetch user profile from user service
     this.userService.userProfile$.subscribe({
       next: (profile) => {
         if (!profile?.userId) {
@@ -39,7 +38,6 @@ export class OrderDetails implements OnInit {
           return;
         }
 
-        // Get orderId from route parameters
         const orderId = this.getOrderIdFromRoute();
         if (!orderId) {
           this.error = 'Invalid order ID';
@@ -47,9 +45,12 @@ export class OrderDetails implements OnInit {
           return;
         }
 
-        // Fetch order details using OrderService
         this.orderService.getOrderDetails(profile.userId, orderId).subscribe({
           next: (order) => {
+            console.log(order);
+            order.items.forEach(element => {
+              console.log(element);
+            });
             this.order = order;
             this.loading = false;
           },
@@ -89,6 +90,11 @@ export class OrderDetails implements OnInit {
           this.order.status = OrderStatus.CANCELLED;
         }
         alert('Order cancelled successfully.');
+        
+        // Navigate back to orders list with a flag to refresh statistics
+        this.router.navigate(['user/orders'], { 
+          queryParams: { refreshStats: 'true' }
+        });
       },
       error: (err) => {
         console.error('Error cancelling order:', err);
@@ -96,8 +102,6 @@ export class OrderDetails implements OnInit {
       }
     });
   }
-
-
 
   getStatusClass(status: OrderStatus): string {
     switch (status) {

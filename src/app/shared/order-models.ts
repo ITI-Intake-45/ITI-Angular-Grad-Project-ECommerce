@@ -12,7 +12,7 @@ export interface OrderItem {
   // Update to match your backend OrderItemDto structure
   productId: number;
   productName: string;
-  price: number;
+  itemPrice: number;
   quantity: number;
   subtotal: number;
   productImage?: string;
