@@ -15,7 +15,7 @@ export class AuthGuard implements CanActivate {
     private authService: AuthService,
     private router: Router,
     private http: HttpClient
-  ) {}
+  ) { }
 
   canActivate(): Observable<boolean> | boolean {
     console.log('🔒 AuthGuard: canActivate called');
@@ -27,6 +27,7 @@ export class AuthGuard implements CanActivate {
     if (!isLocallyAuthenticated) {
       console.log('❌ AuthGuard: Not locally authenticated, redirecting to login');
       this.router.navigate(['/auth/login']);
+      alert("wrong in is locallly");
       return false;
     }
 

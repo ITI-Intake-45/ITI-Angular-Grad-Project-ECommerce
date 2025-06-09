@@ -33,8 +33,10 @@ label {
 .form-control {
     width: 100%;
     padding: 10px;
-    border: 1px solid #fc5c03;
-    border-radius: 4px;
+    /*border: 1px solid #fc5c03;*/
+  border: #f39c12;
+
+  border-radius: 4px;
 }
 
 .valid-msg {
@@ -45,9 +47,11 @@ label {
 
 .login-btn {
     background-color: white;
-    border: 2px solid #fc5c03;
-    color: #fc5c03;
-    padding: 10px 20px;
+    /*border: 2px solid #fc5c03;*/
+    /*color: #fc5c03;*/
+    border:2px solid  #f39c12;
+  color: #f39c12;
+  padding: 10px 20px;
     font-weight: bold;
     width: 100%;
     cursor: pointer;
@@ -55,7 +59,8 @@ label {
 }
 
 .login-btn:hover {
-    background-color: #fc5c03;
+    /*background-color: #fc5c03;*/
+    background-color: #f39c12;
     color: white;
 }
 
@@ -65,7 +70,8 @@ label {
 }
 
 .extra-links a {
-    color: #fc5c03;
+    /*color: #fc5c03;*/
+    color: #f39c12;
     font-weight: bold;
     text-decoration: none;
 }
@@ -85,9 +91,12 @@ label {
 }
 
 .create-account-btn {
-    background-color: white;
-    border: 2px solid #fc5c03;
-    color: #fc5c03;
+    /*background-color: white;*/
+    /*border: 2px solid #fc5c03;*/
+  background-color: white;
+    border: 2px solid #f39c12;
+    /*color: #fc5c03;*/
+    color: #f39c12;
     padding: 10px 20px;
     font-weight: bold;
     cursor: pointer;
@@ -96,6 +105,7 @@ label {
 }
 
 .create-account-btn:hover {
-    background-color: #fc5c03;
+    /*background-color: #fc5c03;*/
+  background-color: #f39c12;
     color: white;
 }

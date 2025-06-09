@@ -7,6 +7,9 @@ import { Register } from './register/register';
 import { ForgotPassword } from './forgot-password/forgot-password';
 import { ResetPassword } from './reset-password/reset-password';
 import { VerifyOtp } from './verify-otp/verify-otp';
+import {LayoutModule} from '../layout/layout-module';
+import { FormsModule } from '@angular/forms';
+
 
 @NgModule({
   declarations: [
@@ -18,7 +21,9 @@ import { VerifyOtp } from './verify-otp/verify-otp';
   ],
   imports: [
     SharedModule,
-    AuthRoutingModule
+    AuthRoutingModule,
+    LayoutModule,
+    FormsModule
   ]
   ,
   exports: [

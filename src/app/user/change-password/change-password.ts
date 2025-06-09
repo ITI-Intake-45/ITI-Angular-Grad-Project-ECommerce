@@ -57,9 +57,9 @@ export class ChangePassword implements OnInit, OnDestroy {
   private setupValidation(): void {
     // Current password validation
     const currentPasswordSub = this.passwordForm.get('currentPassword')?.valueChanges
-      .pipe(debounceTime(500), distinctUntilChanged())
+      .pipe(debounceTime(800), distinctUntilChanged())
       .subscribe(value => {
-        if (value) {
+        if (value && value.trim() !== '') {
           this.validateCurrentPassword(value);
         } else {
           this.currentPasswordStatus = '';
@@ -87,19 +87,43 @@ export class ChangePassword implements OnInit, OnDestroy {
   }
 
   private validateCurrentPassword(password: string): void {
-    // For now, we'll use a simple validation since we don't have the validateCurrentPassword method in UserService
-    // You can extend the UserService to include this method later
-    if (password.length < 6) {
-      this.currentPasswordStatus = '❌ Password must be at least 6 characters';
-    } else {
-      this.currentPasswordStatus = '✅ Password format is valid';
+    if (!password || password.trim() === '') {
+      this.currentPasswordStatus = '';
+      return;
     }
+
+    // Set loading state
+    this.currentPasswordStatus = '⏳ Validating current password...';
+
+    // Use the real API validation
+    const validationSub = this.userService.validateCurrentPassword(password)
+      .subscribe({
+        next: (result) => {
+          this.currentPasswordStatus = result.message;
+          console.log('🔐 Current password validation result:', result);
+
+          // If password is valid, also check if new password is different
+          if (result.valid) {
+            const newPassword = this.passwordForm.get('newPassword')?.value;
+            if (newPassword && newPassword === password) {
+              this.validateNewPassword(newPassword); // Re-validate new password
+            }
+          }
+        },
+        error: (error) => {
+          console.error('🔐 Current password validation error:', error);
+          this.currentPasswordStatus = '❌ Failed to validate password';
+        }
+      });
+
+    this.subscriptions.push(validationSub);
   }
 
   private validateNewPassword(password: string): void {
     if (!password) {
       this.passwordStrength = 0;
       this.newPasswordStatus = '';
+      this.resetPasswordRequirements();
       return;
     }
 
@@ -172,7 +196,7 @@ export class ChangePassword implements OnInit, OnDestroy {
   }
 
   getStrengthColor(): string {
-    const colors = ['#ff4d4d', '#ffcc00', '#9bcd9b', '#46cc46'];
+    const colors = ['#ff4d4d', '#ff8c00', '#ffd700', '#32cd32'];
     return colors[this.passwordStrength - 1] || '#ddd';
   }
 
@@ -181,13 +205,52 @@ export class ChangePassword implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
+    // Clear any previous form status
+    this.formStatus = '';
+    this.formStatusType = '';
+
+    // Check if current password validation is complete and valid
+    if (this.currentPasswordStatus.includes('❌')) {
+      this.formStatus = '❌ Current password is incorrect';
+      this.formStatusType = 'error';
+      return;
+    }
+
+    if (this.currentPasswordStatus.includes('⏳')) {
+      this.formStatus = '❌ Please wait for current password validation to complete';
+      this.formStatusType = 'error';
+      return;
+    }
+
+    if (!this.currentPasswordStatus.includes('✅')) {
+      this.formStatus = '❌ Please enter your current password';
+      this.formStatusType = 'error';
+      return;
+    }
+
+    // Check if new password is strong enough
+    if (this.passwordStrength < 4) {
+      this.formStatus = '❌ New password must meet all requirements';
+      this.formStatusType = 'error';
+      return;
+    }
+
+    // Check if passwords match
+    if (!this.confirmPasswordStatus.includes('✅')) {
+      this.formStatus = '❌ Passwords do not match';
+      this.formStatusType = 'error';
+      return;
+    }
+
     if (this.passwordForm.invalid || this.isSubmitting) {
       this.markFormGroupTouched();
+      this.formStatus = '❌ Please fix all errors before submitting';
+      this.formStatusType = 'error';
       return;
     }
 
     this.isSubmitting = true;
-    this.formStatus = '';
+    this.formStatus = '⏳ Changing password...';
     this.formStatusType = '';
 
     const { currentPassword, newPassword } = this.passwordForm.value;
@@ -195,15 +258,31 @@ export class ChangePassword implements OnInit, OnDestroy {
     const changePasswordSub = this.userService.changePassword(currentPassword, newPassword)
       .subscribe({
         next: (response) => {
+          console.log('✅ Password changed successfully:', response);
           this.formStatus = '✅ Password changed successfully!';
           this.formStatusType = 'success';
           this.passwordForm.reset();
           this.resetValidationStatus();
           this.isSubmitting = false;
+
+          // Auto-hide success message after 5 seconds
+          setTimeout(() => {
+            this.formStatus = '';
+            this.formStatusType = '';
+          }, 5000);
         },
         error: (error) => {
-          console.error('Password change error:', error);
-          this.formStatus = '❌ Failed to change password. Please try again.';
+          console.error('❌ Password change error:', error);
+
+          let errorMessage = '❌ Failed to change password. Please try again.';
+
+          if (error.message) {
+            errorMessage = `❌ ${error.message}`;
+          } else if (typeof error === 'string') {
+            errorMessage = `❌ ${error}`;
+          }
+
+          this.formStatus = errorMessage;
           this.formStatusType = 'error';
           this.isSubmitting = false;
         }
@@ -224,6 +303,10 @@ export class ChangePassword implements OnInit, OnDestroy {
     this.newPasswordStatus = '';
     this.confirmPasswordStatus = '';
     this.passwordStrength = 0;
+    this.resetPasswordRequirements();
+  }
+
+  private resetPasswordRequirements(): void {
     this.passwordRequirements = {
       minLength: false,
       hasUppercase: false,
@@ -235,5 +318,43 @@ export class ChangePassword implements OnInit, OnDestroy {
   isFieldInvalid(fieldName: string): boolean {
     const field = this.passwordForm.get(fieldName);
     return !!(field?.invalid && field?.touched);
+  }
+
+  // Helper method to check if form can be submitted
+  canSubmit(): boolean {
+    return !this.isSubmitting &&
+      this.currentPasswordStatus.includes('✅') &&
+      this.passwordStrength === 4 &&
+      this.confirmPasswordStatus.includes('✅') &&
+      this.passwordForm.valid;
+  }
+
+  // Helper methods for template
+  isCurrentPasswordValid(): boolean {
+    return this.currentPasswordStatus.includes('✅');
+  }
+
+  isCurrentPasswordValidating(): boolean {
+    return this.currentPasswordStatus.includes('⏳');
+  }
+
+  isCurrentPasswordInvalid(): boolean {
+    return this.currentPasswordStatus.includes('❌');
+  }
+
+  isNewPasswordValid(): boolean {
+    return this.newPasswordStatus.includes('✅');
+  }
+
+  isNewPasswordInvalid(): boolean {
+    return this.newPasswordStatus.includes('❌');
+  }
+
+  isConfirmPasswordValid(): boolean {
+    return this.confirmPasswordStatus.includes('✅');
+  }
+
+  isConfirmPasswordInvalid(): boolean {
+    return this.confirmPasswordStatus.includes('❌');
   }
 }

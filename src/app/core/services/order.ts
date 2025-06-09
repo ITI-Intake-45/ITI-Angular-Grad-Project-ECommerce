@@ -1,8 +1,8 @@
-import { HttpClient, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, throwError } from "rxjs";
 import {CreateOrderRequest, Order, OrderStatistics, OrderStatus, Page} from "../../shared/order-models";
-import {map} from 'rxjs/operators';
+import {catchError, map} from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
@@ -10,8 +10,14 @@ export class OrderService {
 
   constructor(private http: HttpClient) {}
 
-  createOrder(orderData: CreateOrderRequest): Observable<Order> {
-    return this.http.post<Order>(this.apiUrl, orderData);
+  // Create/Place order
+  createOrder(userId: number): Observable<string> {
+    return this.http.post(`${this.apiUrl}/${userId}`, {}, {
+      withCredentials: true,
+      responseType: 'text'
+    }).pipe(
+      catchError(this.handleError)
+    );
   }
 
   getUserOrders(userId: number, page?: number, size?: number): Observable<Page<Order>> {
@@ -92,9 +98,47 @@ export class OrderService {
         case OrderStatus.CANCELLED:
           stats.cancelled++;
           break;
+
+        default:
+          // Don't count unknown statuses in any category
+          break;
       }
     });
 
+    console.log('📊 OrderService: Final statistics:', stats);
     return stats;
+  }
+
+  // Error handling
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    console.error('📦 OrderService error:', error);
+
+    let errorMessage = 'An unexpected error occurred';
+
+    if (error.error instanceof ErrorEvent) {
+      // Client-side error
+      errorMessage = error.error.message;
+    } else {
+      // Server-side error
+      switch (error.status) {
+        case 401:
+          errorMessage = 'Authentication required. Please log in again.';
+          break;
+        case 403:
+          errorMessage = 'Access denied. You don\'t have permission to perform this action.';
+          break;
+        case 404:
+          errorMessage = 'Orders not found.';
+          break;
+        case 500:
+          errorMessage = 'Server error. Please try again later.';
+          break;
+        default:
+          errorMessage = error.error?.message || `Server error: ${error.status}`;
+          break;
+      }
+    }
+
+    return throwError(() => new Error(errorMessage));
   }
 }
