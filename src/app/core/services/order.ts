@@ -12,13 +12,17 @@ export class OrderService {
 
   // Create/Place order
   createOrder(userId: number): Observable<string> {
-    return this.http.post(`${this.apiUrl}/${userId}`, {}, {
-      withCredentials: true,
-      responseType: 'text'
-    }).pipe(
-      catchError(this.handleError)
-    );
+    return this.http.post<string>(`${this.apiUrl}/${userId}`, {}, {
+    withCredentials: true,
+    responseType: 'text' as 'json'
+  }).pipe(
+    catchError(this.handleBackendError)
+  );
   }
+  private handleBackendError(error: HttpErrorResponse): Observable<never> {
+  console.error('Backend error:', error.error); // Will print the string message
+  return throwError(() => new Error(error.error || 'Something went wrong'));
+}
 
   getUserOrders(userId: number, page?: number, size?: number): Observable<Page<Order>> {
     let params = new HttpParams();
