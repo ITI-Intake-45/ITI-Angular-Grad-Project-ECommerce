@@ -50,7 +50,7 @@ export class Cart implements OnInit, OnDestroy {
     if (!this.cartService.isUserAuthenticated()) {
       this.loading = false;
       
-      this.router.navigate(['/auth/login'], { queryParams: { returnUrl: '/cart/checkout' } });
+      this.router.navigate(['/auth/login']);
     } else {
       this.cartService.saveCartToDatabase().subscribe({
         next: () => {

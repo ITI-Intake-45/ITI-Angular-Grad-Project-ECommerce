@@ -27,7 +27,7 @@ export class AuthGuard implements CanActivate {
     if (!isLocallyAuthenticated) {
       console.log('❌ AuthGuard: Not locally authenticated, redirecting to login');
       this.router.navigate(['/auth/login']);
-      alert("wrong in is locallly");
+      alert("Login to procceed");
       return false;
     }
 
