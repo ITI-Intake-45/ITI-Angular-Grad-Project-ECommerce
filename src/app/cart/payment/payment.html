@@ -1,1 +1,64 @@
-<p>payment works!</p>
+<div>
+  <form #paymentForm="ngForm" (ngSubmit)="onSubmit()" class="needs-validation" novalidate>
+    <div class="mb-3">
+      <label for="cardNumber" class="form-label">Card Number</label>
+      <input
+        type="text"
+        class="form-control"
+        id="cardNumber"
+        name="cardNumber"
+        [(ngModel)]="paymentDetails.cardNumber"
+        required
+        pattern="\d{16}"
+        placeholder="1234 5678 9012 3456"
+      >
+      <div *ngIf="paymentForm.controls['cardNumber']?.invalid && paymentForm.controls['cardNumber']?.touched"
+           class="invalid-feedback">
+        Please enter a valid 16-digit card number.
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label for="expiry" class="form-label">Expiry Date</label>
+        <input
+          type="text"
+          class="form-control"
+          id="expiry"
+          name="expiry"
+          [(ngModel)]="paymentDetails.expiry"
+          required
+          pattern="\d{2}/\d{2}"
+          placeholder="MM/YY"
+        >
+        <div *ngIf="paymentForm.controls['expiry']?.invalid && paymentForm.controls['expiry']?.touched"
+             class="invalid-feedback">
+          Please enter a valid expiry date (MM/YY).
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label for="cvv" class="form-label">CVV</label>
+        <input
+          type="text"
+          class="form-control"
+          id="cvv"
+          name="cvv"
+          [(ngModel)]="paymentDetails.cvv"
+          required
+          pattern="\d{3}"
+          placeholder="123"
+        >
+        <div *ngIf="paymentForm.controls['cvv']?.invalid && paymentForm.controls['cvv']?.touched"
+             class="invalid-feedback">
+          Please enter a valid 3-digit CVV.
+        </div>
+      </div>
+    </div>
+    <button
+      type="submit"
+      class="btn btn-primary w-100 mt-3"
+      [disabled]="isProcessing || paymentForm.invalid"
+    >
+      {{ isProcessing ? 'Processing...' : 'Complete Payment' }}
+    </button>
+  </form>
+</div>

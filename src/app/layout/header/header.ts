@@ -19,7 +19,7 @@ export class Header implements OnInit, OnDestroy {
   mainCategories: ProductCategory[] = [];
   additionalCategories: ProductCategory[] = [];
   cartItemCount: number = 0;
-  searchQuery: string = ''; // Add this property to store search input
+  searchQuery: string = ''; //  to store search input
 
   @ViewChild('searchInput') searchInput!: ElementRef;
 
@@ -78,6 +78,15 @@ export class Header implements OnInit, OnDestroy {
     });
   }
 
+  // NEW METHOD: Navigate to products page with category filter
+  navigateToCategory(categoryName: string): void {
+    this.router.navigate(['/products'], {
+      queryParams: { category: categoryName }
+    });
+    this.closeDropdown(); // Close dropdown if open
+    this.closeMenu(); // Close mobile menu if open
+  }
+
   toggleMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;
   }
@@ -90,7 +99,6 @@ export class Header implements OnInit, OnDestroy {
     this.isDropdownOpen = false;
   }
 
-  // Update search query as user types
   onSearch(event: any): void {
     this.searchQuery = event.target.value;
   }

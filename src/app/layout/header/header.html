@@ -44,7 +44,6 @@
             </a>
           </li>
           <li class="nav-item" *ngIf="authService.isAuthenticated()">
-
             <a class="nav-link" (click)="logout()" style="cursor: pointer;">
               <i class="fas fa-sign-out-alt me-1"></i>Logout
             </a>
@@ -62,28 +61,34 @@
             <span class="nav-link">No Categories</span>
           </li>
 
+          <!-- UPDATED: Main categories with click handler instead of routerLink -->
           <li class="nav-item" *ngFor="let category of mainCategories">
-            <a class="nav-link" [routerLink]="['/products']"
-              routerLinkActive="active">
+            <a class="nav-link"
+               (click)="navigateToCategory(category.name)"
+               style="cursor: pointer;">
               {{ category.name }}
             </a>
           </li>
+
           <!-- Dropdown for additional categories -->
           <li class="nav-item dropdown" *ngIf="additionalCategories.length > 0">
             <a class="nav-link dropdown-toggle" href="#" (click)="toggleDropdown(); $event.preventDefault()"
-              [class.show]="isDropdownOpen">
+               [class.show]="isDropdownOpen">
               More+
             </a>
             <div class="dropdown-menu" [class.show]="isDropdownOpen">
-              <a class="dropdown-item" *ngFor="let category of additionalCategories" [routerLink]="['/products']"
-                (click)="closeDropdown()">
+              <!-- UPDATED: Additional categories with click handler -->
+              <a class="dropdown-item"
+                 *ngFor="let category of additionalCategories"
+                 (click)="navigateToCategory(category.name)"
+                 style="cursor: pointer;">
                 {{ category.name }}
               </a>
             </div>
-
           </li>
         </ul>
       </div>
+
       <!-- Search Bar (Center) -->
       <div class="col-md-4">
         <div class="search-container">
@@ -103,7 +108,6 @@
           </div>
         </div>
       </div>
-
 
       <!-- Icons (Right) -->
       <div class="col-md-4">
@@ -128,12 +132,19 @@
 
   <!-- Mobile menu toggle button -->
   <button class="navbar-toggler d-lg-none" type="button" (click)="toggleMenu()" [class.collapsed]="!isMenuOpen"
-    aria-expanded="false">
+          aria-expanded="false">
     <span class="navbar-toggler-icon"></span>
   </button>
 
   <!-- Mobile Navigation Menu -->
   <div class="mobile-nav" [class.show]="isMenuOpen">
-    <!-- Mobile menu content here -->
+    <!-- Mobile menu categories -->
+    <ul class="mobile-nav-list">
+      <li *ngFor="let category of categories">
+        <a (click)="navigateToCategory(category.name)" style="cursor: pointer;">
+          {{ category.name }}
+        </a>
+      </li>
+    </ul>
   </div>
 </header>
