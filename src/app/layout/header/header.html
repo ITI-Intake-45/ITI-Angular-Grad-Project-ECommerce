@@ -3,7 +3,7 @@
     <!-- Top Row -->
     <div class="row top-header">
       <!-- Logo and Brand (Left) -->
-      <div class="col-md-6">
+      <div class="col-md-6 col-12">
         <a class="navbar-brand" href="#" routerLink="/">
           <img src="assets/favicon.png" alt="Cuppot" class="logo-img">
           <span class="brand-text">Cuppot</span>
@@ -11,41 +11,41 @@
       </div>
 
       <!-- Top Right Navigation Links -->
-      <div class="col-md-6">
-        <ul class="navbar-nav right-nav d-flex flex-row ">
-          <li class="nav-item">
+      <div class="col-md-6 col-12">
+        <ul class="navbar-nav right-nav d-flex flex-row">
+          <li class="nav-item d-none d-md-inline-block">
             <a class="nav-link" routerLink="/about">
               <i class="fas fa-info-circle me-1"></i>About Us
             </a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item d-none d-md-inline-block">
             <a class="nav-link" routerLink="/faq">
               <i class="fas fa-question-circle me-1"></i>FAQ
             </a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item d-none d-md-inline-block">
             <a class="nav-link" routerLink="/contact">
               <i class="fas fa-envelope me-1"></i>Contact Us
             </a>
           </li>
           <li class="nav-item" *ngIf="!authService.isAuthenticated()">
             <a class="nav-link" routerLink="/auth/register">
-              <i class="fas fa-user-plus me-1"></i>Register
+              <i class="fas fa-user-plus me-1"></i><span class="d-none d-sm-inline">Register</span>
             </a>
           </li>
           <li class="nav-item" *ngIf="!authService.isAuthenticated()">
             <a class="nav-link" routerLink="/auth/login">
-              <i class="fas fa-sign-in-alt me-1"></i>Login
+              <i class="fas fa-sign-in-alt me-1"></i><span class="d-none d-sm-inline">Login</span>
             </a>
           </li>
           <li class="nav-item" *ngIf="authService.isAuthenticated()">
             <a class="nav-link" routerLink="user/profile">
-              <i class="fas fa-user-alt me-1"></i>Account
+              <i class="fas fa-user-alt me-1"></i><span class="d-none d-sm-inline">Account</span>
             </a>
           </li>
           <li class="nav-item" *ngIf="authService.isAuthenticated()">
             <a class="nav-link" (click)="logout()" style="cursor: pointer;">
-              <i class="fas fa-sign-out-alt me-1"></i>Logout
+              <i class="fas fa-sign-out-alt me-1"></i><span class="d-none d-sm-inline">Logout</span>
             </a>
           </li>
         </ul>
@@ -54,32 +54,34 @@
 
     <!-- Bottom Row -->
     <div class="row bottom-header">
-      <div class="col-md-4">
-        <ul class="navbar-nav main-nav d-flex flex-row">
+      <div class="col-lg-4 col-md-12">
+        <ul class="navbar-nav main-nav d-flex flex-row flex-wrap">
           <!-- Show message if no categories are available -->
           <li class="nav-item" *ngIf="categories.length === 0">
             <span class="nav-link">No Categories</span>
           </li>
 
-          <!-- UPDATED: Main categories with click handler instead of routerLink -->
-          <li class="nav-item" *ngFor="let category of mainCategories">
+          <!-- Display first 3 categories inline -->
+          <li class="nav-item" *ngFor="let category of getDisplayCategories(); let i = index">
             <a class="nav-link"
                (click)="navigateToCategory(category.name)"
+               [class.active]="isActiveCategory(category.name)"
                style="cursor: pointer;">
               {{ category.name }}
             </a>
           </li>
 
-          <!-- Dropdown for additional categories -->
-          <li class="nav-item dropdown" *ngIf="additionalCategories.length > 0">
-            <a class="nav-link dropdown-toggle" href="#" (click)="toggleDropdown(); $event.preventDefault()"
-               [class.show]="isDropdownOpen">
-              More+
+          <!-- Dropdown for additional categories (if more than 3) -->
+          <li class="nav-item dropdown" *ngIf="getExtraCategories().length > 0">
+            <a class="nav-link dropdown-toggle" href="#" 
+               (click)="toggleDropdown(); $event.preventDefault()"
+               [class.show]="isDropdownOpen"
+               style="cursor: pointer;">
+              More
             </a>
             <div class="dropdown-menu" [class.show]="isDropdownOpen">
-              <!-- UPDATED: Additional categories with click handler -->
               <a class="dropdown-item"
-                 *ngFor="let category of additionalCategories"
+                 *ngFor="let category of getExtraCategories()"
                  (click)="navigateToCategory(category.name)"
                  style="cursor: pointer;">
                 {{ category.name }}
@@ -90,7 +92,7 @@
       </div>
 
       <!-- Search Bar (Center) -->
-      <div class="col-md-4">
+      <div class="col-lg-4 col-md-6 col-12">
         <div class="search-container">
           <div class="input-group search-box">
             <input #searchInput
@@ -110,7 +112,7 @@
       </div>
 
       <!-- Icons (Right) -->
-      <div class="col-md-4">
+      <div class="col-lg-4 col-md-6 col-12">
         <ul class="navbar-nav icon-nav d-flex flex-row justify-content-end">
           <li class="nav-item">
             <a class="nav-link store-link" routerLink="/">
@@ -119,10 +121,10 @@
           </li>
 
           <!-- dynamic cart item count -->
-          <li class="nav-item" >
-            <a class="nav-link cart-link" routerLink="/cart" >
+          <li class="nav-item">
+            <a class="nav-link cart-link" routerLink="/cart">
               <i class="fas fa-shopping-bag"></i>
-              <span class="cart-badge">{{ cartItemCount }}</span>
+              <span class="cart-badge" *ngIf="cartItemCount > 0">{{ cartItemCount }}</span>
             </a>
           </li>
         </ul>
@@ -138,13 +140,46 @@
 
   <!-- Mobile Navigation Menu -->
   <div class="mobile-nav" [class.show]="isMenuOpen">
+    <!-- Mobile Auth Links -->
+    <div class="mobile-auth-section" *ngIf="!authService.isAuthenticated()">
+      <a class="mobile-auth-link" routerLink="/auth/login" (click)="closeMenu()">
+        <i class="fas fa-sign-in-alt me-2"></i>Login
+      </a>
+      <a class="mobile-auth-link" routerLink="/auth/register" (click)="closeMenu()">
+        <i class="fas fa-user-plus me-2"></i>Register
+      </a>
+    </div>
+    
+    <!-- Mobile User Links -->
+    <div class="mobile-auth-section" *ngIf="authService.isAuthenticated()">
+      <a class="mobile-auth-link" routerLink="/user/profile" (click)="closeMenu()">
+        <i class="fas fa-user-alt me-2"></i>Account
+      </a>
+      <a class="mobile-auth-link" (click)="logout(); closeMenu()" style="cursor: pointer;">
+        <i class="fas fa-sign-out-alt me-2"></i>Logout
+      </a>
+    </div>
+
     <!-- Mobile menu categories -->
     <ul class="mobile-nav-list">
       <li *ngFor="let category of categories">
-        <a (click)="navigateToCategory(category.name)" style="cursor: pointer;">
+        <a (click)="navigateToCategory(category.name); closeMenu()" style="cursor: pointer;">
           {{ category.name }}
         </a>
       </li>
     </ul>
+
+    <!-- Mobile Additional Links -->
+    <div class="mobile-additional-links">
+      <a class="mobile-link" routerLink="/about" (click)="closeMenu()">
+        <i class="fas fa-info-circle me-2"></i>About Us
+      </a>
+      <a class="mobile-link" routerLink="/faq" (click)="closeMenu()">
+        <i class="fas fa-question-circle me-2"></i>FAQ
+      </a>
+      <a class="mobile-link" routerLink="/contact" (click)="closeMenu()">
+        <i class="fas fa-envelope me-2"></i>Contact Us
+      </a>
+    </div>
   </div>
 </header>

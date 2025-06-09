@@ -1,5 +1,5 @@
 import {Component, OnInit, OnDestroy, ElementRef, ViewChild, Output, EventEmitter} from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 import { ProductService } from '../../core/services/product';
 import { CartService } from '../../core/services/cart';
@@ -16,23 +16,24 @@ export class Header implements OnInit, OnDestroy {
   isMenuOpen = false;
   isDropdownOpen = false;
   categories: ProductCategory[] = [];
-  mainCategories: ProductCategory[] = [];
-  additionalCategories: ProductCategory[] = [];
   cartItemCount: number = 0;
-  searchQuery: string = ''; //  to store search input
+  searchQuery: string = '';
+  currentCategory: string = '';
 
   @ViewChild('searchInput') searchInput!: ElementRef;
 
   private cartSubscription: Subscription | undefined;
+  private routeSubscription: Subscription | undefined;
 
-  // Names of main categories to display directly in the navbar
-  private mainCategoryNames: string[] = ['Beans', 'Mugs', 'Machines'];
+  // Maximum number of categories to display inline (the rest go to dropdown)
+  private readonly MAX_INLINE_CATEGORIES = 3;
 
   constructor(
     public authService: AuthService,
     private productService: ProductService,
     private cartService: CartService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
   }
 
@@ -44,12 +45,23 @@ export class Header implements OnInit, OnDestroy {
     this.cartSubscription = this.cartService.cart$.subscribe(() => {
       this.cartItemCount = this.cartService.getCartItemCount();
     });
+
+    // Subscribe to route changes to track current category
+    this.routeSubscription = this.router.events.subscribe(() => {
+      this.updateCurrentCategory();
+    });
+
+    // Update current category on init
+    this.updateCurrentCategory();
   }
 
   ngOnDestroy(): void {
-    // Clean up subscription to prevent memory leaks
+    // Clean up subscriptions to prevent memory leaks
     if (this.cartSubscription) {
       this.cartSubscription.unsubscribe();
+    }
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
     }
   }
 
@@ -57,34 +69,47 @@ export class Header implements OnInit, OnDestroy {
     this.productService.getCategories().subscribe({
       next: (data) => {
         this.categories = data;
-
-        // Split categories into main and additional
-        this.mainCategories = this.categories.filter(category =>
-          this.mainCategoryNames.includes(category.name)
-        );
-
-        // Get additional categories (not in main)
-        this.additionalCategories = this.categories.filter(category =>
-          !this.mainCategoryNames.includes(category.name)
-        );
       },
       error: (error) => {
         console.error('Error fetching categories:', error);
-        // Fallback to empty arrays if there's an error
         this.categories = [];
-        this.mainCategories = [];
-        this.additionalCategories = [];
       }
     });
   }
 
-  // NEW METHOD: Navigate to products page with category filter
+  // Get categories to display inline (first 3)
+  getDisplayCategories(): ProductCategory[] {
+    return this.categories.slice(0, this.MAX_INLINE_CATEGORIES);
+  }
+
+  // Get categories for dropdown (after first 3)
+  getExtraCategories(): ProductCategory[] {
+    return this.categories.slice(this.MAX_INLINE_CATEGORIES);
+  }
+
+  // Check if a category is currently active
+  isActiveCategory(categoryName: string): boolean {
+    return this.currentCategory === categoryName;
+  }
+
+  // Update current category based on route
+  private updateCurrentCategory(): void {
+    // Get the current route's query parameters
+    const snapshot = this.router.routerState.root.firstChild?.snapshot;
+    if (snapshot?.queryParams && snapshot.queryParams['category']) {
+      this.currentCategory = snapshot.queryParams['category'];
+    } else {
+      this.currentCategory = '';
+    }
+  }
+
+  // Navigate to products page with category filter
   navigateToCategory(categoryName: string): void {
     this.router.navigate(['/products'], {
       queryParams: { category: categoryName }
     });
-    this.closeDropdown(); // Close dropdown if open
-    this.closeMenu(); // Close mobile menu if open
+    this.closeDropdown();
+    this.closeMenu();
   }
 
   toggleMenu(): void {
@@ -137,5 +162,6 @@ export class Header implements OnInit, OnDestroy {
 
   logout(): void {
     this.authService.logout();
+    this.closeMenu();
   }
 }
