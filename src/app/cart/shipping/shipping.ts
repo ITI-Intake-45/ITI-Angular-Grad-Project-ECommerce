@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { UserProfile, UserService, ValidationResult } from '../../core/services/user';
 import { CartService } from '../../core/services/cart';
-import { catchError, of, tap } from 'rxjs';
+import { catchError, of, switchMap, tap } from 'rxjs';
 import { AuthService } from '../../core/services/auth';
 import { OrderService } from '../../core/services/order';
 import { Router } from '@angular/router';
@@ -57,51 +57,72 @@ export class Shipping implements OnInit {
   }
 
   onSubmit(): void {
-    if (!this.isAddressValid) {
-      alert('Please ensure a valid shipping address is set in your profile.');
-      return;
-    }
+  if (!this.isAddressValid) {
+    alert('Please ensure a valid shipping address is set in your profile.');
+    return;
+  }
 
-    const user = this.authService.getCurrentUser();
-    if (!user || !user.userId) {
-      console.error('Shipping: No user ID found');
-      alert('User not authenticated. Please log in again.');
-      this.router.navigate(['/auth/login']);
-      return;
-    }
+  const user = this.authService.getCurrentUser();
+  if (!user || !user.userId) {
+    console.error('Shipping: No user ID found');
+    alert('User not authenticated. Please log in again.');
+    this.router.navigate(['/auth/login']);
+    return;
+  }
 
-    this.isProcessing = true;
-    console.log('Shipping: Placing order...');
+  this.isProcessing = true;
+  console.log('Shipping: Starting order process for user:', user.userId, 'Cart:', this.cartService.getCurrentCart());
+  
 
-    this.orderService.createOrder(user.userId).subscribe({
-      next: (response) => {
-        console.log('Shipping: Order placed successfully:', response);
-        this.cartService.clearCart();
-        this.userService.refreshProfile().subscribe({
-          next: (profile) => this.creditBalance = profile.creditBalance,
-          error: (error) => console.error('Shipping: Error refreshing profile:', error)
-        });
-        this.isProcessing = false;
-        this.router.navigate(['/user/orders']);
-      },
-      error: (error) => {
-        console.error('Shipping: Error placing order:', error);
-        this.isProcessing = false;
-        let message = 'Failed to place order. Please try again.';
-        if (error.message.includes('Cart not found')) {
+  this.orderService.createOrder(user.userId).pipe(
+    tap(response => console.log('Shipping: Order created successfully:', response)),
+    switchMap(() => this.userService.refreshProfile().pipe(
+      tap(profile => console.log('Shipping: Profile refreshed, balance:', profile.creditBalance))
+    ))
+  ).subscribe({
+    next: (profile: UserProfile) => {
+      console.log('Shipping: Order and profile refresh completed');
+      this.creditBalance = profile.creditBalance;
+      this.cartService.clearCartAfterCheckout().subscribe({
+        next: () => {
+          console.log('Shipping: Cart cleared successfully, cart:', this.cartService.getCurrentCart());
+          this.isProcessing = false;
+          
+          alert("Order placed! ☕ Thank you for shopping with us.");
+          this.router.navigate(['/']);
+        },
+        error: (error) => {
+          console.error('Shipping: Error clearing cart:', error);
+          this.isProcessing = false;
+          console.log('Shipping: Cart after clear error:', this.cartService.getCurrentCart());
+          alert('Order placed, but failed to clear cart. Please check your cart.');
+          this.router.navigate(['/']);
+        }
+      });
+    },
+    error: (error) => {
+      console.error('Shipping: Error in order process:', error);
+      this.isProcessing = false;
+      console.log('Shipping: Cart preserved after error:', this.cartService.getCurrentCart());
+      let message = 'Failed to place order. Please try again.';
+      const backendError = error.message || error.error; // Handle text-based errors from OrderService
+      console.log('Shipping: Backend error:', backendError);
+      if (typeof backendError === 'string') {
+        if (backendError.includes('Cart not found')) {
           message = 'Cart not found. Please add items to your cart.';
-        } else if (error.message.includes('empty cart')) {
+        } else if (backendError.includes('empty cart')) {
           message = 'Your cart is empty. Please add items.';
-        } else if (error.message.includes('Insufficient credit balance')) {
+        } else if (backendError.includes('Insufficient credit balance')) {
           message = 'Insufficient credit balance. Please add funds.';
-        } else if (error.message.includes('Insufficient stock')) {
-          message = error.message;
-        } else if (error.message.includes('Id cannot be null')) {
+        } else if (backendError.includes('Insufficient stock')) {
+          message = backendError;
+        } else if (backendError.includes('Id cannot be null')) {
           message = 'Invalid user ID. Please log in again.';
         }
-        alert(message);
       }
-    });
-  }
+      alert(message);
+    }
+  });
+}
 
 }

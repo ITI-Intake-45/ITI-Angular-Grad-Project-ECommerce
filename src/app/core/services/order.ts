@@ -16,14 +16,18 @@ export class OrderService {
 
   // Create/Place order
   createOrder(userId: number): Observable<string> {
-    return this.http.post(`${this.apiUrl}/${userId}`, {}, {
+    return this.http.post<string>(`${this.apiUrl}/${userId}`, {}, {
       withCredentials: true,
-      responseType: 'text'
+      responseType: 'text' as 'json'
     }).pipe(
       tap(() => this.orderUpdatedSource.next()), // Emit event on order creation
-      catchError(this.handleError)
+      catchError(this.handlePlaceOrderError)
     );
   }
+  private handlePlaceOrderError(error: HttpErrorResponse): Observable<never> {
+  console.error('error:', error.error); 
+  return throwError(() => new Error(error.error || 'Something went wrong'));
+}
 
   getUserOrders(userId: number, page?: number, size?: number): Observable<Page<Order>> {
     let params = new HttpParams();

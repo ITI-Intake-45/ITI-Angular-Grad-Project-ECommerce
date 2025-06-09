@@ -253,6 +253,7 @@ export class CartService {
   clearCartAfterCheckout(): Observable<void> {
     if (!this.authService.isAuthenticated()) {
       this.clearCart();
+      console.log("clear cart..")
       return of(void 0);
     }
     return this.http.post<void>(`${this.API_BASE_URL}/clear`, {}, this.getHttpOptions()).pipe(
