@@ -421,12 +421,82 @@ export class UserService {
   }
 
   // ===== PASSWORD METHODS =====
+  // validateCurrentPassword(password: string): Observable<ValidationResult> {
+  //   if (!password || password.trim() === '') {
+  //     return of({valid: false, message: '❌ Current password is required'});
+  //   }
+  //   return of({valid: true, message: '✅ Valid'}).pipe(delay(200));
+  // }
+
   validateCurrentPassword(password: string): Observable<ValidationResult> {
-    if (!password || password.trim() === '') {
-      return of({valid: false, message: '❌ Current password is required'});
-    }
-    return of({valid: true, message: '✅ Valid'}).pipe(delay(200));
+    // Use the changePassword endpoint to validate current password
+    // by trying to change to the same password
+    return this.http.patch(`${this.apiUrl}/change-password`, {
+      oldPassword: password,
+      newPassword: password  // Using same password will trigger validation
+    }, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      observe: 'response',
+      responseType: 'text'
+    }).pipe(
+      map(response => {
+        // If we get here, the current password is correct
+        // Even if backend rejects same passwords, the current password was validated
+        return {
+          valid: true,
+          message: '✅ Current password is correct'
+        };
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('🔐 UserService: Validate current password error:', error);
+
+        if (error.status === 400) {
+          // If it's a 400 error, check the message
+          const errorMessage = error.error || '';
+
+          // If the error is about passwords being the same, current password is valid
+          if (errorMessage.toLowerCase().includes('same') ||
+            errorMessage.toLowerCase().includes('different') ||
+            errorMessage.toLowerCase().includes('must be different')) {
+            return of({
+              valid: true,
+              message: '✅ Current password is correct'
+            });
+          }
+
+          // If it's about invalid current password
+          if (errorMessage.toLowerCase().includes('invalid') ||
+            errorMessage.toLowerCase().includes('incorrect') ||
+            errorMessage.toLowerCase().includes('wrong')) {
+            return of({
+              valid: false,
+              message: '❌ Current password is incorrect'
+            });
+          }
+
+          // Default 400 error - likely invalid current password
+          return of({
+            valid: false,
+            message: '❌ Current password is incorrect'
+          });
+        } else if (error.status === 401) {
+          return of({
+            valid: false,
+            message: '❌ User not authenticated'
+          });
+        } else {
+          return of({
+            valid: false,
+            message: '❌ Failed to validate password'
+          });
+        }
+      })
+    );
   }
+
 
   validateNewPassword(password: string): Observable<ValidationResult> {
     if (!password || password.trim() === '') {

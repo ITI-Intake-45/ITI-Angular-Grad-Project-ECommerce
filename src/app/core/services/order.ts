@@ -1,26 +1,31 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, throwError } from "rxjs";
+import { Observable, throwError, Subject } from "rxjs";
 import {CreateOrderRequest, Order, OrderStatistics, OrderStatus, Page} from "../../shared/order-models";
-import {catchError, map} from 'rxjs/operators';
+import {catchError, map, tap} from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   private apiUrl = 'http://localhost:8080/api/v1/orders';
+  
+  // Subject to emit when orders are updated
+  private orderUpdatedSource = new Subject<void>();
+  public orderUpdated$ = this.orderUpdatedSource.asObservable();
 
   constructor(private http: HttpClient) {}
 
   // Create/Place order
   createOrder(userId: number): Observable<string> {
     return this.http.post<string>(`${this.apiUrl}/${userId}`, {}, {
-    withCredentials: true,
-    responseType: 'text' as 'json'
-  }).pipe(
-    catchError(this.handleBackendError)
-  );
+      withCredentials: true,
+      responseType: 'text' as 'json'
+    }).pipe(
+      tap(() => this.orderUpdatedSource.next()), // Emit event on order creation
+      catchError(this.handlePlaceOrderError)
+    );
   }
-  private handleBackendError(error: HttpErrorResponse): Observable<never> {
-  console.error('Backend error:', error.error); // Will print the string message
+  private handlePlaceOrderError(error: HttpErrorResponse): Observable<never> {
+  console.error('error:', error.error); 
   return throwError(() => new Error(error.error || 'Something went wrong'));
 }
 
@@ -38,7 +43,7 @@ export class OrderService {
 
     return this.http.get<Page<Order>>(`${this.apiUrl}/user/${userId}`, {
       params,
-      withCredentials: true // Add this for session-based auth
+      withCredentials: true
     });
   }
 
@@ -66,15 +71,22 @@ export class OrderService {
     });
   }
 
-  updateOrderStatus(orderId: number, status: OrderStatus): Observable<Order> {
-    return this.http.patch<Order>(`${this.apiUrl}/${orderId}/status`, { status }, { withCredentials: true });
+  acceptOrder(orderId: number): Observable<string> {
+    return this.http.put<string>(`${this.apiUrl}/${orderId}/accept`, null, {
+      withCredentials: true,
+      responseType: 'text' as 'json'
+    }).pipe(
+      tap(() => this.orderUpdatedSource.next()) // Emit event on order acceptance
+    );
   }
 
   cancelOrder(orderId: number): Observable<string> {
     return this.http.put<string>(`${this.apiUrl}/${orderId}/cancel`, null, {
       withCredentials: true,
-      responseType: 'text' as 'json' // Backend returns string response
-    });
+      responseType: 'text' as 'json'
+    }).pipe(
+      tap(() => this.orderUpdatedSource.next()) // Emit event on order cancellation
+    );
   }
 
   getUserOrderStatistics(userId: number): Observable<OrderStatistics> {
@@ -102,9 +114,7 @@ export class OrderService {
         case OrderStatus.CANCELLED:
           stats.cancelled++;
           break;
-
         default:
-          // Don't count unknown statuses in any category
           break;
       }
     });
@@ -113,17 +123,14 @@ export class OrderService {
     return stats;
   }
 
-  // Error handling
   private handleError(error: HttpErrorResponse): Observable<never> {
     console.error('📦 OrderService error:', error);
 
     let errorMessage = 'An unexpected error occurred';
 
     if (error.error instanceof ErrorEvent) {
-      // Client-side error
       errorMessage = error.error.message;
     } else {
-      // Server-side error
       switch (error.status) {
         case 401:
           errorMessage = 'Authentication required. Please log in again.';

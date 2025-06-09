@@ -44,13 +44,38 @@
           </div>
         </div>
 
-
-        <!-- Cancel Button -->
+        <!-- Action Buttons -->
         <div *ngIf="order.status === OrderStatus.PENDING"
-             class="d-flex justify-content-end">
-          <button class="btn btn-danger" (click)="cancelOrder()">
-            <i class="fas fa-times"></i> Cancel Order
+             class="d-flex justify-content-end gap-2">
+          <!-- Accept Button -->
+          <button class="btn btn-success" 
+                  (click)="acceptOrder()"
+                  [disabled]="updatingStatus">
+            <i class="fas fa-check"></i> 
+            <span *ngIf="!updatingStatus">Accept Order</span>
+            <span *ngIf="updatingStatus">Processing...</span>
           </button>
+          
+          <!-- Cancel Button -->
+          <button class="btn btn-danger" 
+                  (click)="cancelOrder()"
+                  [disabled]="updatingStatus">
+            <i class="fas fa-times"></i> 
+            <span *ngIf="!updatingStatus">Cancel Order</span>
+            <span *ngIf="updatingStatus">Processing...</span>
+          </button>
+        </div>
+
+        <!-- Status Message for Non-Pending Orders -->
+        <div *ngIf="order.status !== OrderStatus.PENDING" 
+             class="alert alert-info mt-3 mb-0">
+          <i class="fas fa-info-circle"></i>
+          <span *ngIf="order.status === OrderStatus.ACCEPTED">
+            This order has been accepted and is being processed.
+          </span>
+          <span *ngIf="order.status === OrderStatus.CANCELLED">
+            This order has been cancelled.
+          </span>
         </div>
       </div>
     </div>
@@ -74,13 +99,17 @@
           <tr *ngFor="let item of order.items">
             <td>
               <div class="d-flex align-items-center">
-                <img *ngIf="item.productImage" [src]="item.productImage" alt="{{ item.productName }}" class="img-thumbnail me-2">
+                <img *ngIf="item.productImage" 
+                     [src]="item.productImage" 
+                     alt="{{ item.productName }}" 
+                     class="img-thumbnail me-2"
+                     style="width: 50px; height: 50px; object-fit: cover;">
                 <span>{{ item.productName }}</span>
               </div>
             </td>
-            <td>${{ item.price.toFixed(2) }}</td>
+            <td>${{item.itemPrice.toFixed(2)}}</td>
             <td>{{ item.quantity }}</td>
-            <td class="text-end">${{ item.subtotal.toFixed(2) }}</td>
+            <td class="text-end">${{ (item.itemPrice * item.quantity).toFixed(2) }}</td>
           </tr>
           </tbody>
           <tfoot>
