@@ -49,6 +49,13 @@ export class OrdersStatistics implements OnInit, OnDestroy {
           this.loadStatistics();
         }
       });
+
+      this.orderService.orderUpdated$
+  .pipe(takeUntil(this.destroy$))
+  .subscribe(() => {
+    console.log('📊 OrdersStatistics: Refreshing statistics due to order update');
+    this.loadStatistics();
+  });
   }
 
   ngOnDestroy(): void {
