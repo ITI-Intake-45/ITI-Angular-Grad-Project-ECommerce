@@ -1,1 +1,41 @@
-<p>checkout works!</p>
+<div class="container py-5">
+  <nav aria-label="Checkout progress" class="mb-4">
+    <ol class="list-group list-group-horizontal-sm justify-content-center">
+      <li class="list-group-item border-0 d-flex align-items-center text-muted">
+        <span class="me-2">1.</span> Cart <span class="ms-2">→</span>
+      </li>
+      <li class="list-group-item border-0 d-flex align-items-center fw-bold text-primary">
+        <span class="me-2">2.</span> Checkout <span class="ms-2">→</span>
+      </li>
+      <li class="list-group-item border-0 d-flex align-items-center text-muted">
+        <span class="me-2">3.</span> Confirmation
+      </li>
+    </ol>
+  </nav>
+
+  <div *ngIf="isAuthenticated && !isCartEmpty; else notReady" class="row g-4">
+    <div class="col-lg-7">
+      <div class="card p-4">
+        <h2 class="card-title h5 fw-bold mb-3">Order Summary</h2>
+        <app-order-summary></app-order-summary>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="card p-4">
+        <h2 class="card-title h5 fw-bold mb-3">Payment</h2>
+        <app-payment (checkoutComplete)="onCheckoutComplete()"></app-payment>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #notReady>
+    <div class="alert alert-danger text-center" role="alert">
+      <p *ngIf="!isAuthenticated">
+        Please <a routerLink="/login" class="alert-link">log in</a> to proceed with checkout.
+      </p>
+      <p *ngIf="isAuthenticated && isCartEmpty">
+        Your cart is empty. <a routerLink="/products" class="alert-link">Add items</a> to continue.
+      </p>
+    </div>
+  </ng-template>
+</div>

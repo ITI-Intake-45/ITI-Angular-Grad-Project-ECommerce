@@ -1,1 +1,19 @@
-<p>order-summary works!</p>
+<div *ngIf="cart.cartItems.length > 0; else emptyCart">
+  <div class="list-group list-group-flush">
+    <div *ngFor="let item of cart.cartItems" class="list-group-item d-flex align-items-start py-2">
+      <img [src]="item.image || 'assets/default.jpg'" alt="{{item.productName}}" class="img-thumbnail me-2" style="width: 50px; height: 50px;">
+      <div class="flex-grow-1">
+        <p class="mb-0 small">{{ item.productName }}</p>
+        <small class="text-muted">Qty: {{ item.quantity }}</small>
+      </div>
+      <span>{{ item.subtotal | currency }}</span>
+    </div>
+  </div>
+  <div class="d-flex justify-content-between mt-2 pt-2 border-top">
+    <span>Total</span>
+    <span>{{ cart.totalPrice | currency }}</span>
+  </div>
+</div>
+<ng-template #emptyCart>
+  <p class="text-muted small">Cart is empty.</p>
+</ng-template>
