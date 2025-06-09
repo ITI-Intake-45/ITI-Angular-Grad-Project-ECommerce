@@ -1,17 +1,5 @@
 <div class="container py-5">
-  <nav aria-label="Checkout progress" class="mb-4">
-    <ol class="list-group list-group-horizontal-sm justify-content-center">
-      <li class="list-group-item border-0 d-flex align-items-center text-muted">
-        <span class="me-2">1.</span> Cart <span class="ms-2">→</span>
-      </li>
-      <li class="list-group-item border-0 d-flex align-items-center fw-bold text-primary">
-        <span class="me-2">2.</span> Checkout <span class="ms-2">→</span>
-      </li>
-      <li class="list-group-item border-0 d-flex align-items-center text-muted">
-        <span class="me-2">3.</span> Confirmation
-      </li>
-    </ol>
-  </nav>
+  
 
   <div *ngIf="isAuthenticated && !isCartEmpty; else notReady" class="row g-4">
     <div class="col-lg-7">
@@ -22,8 +10,8 @@
     </div>
     <div class="col-lg-5">
       <div class="card p-4">
-        <h2 class="card-title h5 fw-bold mb-3">Payment</h2>
-        <app-payment (checkoutComplete)="onCheckoutComplete()"></app-payment>
+        <h2 class="card-title h5 fw-bold mb-3">Shipping</h2>
+        <app-shipping (checkoutComplete)="onCheckoutComplete()"></app-shipping>
       </div>
     </div>
   </div>

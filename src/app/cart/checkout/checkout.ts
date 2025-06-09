@@ -23,8 +23,8 @@ export class Checkout implements OnInit {
     this.isAuthenticated = this.authService.isAuthenticated();
     if (!this.isAuthenticated) {
       console.error('Checkout: User not authenticated, redirecting to login');
-      alert('Please log in to proceed with checkout');
-      this.router.navigate(['/login']);
+      
+      this.router.navigate(['/auth/login']);
       return;
     }
 
@@ -32,13 +32,13 @@ export class Checkout implements OnInit {
       this.isCartEmpty = cart.cartItems.length === 0;
       if (this.isCartEmpty) {
         console.warn('Checkout: Cart is empty');
-        alert('Your cart is empty. Add items to proceed.');
+        
       }
     });
   }
 
   onCheckoutComplete(): void {
-    console.log('Checkout: Payment successful, navigating to confirmation');
+    console.log('Checkout: Shipping confirmed, navigating to confirmation');
     this.router.navigate(['confirmation']);
   }
 }

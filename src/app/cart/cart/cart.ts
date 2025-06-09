@@ -49,21 +49,23 @@ export class Cart implements OnInit, OnDestroy {
     this.loading = true;
     if (!this.cartService.isUserAuthenticated()) {
       this.loading = false;
-      this.router.navigate(['/login'], { queryParams: { returnUrl: '/cart/checkout' } });
+      
+      this.router.navigate(['/auth/login'], { queryParams: { returnUrl: '/cart/checkout' } });
     } else {
-      this.cartService.canProceedToCheckout().subscribe({
+      this.cartService.saveCartToDatabase().subscribe({
         next: () => {
+          console.log('Cart: Cart saved successfully');
           this.loading = false;
           this.router.navigate(['/cart/checkout']);
         },
         error: (err) => {
-          console.error('Checkout error:', err);
+          console.error('Cart: Error saving cart:', err);
           this.loading = false;
-          this.router.navigate(['/login'], { queryParams: { returnUrl: '/cart/checkout' } });
+          
         }
       });
     }
-  }
+}
 
   isCartEmpty(): boolean {
     return this.cartService.isCartEmpty();

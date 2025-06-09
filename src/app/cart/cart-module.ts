@@ -7,6 +7,7 @@ import { CartItem } from './cart-item/cart-item';
 import { Checkout } from './checkout/checkout';
 import { OrderSummary } from './order-summary/order-summary';
 import { Payment } from './payment/payment';
+import { Shipping } from './shipping/shipping';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { Payment } from './payment/payment';
     CartItem,
     Checkout,
     OrderSummary,
-    Payment
+    Payment,
+    Shipping
   ],
   imports: [
     SharedModule,
