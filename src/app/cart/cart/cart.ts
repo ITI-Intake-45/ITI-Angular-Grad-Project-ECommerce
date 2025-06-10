@@ -52,18 +52,10 @@ export class Cart implements OnInit, OnDestroy {
       
       this.router.navigate(['/auth/login']);
     } else {
-      this.cartService.saveCartToDatabase().subscribe({
-        next: () => {
-          console.log('Cart: Cart saved successfully');
+      
           this.loading = false;
           this.router.navigate(['/cart/checkout']);
-        },
-        error: (err) => {
-          console.error('Cart: Error saving cart:', err);
-          this.loading = false;
-          
-        }
-      });
+        
     }
 }
 
