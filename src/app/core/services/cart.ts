@@ -52,14 +52,12 @@ export class CartService {
   }
 
   private getHttpOptions() {
-    const authToken = localStorage.getItem('authToken');
     const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {})
+      'Content-Type': 'application/json'
     });
     return {
       headers,
-      withCredentials: true
+      withCredentials: true // Important: This sends session cookies
     };
   }
 
@@ -98,15 +96,63 @@ export class CartService {
     );
   }
 
+  // Enhanced addToCart method with session support
   addToCart(productId: number, quantity: number = 1): Observable<CartDTO> {
+    console.log('CartService: addToCart called', { productId, quantity, isAuthenticated: this.authService.isAuthenticated() });
+    
     if (this.authService.isAuthenticated()) {
       const request: AddToCartRequest = { productId, quantity };
+      console.log('CartService: Making server request to add to cart', request);
+      
       return this.http.post<CartDTO>(`${this.API_BASE_URL}/add`, request, this.getHttpOptions()).pipe(
-        switchMap(cart => this.handleNullImages(cart)),
-        catchError(error => this.handleCartError(error, () => this.addToLocalCart(productId, quantity)))
+        tap(serverResponse => {
+          console.log('CartService: Server response received:', serverResponse);
+        }),
+        switchMap(cart => {
+          console.log('CartService: Processing server cart response');
+          return this.handleNullImages(cart);
+        }),
+        catchError(error => {
+          console.error('CartService: Server request failed, falling back to local cart:', {
+            status: error.status,
+            message: error.message,
+            error: error.error,
+            url: error.url
+          });
+          return this.handleCartError(error, () => {
+            console.log('CartService: Using local cart fallback');
+            return this.addToLocalCart(productId, quantity);
+          });
+        })
       );
     }
+    
+    console.log('CartService: User not authenticated, using local cart');
     return this.addToLocalCart(productId, quantity);
+  }
+
+  // Enhanced handleCartError method
+  private handleCartError(error: any, fallback: () => Observable<CartDTO>): Observable<CartDTO> {
+    console.error('CartService: Operation error details:', {
+      status: error.status,
+      message: error.message,
+      error: error.error || 'No error details',
+      url: error.url || 'No URL',
+      statusText: error.statusText || 'No status text'
+    });
+    
+    // Check for specific error types
+    if (error.status === 0) {
+      console.error('CartService: Network error - server might be down');
+    } else if (error.status === 401) {
+      console.error('CartService: Unauthorized - session might be expired');
+    } else if (error.status === 404) {
+      console.error('CartService: API endpoint not found');
+    } else if (error.status >= 500) {
+      console.error('CartService: Server error');
+    }
+    
+    return fallback();
   }
 
   removeFromCart(productId: number): Observable<CartDTO> {
@@ -256,16 +302,10 @@ export class CartService {
       console.log("clear cart..")
       return of(void 0);
     }
-    return this.http.post<void>(`${this.API_BASE_URL}/clear`, {}, this.getHttpOptions()).pipe(
-      tap(() => {
-        this.clearCart();
-      }),
-      catchError(error => {
-        console.error('CartService: Error clearing server cart:', error.status, error.message, error.error);
-        this.clearCart();
-        return of(void 0);
-      })
-    );
+    // For session-based backend, we don't need a separate clear endpoint
+    // The backend handles clearing after checkout in the order service
+    this.clearCart(); // Clear local cart immediately
+    return of(void 0);
   }
 
   isUserAuthenticated(): boolean {
@@ -292,6 +332,17 @@ export class CartService {
     const emptyCart: CartDTO = { userId: 0, cartId: 0, cartItems: [], totalPrice: 0 };
     this.cartUpdateSubject.next(emptyCart);
     localStorage.removeItem(this.CART_STORAGE_KEY);
+  }
+
+  clearCartAfterCheckOut(): void {
+    const currentCart = this.getCurrentCart();
+    const updatedCart: CartDTO = {
+      ...currentCart,
+      cartItems: [],
+      totalPrice: 0
+    };
+    this.cartUpdateSubject.next(updatedCart);
+    localStorage.setItem(this.CART_STORAGE_KEY, JSON.stringify(updatedCart));
   }
 
   private handleNullImages(cart: CartDTO): Observable<CartDTO> {
@@ -326,15 +377,6 @@ export class CartService {
         return updatedCart;
       })
     );
-  }
-
-  private handleCartError(error: any, fallback: () => Observable<CartDTO>): Observable<CartDTO> {
-    console.error('CartService: Operation error:', {
-      status: error.status,
-      message: error.message,
-      error: error.error || 'No error details'
-    });
-    return fallback();
   }
 
   private addToLocalCart(productId: number, quantity: number): Observable<CartDTO> {
