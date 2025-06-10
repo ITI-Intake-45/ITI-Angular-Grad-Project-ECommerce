@@ -59,7 +59,10 @@ export class Shipping implements OnInit {
   }
 
   get isCheckoutDisabled(): boolean {
-    return this.isProcessing || !this.isAddressValid || this.hasInsufficientBalance;
+    console.log("p"+this.isProcessing);
+    console.log("a"+!this.isAddressValid);
+    console.log(this.hasInsufficientBalance);
+    return this.isProcessing || this.hasInsufficientBalance;
   }
 
   get checkoutButtonText(): string {
@@ -87,10 +90,10 @@ export class Shipping implements OnInit {
   }
 
   onSubmit(): void {
-    if (!this.isAddressValid) {
+   /* if (!this.isAddressValid) {
       alert('Please ensure a valid shipping address is set in your profile.');
       return;
-    }
+    }*/
 
     if (this.hasInsufficientBalance) {
       alert(`Insufficient credit balance. You need $${(this.cartTotal - this.creditBalance).toFixed(2)} more to complete this order.`);
@@ -117,22 +120,15 @@ export class Shipping implements OnInit {
       next: (profile: UserProfile) => {
         console.log('Shipping: Order and profile refresh completed');
         this.creditBalance = profile.creditBalance;
-        this.cartService.clearCartAfterCheckout().subscribe({
-          next: () => {
+        
             console.log('Shipping: Cart cleared successfully, cart:', this.cartService.getCurrentCart());
             this.isProcessing = false;
             
             alert("Order placed! ☕ Thank you for shopping with us.");
+            this.cartService.clearCartAfterCheckOut();
             this.router.navigate(['/']);
-          },
-          error: (error) => {
-            console.error('Shipping: Error clearing cart:', error);
-            this.isProcessing = false;
-            console.log('Shipping: Cart after clear error:', this.cartService.getCurrentCart());
-            alert('Order placed, but failed to clear cart. Please check your cart.');
-            this.router.navigate(['/']);
-          }
-        });
+          
+        
       },
       error: (error) => {
         console.error('Shipping: Error in order process:', error);
