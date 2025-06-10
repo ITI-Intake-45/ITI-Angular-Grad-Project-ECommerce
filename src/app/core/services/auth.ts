@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable, Injector } from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { switchMap, tap, catchError, map } from 'rxjs/operators';
@@ -51,7 +51,7 @@ export class AuthService {
   private baseUrl = 'http://localhost:8080/api/v1/users';
 
   constructor(private http: HttpClient, private router: Router,
-     private injector: Injector
+    private injector: Injector
   ) {
     // Check if user is already logged in
     const userData = localStorage.getItem('currentUser');
@@ -66,75 +66,75 @@ export class AuthService {
     }
   }
 
-// Updated login method in auth.service.ts
-login(credentials: LoginRequest): Observable<any> {
-  console.log('🔐 AuthService: Starting login process...');
+  // Updated login method in auth.service.ts
+  login(credentials: LoginRequest): Observable<any> {
+    console.log('🔐 AuthService: Starting login process...');
 
-  return this.http.post<UserLoginDto>(this.baseUrl + "/login", credentials, { withCredentials: true })
-    .pipe(
-      switchMap((loginResponse) => {
-        console.log('✅ AuthService: Login successful, response:', loginResponse);
+    return this.http.post<UserLoginDto>(this.baseUrl + "/login", credentials, { withCredentials: true })
+      .pipe(
+        switchMap((loginResponse) => {
+          console.log('✅ AuthService: Login successful, response:', loginResponse);
 
-        // Store basic user data first
-        localStorage.setItem('currentUser', JSON.stringify(loginResponse));
-        localStorage.setItem('loginTimestamp', Date.now().toString());
-        localStorage.setItem('authToken', 'authenticated');
-        this.currentUserSubject.next(loginResponse);
+          // Store basic user data first
+          localStorage.setItem('currentUser', JSON.stringify(loginResponse));
+          localStorage.setItem('loginTimestamp', Date.now().toString());
+          localStorage.setItem('authToken', 'authenticated');
+          this.currentUserSubject.next(loginResponse);
 
-        console.log('👤 AuthService: Now loading full profile...');
+          console.log('👤 AuthService: Now loading full profile...');
 
-        // Load full profile from API
-        return this.http.get<any>(`${this.baseUrl}/profile`, { withCredentials: true })
-          .pipe(
-            tap(profile => {
-              console.log('✅ AuthService: Full profile loaded:', profile);
-              // Store the full profile data
-              localStorage.setItem('userProfile', JSON.stringify(profile));
-            }),
-            catchError(error => {
-              console.error('❌ AuthService: Error loading profile after login:', error);
-              // Continue with login even if profile fails to load
-              return of(loginResponse);
-            }),
-            // Sync cart after profile is loaded
-            switchMap(() => {
-              console.log('🛒 AuthService: Syncing cart with server...');
-              const cartService = this.injector.get<CartService>(CartService);
-              return cartService.syncCartWithServer().pipe(
-                tap(cart => {
-                  console.log('✅ AuthService: Cart synced:', cart);
-                }),
-                catchError(error => {
-                  console.error('❌ AuthService: Error syncing cart:', error);
-                  // Continue login even if cart sync fails
-                  return of(null);
-                }),
-                // Return the login response for the component
-                map(() => loginResponse)
-              );
-            })
-          );
-      }),
-      tap(() => {
-        console.log('✅ AuthService: Login, profile loading, and cart sync completed');
+          // Load full profile from API
+          return this.http.get<any>(`${this.baseUrl}/profile`, { withCredentials: true })
+            .pipe(
+              tap(profile => {
+                console.log('✅ AuthService: Full profile loaded:', profile);
+                // Store the full profile data
+                localStorage.setItem('userProfile', JSON.stringify(profile));
+              }),
+              catchError(error => {
+                console.error('❌ AuthService: Error loading profile after login:', error);
+                // Continue with login even if profile fails to load
+                return of(loginResponse);
+              }),
+              // Sync cart after profile is loaded
+              switchMap(() => {
+                console.log('🛒 AuthService: Syncing cart with server...');
+                const cartService = this.injector.get<CartService>(CartService);
+                return cartService.syncCartWithServer().pipe(
+                  tap(cart => {
+                    console.log('✅ AuthService: Cart synced:', cart);
+                  }),
+                  catchError(error => {
+                    console.error('❌ AuthService: Error syncing cart:', error);
+                    // Continue login even if cart sync fails
+                    return of(null);
+                  }),
+                  // Return the login response for the component
+                  map(() => loginResponse)
+                );
+              })
+            );
+        }),
+        tap(() => {
+          console.log('✅ AuthService: Login, profile loading, and cart sync completed');
 
-        // Navigate to home after everything is loaded
-        setTimeout(() => {
-          console.log('🏠 AuthService: Navigating to home');
-          this.router.navigate(['/']);
-        }, 100);
-      }),
-      catchError(error => {
-        console.error('❌ AuthService: Login error:', error);
+          // Navigate to home after everything is loaded
+          setTimeout(() => {
+            console.log('🏠 AuthService: Navigating to home');
+            this.router.navigate(['/']);
+          }, 100);
+        }),
+        catchError(error => {
+          console.error('❌ AuthService: Login error:', error);
 
-        // Don't show alerts here - let the component handle the error display
-        // Remove the alert calls and let the component show user-friendly messages
+          // Don't show alerts here - let the component handle the error display
+          // Remove the alert calls and let the component show user-friendly messages
 
-        // Re-throw the error so the component can catch it
-        return throwError(() => error);
-      })
-    );
-}
+          // Re-throw the error so the component can catch it
+          return throwError(() => error);
+        })
+      );
+  }
 
   // Add session validation method
   validateSession(): Observable<any> {
@@ -165,7 +165,9 @@ login(credentials: LoginRequest): Observable<any> {
 
           // alert("🎉 Welcome! Your account has been created.");
           console.log('📝 AuthService: Navigating to home...');
-          this.login({ email: newUser.email, password: newUser.password });
+
+          //  this.login({ email: newUser.email, password: newUser.password });
+          this.router.navigate(['/auth/login']);
 
         },
         error: (error) => {
@@ -180,57 +182,57 @@ login(credentials: LoginRequest): Observable<any> {
   }
 
   logout(): void {
-  console.log('🔐 AuthService: Logging out...');
+    console.log('🔐 AuthService: Logging out...');
 
-  // Lazily get CartService using Injector
-  const cartService = this.injector.get<CartService>(CartService);
+    // Lazily get CartService using Injector
+    const cartService = this.injector.get<CartService>(CartService);
 
-  // Call CartService.handleCartOnLogout
-  cartService.handleCartOnLogout().subscribe({
-    next: () => {
-      console.log('🔐 AuthService: Cart handled on logout');
-      // Clear local data
-      this.clearAuthData();
+    // Call CartService.handleCartOnLogout
+    cartService.handleCartOnLogout().subscribe({
+      next: () => {
+        console.log('🔐 AuthService: Cart handled on logout');
+        // Clear local data
+        this.clearAuthData();
 
-      // Call backend logout endpoint
-      this.http.post(`${this.baseUrl}/logout`, {}, {
-        withCredentials: true,
-        headers: new HttpHeaders({
-          'Authorization': 'Basic '
-        })
-      }).subscribe({
-        next: () => {
-          console.log('🔐 AuthService: Server logout successful');
-          this.router.navigate(['/']);
-        },
-        error: (error) => {
-          console.error('🔐 AuthService: Server logout error:', error);
-          this.router.navigate(['/']);
-        }
-      });
-    },
-    error: (error) => {
-      console.error('🔐 AuthService: Error handling cart on logout:', error);
-      // Proceed with logout even if cart handling fails
-      this.clearAuthData();
-      this.http.post(`${this.baseUrl}/logout`, {}, {
-        withCredentials: true,
-        headers: new HttpHeaders({
-          'Authorization': 'Basic '
-        })
-      }).subscribe({
-        next: () => {
-          console.log('🔐 AuthService: Server logout successful');
-          this.router.navigate(['/']);
-        },
-        error: (err) => {
-          console.error('🔐 AuthService: Server logout error:', err);
-          this.router.navigate(['/']);
-        }
-      });
-    }
-  });
-}
+        // Call backend logout endpoint
+        this.http.post(`${this.baseUrl}/logout`, {}, {
+          withCredentials: true,
+          headers: new HttpHeaders({
+            'Authorization': 'Basic '
+          })
+        }).subscribe({
+          next: () => {
+            console.log('🔐 AuthService: Server logout successful');
+            this.router.navigate(['/']);
+          },
+          error: (error) => {
+            console.error('🔐 AuthService: Server logout error:', error);
+            this.router.navigate(['/']);
+          }
+        });
+      },
+      error: (error) => {
+        console.error('🔐 AuthService: Error handling cart on logout:', error);
+        // Proceed with logout even if cart handling fails
+        this.clearAuthData();
+        this.http.post(`${this.baseUrl}/logout`, {}, {
+          withCredentials: true,
+          headers: new HttpHeaders({
+            'Authorization': 'Basic '
+          })
+        }).subscribe({
+          next: () => {
+            console.log('🔐 AuthService: Server logout successful');
+            this.router.navigate(['/']);
+          },
+          error: (err) => {
+            console.error('🔐 AuthService: Server logout error:', err);
+            this.router.navigate(['/']);
+          }
+        });
+      }
+    });
+  }
 
   // Make this method public so AuthGuard can use it
   public clearAuthData(): void {
