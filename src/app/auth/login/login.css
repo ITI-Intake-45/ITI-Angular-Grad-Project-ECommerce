@@ -1,3 +1,4 @@
+/* login.css */
 .login-wrapper {
     display: flex;
     justify-content: center;
@@ -33,35 +34,56 @@ label {
 .form-control {
     width: 100%;
     padding: 10px;
-    /*border: 1px solid #fc5c03;*/
-  border: #f39c12;
+    border: 1px solid #f39c12;
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
+}
 
-  border-radius: 4px;
+.form-control:focus {
+    outline: none;
+    border-color: #f39c12;
+    box-shadow: 0 0 5px rgba(243, 156, 18, 0.3);
+}
+
+.form-control.error-border {
+    border-color: #e74c3c;
+    box-shadow: 0 0 5px rgba(231, 76, 60, 0.3);
 }
 
 .valid-msg {
-    color: green;
+    color: #27ae60;
     font-size: 0.9em;
     margin-top: 5px;
+    font-weight: 500;
+}
+
+.error-msg {
+    color: #e74c3c;
+    font-size: 0.9em;
+    margin-top: 5px;
+    font-weight: 500;
 }
 
 .login-btn {
     background-color: white;
-    /*border: 2px solid #fc5c03;*/
-    /*color: #fc5c03;*/
-    border:2px solid  #f39c12;
-  color: #f39c12;
-  padding: 10px 20px;
+    border: 2px solid #f39c12;
+    color: #f39c12;
+    padding: 10px 20px;
     font-weight: bold;
     width: 100%;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.3s ease;
+    border-radius: 4px;
 }
 
 .login-btn:hover {
-    /*background-color: #fc5c03;*/
     background-color: #f39c12;
     color: white;
+}
+
+.login-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .extra-links {
@@ -70,14 +92,32 @@ label {
 }
 
 .extra-links a {
-    /*color: #fc5c03;*/
     color: #f39c12;
     font-weight: bold;
     text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.extra-links a:hover {
+    color: #e67e22;
 }
 
 .remember-me {
     margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.remember-me input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.remember-me label {
+    font-weight: normal;
+    margin: 0;
+    cursor: pointer;
 }
 
 .new-customer {
@@ -88,24 +128,29 @@ label {
 
 .new-customer h4 {
     font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.new-customer p {
+    line-height: 1.5;
+    color: #666;
+    margin-bottom: 15px;
 }
 
 .create-account-btn {
-    /*background-color: white;*/
-    /*border: 2px solid #fc5c03;*/
-  background-color: white;
+    background-color: white;
     border: 2px solid #f39c12;
-    /*color: #fc5c03;*/
     color: #f39c12;
     padding: 10px 20px;
     font-weight: bold;
     cursor: pointer;
     width: 100%;
     margin-top: 10px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
 }
 
 .create-account-btn:hover {
-    /*background-color: #fc5c03;*/
-  background-color: #f39c12;
+    background-color: #f39c12;
     color: white;
 }

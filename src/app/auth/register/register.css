@@ -1,3 +1,4 @@
+/* register.css */
 .register-wrapper {
     display: flex;
     justify-content: center;
@@ -12,12 +13,14 @@
     border: 1px solid #e0e0e0;
     padding: 30px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }
 
 .register-form h2 {
     font-weight: bold;
     text-align: left;
     margin-bottom: 30px;
+    color: #333;
 }
 
 .form-group {
@@ -27,34 +30,190 @@
 label {
     font-weight: bold;
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    color: #333;
 }
 
 .form-control {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #fc5c03;
+    box-shadow: 0 0 8px rgba(252, 92, 3, 0.2);
+}
+
+.form-control.error-border {
+    border-color: #e74c3c;
+    box-shadow: 0 0 8px rgba(231, 76, 60, 0.2);
+}
+
+.form-control::placeholder {
+    color: #999;
+    font-style: italic;
 }
 
 .register-btn {
     background-color: white;
     border: 2px solid #fc5c03;
     color: #fc5c03;
-    padding: 10px 20px;
+    padding: 12px 20px;
     font-weight: bold;
     width: 100%;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+    font-size: 16px;
 }
 
 .register-btn:hover {
     background-color: #fc5c03;
     color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(252, 92, 3, 0.3);
 }
 
-.error {
-    color: red;
+.register-btn:active {
+    transform: translateY(0);
+}
+
+.error-msg {
+    color: #e74c3c;
     font-size: 0.85em;
     margin-top: 5px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.error-msg::before {
+    content: "⚠";
+    font-size: 0.9em;
+}
+
+.success-msg {
+    color: #27ae60;
+    font-size: 0.85em;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+.helper-text {
+    color: #666;
+    font-size: 0.8em;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.password-requirements {
+    margin-top: 8px;
+}
+
+.strength-indicator {
+    font-size: 0.85em;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-transform: capitalize;
+    font-weight: 500;
+}
+
+.strength-indicator.weak {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+}
+
+.strength-indicator.medium {
+    background-color: #fff3e0;
+    color: #ef6c00;
+    border: 1px solid #ffcc02;
+}
+
+.strength-indicator.strong {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+
+.password-help {
+    margin-top: 5px;
+}
+
+.password-help small {
+    color: #666;
+    font-size: 0.75em;
+    line-height: 1.4;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .register-wrapper {
+        padding: 20px;
+    }
+    
+    .register-form {
+        padding: 20px;
+        margin: 0 10px;
+    }
+    
+    .form-control {
+        padding: 10px;
+    }
+    
+    .register-btn {
+        padding: 10px 16px;
+    }
+}
+
+/* Animation for form validation */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.form-control.error-border {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Loading state for button */
+.register-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.register-btn:disabled:hover {
+    background-color: white;
+    color: #fc5c03;
+    transform: none;
+    box-shadow: none;
+}
+
+.error-border {
+  border: 1px solid #e74c3c;
+}
+
+.success-border {
+  border: 1px solid #2ecc71;
+}
+
+.error-msg {
+  color: #e74c3c;
+  font-size: 0.9em;
+  margin-top: 4px;
+}
+
+.success-msg {
+  color: #2ecc71;
+  font-size: 0.9em;
+  margin-top: 4px;
 }

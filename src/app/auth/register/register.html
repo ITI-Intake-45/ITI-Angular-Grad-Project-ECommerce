@@ -1,66 +1,138 @@
 <app-header></app-header>
 <div class="register-wrapper">
-    <form #registerForm="ngForm" (ngSubmit)="onRegister(registerForm)" class="register-form" novalidate>
-        <h2>PERSONAL INFORMATION</h2>
+  <form (ngSubmit)="onRegister()" class="register-form" novalidate>
+    <h2>PERSONAL INFORMATION</h2>
 
-        <!-- NAME -->
-        <div class="form-group">
-            <label>Name *</label>
-            <input type="text" class="form-control" name="name" [(ngModel)]="name" required #nameRef="ngModel" />
-            <div class="error" *ngIf="submitted && nameRef.invalid">Name is required.</div>
-        </div>
+    <!-- NAME -->
+    <div class="form-group">
+      <label>Name *</label>
+      <input
+        type="text"
+        class="form-control"
+        name="name"
+        [(ngModel)]="name"
+        [class.error-border]="nameError"
+        [class.success-border]="!nameError && name"
+        (blur)="onNameChange()"
+        placeholder="Enter your full name"
+      />
+      <div class="error-msg" *ngIf="nameError">{{ nameError }}</div>
+      <div class="success-msg" *ngIf="nameTouched && !nameError && name">✔ Name looks good</div>
+    </div>
 
-        <!-- EMAIL -->
-        <div class="form-group">
-            <label>E-MAIL *</label>
-            <input type="email" class="form-control" name="email" [(ngModel)]="email" required email
-                #emailRef="ngModel" />
-            <div class="error" *ngIf="submitted && emailRef.errors?.['required']">Email is required.</div>
-            <div class="error" *ngIf="submitted && emailRef.errors?.['email']">Invalid email format.</div>
-        </div>
+    <!-- EMAIL -->
+    <div class="form-group">
+      <label>E-MAIL *</label>
+      <input
+        type="email"
+        class="form-control"
+        name="email"
+        [(ngModel)]="email"
+        [class.error-border]="emailError"
+        [class.success-border]="!emailError && email"
+        (blur)="onEmailChange()"
+        placeholder="Enter your email address"
+      />
+      <div class="error-msg" *ngIf="emailError">{{ emailError }}</div>
+      <div class="success-msg" *ngIf="emailTouched && !emailError && email">✔ Valid email</div>
+    </div>
 
-        <!-- PHONE -->
-        <div class="form-group">
-            <label>PHONE *</label>
-            <input type="text" class="form-control" name="phone" [(ngModel)]="phone" required pattern="^[0-9]{11}$"
-                #phoneRef="ngModel" />
-            <div class="error" *ngIf="submitted && phoneRef.errors?.['required']">Phone number is required.</div>
-            <div class="error" *ngIf="submitted && phoneRef.errors?.['pattern']">Phone number must be exactly 11 digits.
-            </div>
-        </div>
+    <!-- PHONE -->
+    <div class="form-group">
+      <label>PHONE *</label>
+      <input
+        type="text"
+        class="form-control"
+        name="phone"
+        maxlength="11"
+        [(ngModel)]="phone"
+        [class.error-border]="phoneError"
+        [class.success-border]="!phoneError && phone"
+        (blur)="onPhoneChange()"
+        placeholder="Enter 11-digit phone number"
+      />
+      <div class="error-msg" *ngIf="phoneError">{{ phoneError }}</div>
+      <div class="success-msg" *ngIf="phoneTouched && !phoneError && phone">✔ Phone number valid</div>
+      <div class="helper-text" *ngIf="!phoneError && phone">{{ phone.length }}/11 digits</div>
+    </div>
 
-        <!-- ADDRESS -->
-        <div class="form-group">
-            <label>ADDRESS *</label>
-            <input type="text" class="form-control" name="address" [(ngModel)]="address" required
-                #addressRef="ngModel" />
-            <div class="error" *ngIf="submitted && addressRef.invalid">Address is required.</div>
-        </div>
+    <!-- ADDRESS -->
+    <div class="form-group">
+      <label>ADDRESS *</label>
+      <input
+        type="text"
+        class="form-control"
+        name="address"
+        [(ngModel)]="address"
+        [class.error-border]="addressError"
+        [class.success-border]="!addressError && address"
+        (blur)="onAddressChange()"
+        placeholder="Enter your address"
+      />
+      <div class="error-msg" *ngIf="addressError">{{ addressError }}</div>
+      <div class="success-msg" *ngIf="addressTouched && !addressError && address">✔ Address looks good</div>
+    </div>
 
-        <!-- CREDIT -->
-        <div class="form-group">
-            <label>CREDIT BALANCE*</label>
-            <input type="number" class="form-control" name="creditBalence" [(ngModel)]="creditBalence" required
-                #creditRef="ngModel" />
-            <div class="error" *ngIf="submitted && creditRef.invalid">Credit is required.</div>
-        </div>
+    <!-- CREDIT BALANCE -->
+    <div class="form-group">
+      <label>CREDIT BALANCE *</label>
+      <input
+        type="number"
+        min="0"
+        step="100"
+        class="form-control"
+        name="creditBalance"
+        [(ngModel)]="creditBalence"
+        [class.error-border]="creditError"
+        [class.success-border]="!creditError && creditBalence !== null"
+        (blur)="onCreditChange()"
+        placeholder="Enter initial credit balance"
+      />
+      <div class="error-msg" *ngIf="creditError">{{ creditError }}</div>
+      <div class="success-msg" *ngIf="creditTouched && !creditError && creditBalence !== null">✔ Credit valid</div>
+    </div>
 
-        <!-- PASSWORD -->
-        <div class="form-group">
-            <label>PASSWORD *</label>
-            <input type="password" class="form-control" name="password" [(ngModel)]="password" required
-                #passRef="ngModel" />
-            <div class="error" *ngIf="submitted && passRef.invalid">Password is required.</div>
-        </div>
+    <!-- PASSWORD -->
+    <div class="form-group">
+      <label>PASSWORD *</label>
+      <input
+        type="password"
+        class="form-control"
+        name="password"
+        [(ngModel)]="password"
+        [class.error-border]="passwordError"
+        [class.success-border]="!passwordError && password"
+        (blur)="onPasswordChange()"
+        placeholder="Enter a strong password"
+      />
+      <div class="error-msg" *ngIf="passwordError">{{ passwordError }}</div>
+      <div class="success-msg" *passwordTouched && ngIf="!passwordError && password">✔ Password is strong</div>
+      <div class="password-help" *ngIf="!password">
+        <small>Password must contain: lowercase, uppercase, number, special character (min 8 chars)</small>
+      </div>
+    </div>
 
-        <!-- CONFIRM PASSWORD -->
-        <div class="form-group">
-            <label>CONFIRM PASSWORD *</label>
-            <input type="password" class="form-control" name="confirmPassword" [(ngModel)]="confirmPassword" required />
-            <div class="error" *ngIf="submitted && password !== confirmPassword">Passwords do not match.</div>
-        </div>
+    <!-- CONFIRM PASSWORD -->
+    <div class="form-group">
+      <label>CONFIRM PASSWORD *</label>
+      <input
+        type="password"
+        class="form-control"
+        name="confirmPassword"
+        [(ngModel)]="confirmPassword"
+        [class.error-border]="confirmPasswordError"
+        [class.success-border]="!confirmPasswordError && confirmPassword === password"
+        (blur)="onConfirmPasswordChange()"
+        (input)="onConfirmPasswordChange()"
+        placeholder="Confirm your password"
+      />
+      <div class="error-msg" *ngIf="confirmPasswordError">{{ confirmPasswordError }}</div>
+      <div class="success-msg" *ngIf="confirmPasswordTouched && !confirmPasswordError && confirmPassword === password">
+        ✔ Passwords match
+      </div>
+    </div>
 
-        <button type="submit" class="register-btn">REGISTER</button>
-    </form>
+    <button type="submit" class="register-btn">REGISTER</button>
+  </form>
 </div>
 <app-footer></app-footer>

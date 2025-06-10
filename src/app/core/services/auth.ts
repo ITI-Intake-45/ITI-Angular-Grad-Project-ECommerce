@@ -119,7 +119,7 @@ login(credentials: LoginRequest) {
     .subscribe({
       next: () => {
         console.log('🔐 AuthService: Login, profile loading, and cart sync completed');
-        alert("Hello and welcome!");
+        // alert("Hello and welcome!");
 
         // Navigate to home after everything is loaded
         setTimeout(() => {
@@ -165,8 +165,9 @@ login(credentials: LoginRequest) {
         next: (response) => {
           console.log('📝 AuthService: Registration successful:', response);
 
-          alert("🎉 Welcome! Your account has been created.");
+          // alert("🎉 Welcome! Your account has been created.");
           console.log('📝 AuthService: Navigating to home...');
+          this.login({ email: newUser.email, password: newUser.password });
 
         },
         error: (error) => {
