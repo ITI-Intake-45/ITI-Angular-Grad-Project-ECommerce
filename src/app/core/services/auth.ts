@@ -117,19 +117,19 @@ login(credentials: LoginRequest): Observable<any> {
       }),
       tap(() => {
         console.log('✅ AuthService: Login, profile loading, and cart sync completed');
-        
+
         // Navigate to home after everything is loaded
         setTimeout(() => {
           console.log('🏠 AuthService: Navigating to home');
-          this.router.navigate(['/home']);
+          this.router.navigate(['/']);
         }, 100);
       }),
       catchError(error => {
         console.error('❌ AuthService: Login error:', error);
-        
+
         // Don't show alerts here - let the component handle the error display
         // Remove the alert calls and let the component show user-friendly messages
-        
+
         // Re-throw the error so the component can catch it
         return throwError(() => error);
       })
@@ -201,11 +201,11 @@ login(credentials: LoginRequest): Observable<any> {
       }).subscribe({
         next: () => {
           console.log('🔐 AuthService: Server logout successful');
-          this.router.navigate(['/home']);
+          this.router.navigate(['/']);
         },
         error: (error) => {
           console.error('🔐 AuthService: Server logout error:', error);
-          this.router.navigate(['/home']);
+          this.router.navigate(['/']);
         }
       });
     },
@@ -221,11 +221,11 @@ login(credentials: LoginRequest): Observable<any> {
       }).subscribe({
         next: () => {
           console.log('🔐 AuthService: Server logout successful');
-          this.router.navigate(['/home']);
+          this.router.navigate(['/']);
         },
         error: (err) => {
           console.error('🔐 AuthService: Server logout error:', err);
-          this.router.navigate(['/home']);
+          this.router.navigate(['/']);
         }
       });
     }
