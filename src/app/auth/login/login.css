@@ -37,6 +37,7 @@ label {
     border: 1px solid #f39c12;
     border-radius: 4px;
     transition: border-color 0.3s ease;
+    box-sizing: border-box;
 }
 
 .form-control:focus {
@@ -64,6 +65,62 @@ label {
     font-weight: 500;
 }
 
+.global-error-msg {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 12px;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.password-requirements {
+    margin-top: 8px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border-left: 3px solid #f39c12;
+}
+
+.password-requirements small {
+    font-weight: bold;
+    color: #666;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.password-requirements ul {
+    margin: 0;
+    padding-left: 20px;
+    list-style: none;
+}
+
+.password-requirements li {
+    font-size: 0.85em;
+    margin-bottom: 4px;
+    color: #e74c3c;
+    position: relative;
+}
+
+.password-requirements li:before {
+    content: "✗";
+    position: absolute;
+    left: -15px;
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.password-requirements li.met {
+    color: #27ae60;
+}
+
+.password-requirements li.met:before {
+    content: "✓";
+    color: #27ae60;
+}
+
 .login-btn {
     background-color: white;
     border: 2px solid #f39c12;
@@ -76,7 +133,7 @@ label {
     border-radius: 4px;
 }
 
-.login-btn:hover {
+.login-btn:hover:not(:disabled) {
     background-color: #f39c12;
     color: white;
 }
@@ -84,6 +141,9 @@ label {
 .login-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    background-color: #f5f5f5;
+    border-color: #ddd;
+    color: #999;
 }
 
 .extra-links {
@@ -153,4 +213,15 @@ label {
 .create-account-btn:hover {
     background-color: #f39c12;
     color: white;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .login-wrapper {
+        padding: 20px;
+    }
+    
+    .login-form {
+        padding: 20px;
+    }
 }

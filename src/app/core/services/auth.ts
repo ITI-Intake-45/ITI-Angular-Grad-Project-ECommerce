@@ -2,7 +2,7 @@ import { forwardRef, Inject, Injectable, Injector } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { switchMap, tap, catchError } from 'rxjs/operators';
+import { switchMap, tap, catchError, map } from 'rxjs/operators';
 import { CartService } from './cart';
 
 // Define the missing interfaces
@@ -66,13 +66,14 @@ export class AuthService {
     }
   }
 
-login(credentials: LoginRequest) {
+// Updated login method in auth.service.ts
+login(credentials: LoginRequest): Observable<any> {
   console.log('🔐 AuthService: Starting login process...');
 
-  this.http.post<UserLoginDto>(this.baseUrl + "/login", credentials, { withCredentials: true })
+  return this.http.post<UserLoginDto>(this.baseUrl + "/login", credentials, { withCredentials: true })
     .pipe(
       switchMap((loginResponse) => {
-        console.log('🔐 AuthService: Login successful, response:', loginResponse);
+        console.log('✅ AuthService: Login successful, response:', loginResponse);
 
         // Store basic user data first
         localStorage.setItem('currentUser', JSON.stringify(loginResponse));
@@ -80,62 +81,59 @@ login(credentials: LoginRequest) {
         localStorage.setItem('authToken', 'authenticated');
         this.currentUserSubject.next(loginResponse);
 
-        console.log('🔐 AuthService: Now loading full profile...');
+        console.log('👤 AuthService: Now loading full profile...');
 
         // Load full profile from API
         return this.http.get<any>(`${this.baseUrl}/profile`, { withCredentials: true })
           .pipe(
             tap(profile => {
-              console.log('🔐 AuthService: Full profile loaded:', profile);
+              console.log('✅ AuthService: Full profile loaded:', profile);
               // Store the full profile data
               localStorage.setItem('userProfile', JSON.stringify(profile));
             }),
             catchError(error => {
-              console.error('🔐 AuthService: Error loading profile after login:', error);
+              console.error('❌ AuthService: Error loading profile after login:', error);
               // Continue with login even if profile fails to load
-              return new Observable(observer => {
-                observer.next(loginResponse);
-                observer.complete();
-              });
+              return of(loginResponse);
             }),
             // Sync cart after profile is loaded
             switchMap(() => {
-              console.log('🔐 AuthService: Syncing cart with server...');
+              console.log('🛒 AuthService: Syncing cart with server...');
               const cartService = this.injector.get<CartService>(CartService);
               return cartService.syncCartWithServer().pipe(
                 tap(cart => {
-                  console.log('🔐 AuthService: Cart synced:', cart);
+                  console.log('✅ AuthService: Cart synced:', cart);
                 }),
                 catchError(error => {
-                  console.error('🔐 AuthService: Error syncing cart:', error);
+                  console.error('❌ AuthService: Error syncing cart:', error);
                   // Continue login even if cart sync fails
                   return of(null);
-                })
+                }),
+                // Return the login response for the component
+                map(() => loginResponse)
               );
             })
           );
-      })
-    )
-    .subscribe({
-      next: () => {
-        console.log('🔐 AuthService: Login, profile loading, and cart sync completed');
-        // alert("Hello and welcome!");
-
+      }),
+      tap(() => {
+        console.log('✅ AuthService: Login, profile loading, and cart sync completed');
+        
         // Navigate to home after everything is loaded
         setTimeout(() => {
-          console.log('🔐 AuthService: Navigating to home');
+          console.log('🏠 AuthService: Navigating to home');
           this.router.navigate(['/home']);
         }, 100);
-      },
-      error: (error) => {
-        console.error('🔐 AuthService: Login error:', error);
-        if (error.status === 401) {
-          alert('Invalid email or password.');
-        } else {
-          alert('Something went wrong. Please try again later.');
-        }
-      }
-    });
+      }),
+      catchError(error => {
+        console.error('❌ AuthService: Login error:', error);
+        
+        // Don't show alerts here - let the component handle the error display
+        // Remove the alert calls and let the component show user-friendly messages
+        
+        // Re-throw the error so the component can catch it
+        return throwError(() => error);
+      })
+    );
 }
 
   // Add session validation method

@@ -4,6 +4,11 @@
     <form (submit)="onSubmit(); $event.preventDefault()" class="login-form">
         <h2>Login</h2>
         
+        <!-- Global error message for invalid credentials -->
+        <div class="global-error-msg" *ngIf="globalErrorMessage">
+            {{ globalErrorMessage }}
+        </div>
+        
         <div class="form-group">
             <label for="email">E-MAIL *</label>
             <input 
@@ -14,11 +19,10 @@
                 class="form-control"
                 [class.error-border]="emailError"
                 (blur)="onEmailChange()"
-                (input)="onEmailChange()"
                 required 
             />
             <div class="error-msg" *ngIf="emailError">{{ emailError }}</div>
-            <div class="valid-msg" *ngIf="email && isValidUser && !emailError">Valid user!</div>
+            <div class="valid-msg" *ngIf="email && isValidEmail && !emailError">Valid email!</div>
         </div>
 
         <div class="form-group">
@@ -35,16 +39,29 @@
                 required 
             />
             <div class="error-msg" *ngIf="passwordError">{{ passwordError }}</div>
+            <div class="valid-msg" *ngIf="password && isValidPassword && !passwordError">Strong password!</div>
+            
+            <!-- Password requirements helper -->
+            <div class="password-requirements" *ngIf="password && !isValidPassword">
+                <small>Password must contain:</small>
+                <ul>
+                    <li [class.met]="hasUppercase">At least 1 uppercase letter</li>
+                    <li [class.met]="hasLowercase">At least 1 lowercase letter</li>
+                    <li [class.met]="hasDigit">At least 1 digit</li>
+                    <li [class.met]="hasSpecialChar">At least 1 special character</li>
+                    <li [class.met]="hasMinLength">Minimum 8 characters</li>
+                </ul>
+            </div>
         </div>
 
-        <button type="submit" class="login-btn">LOGIN</button>
+        <button type="submit" class="login-btn" [disabled]="!isFormValid">LOGIN</button>
 
         <div class="extra-links">
             <a routerLink="/auth/forgot-password">Lost Your Password?</a>
         </div>
 
         <div class="remember-me">
-            <input type="checkbox" id="rememberMe" />
+            <input type="checkbox" id="rememberMe" [(ngModel)]="rememberMe" name="rememberMe" />
             <label for="rememberMe">Remember Me</label>
         </div>
 
