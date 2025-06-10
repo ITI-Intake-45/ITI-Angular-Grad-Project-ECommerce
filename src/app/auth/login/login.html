@@ -39,7 +39,7 @@
                 required 
             />
             <div class="error-msg" *ngIf="passwordError">{{ passwordError }}</div>
-            <div class="valid-msg" *ngIf="password && isValidPassword && !passwordError">Strong password!</div>
+            <div class="valid-msg" *ngIf="password && isValidPassword && !passwordError">Valid password!</div>
             
             <!-- Password requirements helper -->
             <div class="password-requirements" *ngIf="password && !isValidPassword">
