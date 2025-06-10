@@ -123,10 +123,10 @@ export class Header implements OnInit, OnDestroy {
     }
 
     // Clear the search input after search
-    this.searchQuery = '';
-    if (this.searchInput) {
-      this.searchInput.nativeElement.value = '';
-    }
+    // this.searchQuery = '';
+    // if (this.searchInput) {
+    //   this.searchInput.nativeElement.value = '';
+    // }
   }
 
   // Handle Enter key press in search input
