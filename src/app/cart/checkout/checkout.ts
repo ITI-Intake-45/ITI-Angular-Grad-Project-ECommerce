@@ -29,7 +29,7 @@ export class Checkout implements OnInit {
     }
 
     // Force cart sync and check cart state
-    this.cartService.syncCartWithServer().pipe(
+    /*this.cartService.syncCartWithServer().pipe(
       tap(cart => console.log('Checkout: Cart synced', cart)),
       switchMap(cart => {
         this.isCartEmpty = cart.cartItems.length === 0;
@@ -47,7 +47,7 @@ export class Checkout implements OnInit {
         this.isCartEmpty = true; // Assume empty on error to avoid checkout with invalid cart
         this.router.navigate(['/cart']);
       }
-    });
+    });*/
 
     // Monitor cart$ for real-time updates
     this.cartService.cart$.subscribe(cart => {
