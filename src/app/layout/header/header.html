@@ -1,7 +1,67 @@
 <header class="main-header">
   <div class="container-fluid">
-    <!-- Top Row -->
-    <div class="row top-header">
+    <!-- Mobile View: Logo, Search, Cart, Menu Toggle, and Categories -->
+    <div class="mobile-header d-lg-none">
+      <div class="mobile-header-content">
+        <!-- Logo -->
+        <div class="mobile-logo">
+          <a class="navbar-brand" href="#" routerLink="/" (click)="navigateAndClose('/')">
+            <img src="assets/favicon.png" alt="Cuppot" class="logo-img">
+            <span class="brand-text">Cuppot</span>
+          </a>
+        </div>
+        <!-- Search -->
+        <div class="mobile-search-container">
+          <div class="input-group mobile-search-box">
+            <input #searchInputMobile type="text" class="form-control search-input" placeholder="Search products"
+                   [(ngModel)]="searchQuery" (input)="onSearch($event)" (keyup)="onSearchKeyUp($event)">
+            <button class="btn search-btn" type="button" (click)="performSearch()">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+        <!-- Cart -->
+        <div class="mobile-cart">
+          <a class="nav-link cart-link" routerLink="/cart" (click)="navigateAndClose('/cart')">
+            <i class="fas fa-shopping-bag"></i>
+            <span class="cart-badge">{{ cartItemCount }}</span>
+          </a>
+        </div>
+        <!-- Menu Toggle -->
+        <button class="navbar-toggler" type="button" (click)="toggleMenu()" [class.collapsed]="!isMenuOpen"
+                aria-expanded="false">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+      <!-- Mobile Categories -->
+      <div class="mobile-categories">
+        <ul class="navbar-nav main-nav d-flex flex-row">
+          <li class="nav-item" *ngIf="categories.length === 0">
+            <span class="nav-link">No Categories</span>
+          </li>
+          <li class="nav-item" *ngFor="let category of mainCategories">
+            <a class="nav-link" (click)="navigateToCategory(category.name)" style="cursor: pointer;">
+              {{ category.name }}
+            </a>
+          </li>
+          <li class="nav-item dropdown" *ngIf="additionalCategories.length > 0">
+            <a class="nav-link dropdown-toggle" href="#" (click)="toggleDropdown(); $event.preventDefault()"
+               [class.show]="isDropdownOpen">
+              More+
+            </a>
+            <div class="dropdown-menu" [class.show]="isDropdownOpen">
+              <a class="dropdown-item" *ngFor="let category of additionalCategories"
+                 (click)="navigateToCategory(category.name)" style="cursor: pointer;">
+                {{ category.name }}
+              </a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Desktop View: Top Row -->
+    <div class="row top-header d-none d-lg-flex">
       <!-- Logo and Brand (Left) -->
       <div class="col-md-6">
         <a class="navbar-brand" href="#" routerLink="/">
@@ -9,10 +69,9 @@
           <span class="brand-text">Cuppot</span>
         </a>
       </div>
-
       <!-- Top Right Navigation Links -->
       <div class="col-md-6">
-        <ul class="navbar-nav right-nav d-flex flex-row ">
+        <ul class="navbar-nav right-nav d-flex flex-row">
           <li class="nav-item">
             <a class="nav-link" routerLink="/about">
               <i class="fas fa-info-circle me-1"></i>About Us
@@ -52,63 +111,44 @@
       </div>
     </div>
 
-    <!-- Bottom Row -->
-    <div class="row bottom-header">
+    <!-- Desktop View: Bottom Row -->
+    <div class="row bottom-header d-none d-lg-flex">
       <div class="col-md-4">
         <ul class="navbar-nav main-nav d-flex flex-row">
-          <!-- Show message if no categories are available -->
           <li class="nav-item" *ngIf="categories.length === 0">
             <span class="nav-link">No Categories</span>
           </li>
-
-          <!-- UPDATED: Main categories with click handler instead of routerLink -->
           <li class="nav-item" *ngFor="let category of mainCategories">
-            <a class="nav-link"
-               (click)="navigateToCategory(category.name)"
-               style="cursor: pointer;">
+            <a class="nav-link" (click)="navigateToCategory(category.name)" style="cursor: pointer;">
               {{ category.name }}
             </a>
           </li>
-
-          <!-- Dropdown for additional categories -->
           <li class="nav-item dropdown" *ngIf="additionalCategories.length > 0">
             <a class="nav-link dropdown-toggle" href="#" (click)="toggleDropdown(); $event.preventDefault()"
                [class.show]="isDropdownOpen">
               More+
             </a>
             <div class="dropdown-menu" [class.show]="isDropdownOpen">
-              <!-- UPDATED: Additional categories with click handler -->
-              <a class="dropdown-item"
-                 *ngFor="let category of additionalCategories"
-                 (click)="navigateToCategory(category.name)"
-                 style="cursor: pointer;">
+              <a class="dropdown-item" *ngFor="let category of additionalCategories"
+                 (click)="navigateToCategory(category.name)" style="cursor: pointer;">
                 {{ category.name }}
               </a>
             </div>
           </li>
         </ul>
       </div>
-
       <!-- Search Bar (Center) -->
       <div class="col-md-4">
         <div class="search-container">
           <div class="input-group search-box">
-            <input #searchInput
-                   type="text"
-                   class="form-control search-input"
-                   placeholder="Search products"
-                   [(ngModel)]="searchQuery"
-                   (input)="onSearch($event)"
-                   (keyup)="onSearchKeyUp($event)">
-            <button class="btn search-btn"
-                    type="button"
-                    (click)="performSearch()">
+            <input #searchInput type="text" class="form-control search-input" placeholder="Search products"
+                   [(ngModel)]="searchQuery" (input)="onSearch($event)" (keyup)="onSearchKeyUp($event)">
+            <button class="btn search-btn" type="button" (click)="performSearch()">
               <i class="fas fa-search"></i>
             </button>
           </div>
         </div>
       </div>
-
       <!-- Icons (Right) -->
       <div class="col-md-4">
         <ul class="navbar-nav icon-nav d-flex flex-row justify-content-end">
@@ -117,10 +157,8 @@
               <i class="fas fa-home"></i>
             </a>
           </li>
-
-          <!-- dynamic cart item count -->
-          <li class="nav-item" >
-            <a class="nav-link cart-link" routerLink="/cart" >
+          <li class="nav-item">
+            <a class="nav-link cart-link" routerLink="/cart">
               <i class="fas fa-shopping-bag"></i>
               <span class="cart-badge">{{ cartItemCount }}</span>
             </a>
@@ -128,23 +166,105 @@
         </ul>
       </div>
     </div>
-  </div>
 
-  <!-- Mobile menu toggle button -->
-  <button class="navbar-toggler d-lg-none" type="button" (click)="toggleMenu()" [class.collapsed]="!isMenuOpen"
-          aria-expanded="false">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+    <!-- Mobile Navigation Menu -->
+    <div class="mobile-nav" [class.show]="isMenuOpen">
+      <button class="close-menu-btn" (click)="closeMenu()">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="mobile-nav-content">
 
-  <!-- Mobile Navigation Menu -->
-  <div class="mobile-nav" [class.show]="isMenuOpen">
-    <!-- Mobile menu categories -->
-    <ul class="mobile-nav-list">
-      <li *ngFor="let category of categories">
-        <a (click)="navigateToCategory(category.name)" style="cursor: pointer;">
-          {{ category.name }}
-        </a>
-      </li>
-    </ul>
+        <!-- Search Section -->
+    <div class="mobile-nav-section">
+      <h3 class="section-title">Search</h3>
+      <div class="search-container">
+        <div class="input-group mobile-search-box">
+          <input #searchInputMobileMenu type="text" class="form-control search-input" placeholder="Search products"
+                 [(ngModel)]="searchQuery" (input)="onSearch($event)" (keyup)="onSearchKeyUp($event)">
+          <button class="btn search-btn" type="button" (click)="performSearch(); closeMenu();">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+       <!-- Account Section -->
+        <div class="mobile-nav-section">
+          <h3 class="section-title">Account</h3>
+          <ul class="mobile-nav-list">
+            <li *ngIf="!authService.isAuthenticated()">
+              <a class="nav-link" routerLink="/auth/register" (click)="navigateAndClose('/auth/register')">
+                <i class="fas fa-user-plus me-1"></i>Register
+              </a>
+            </li>
+            <li *ngIf="!authService.isAuthenticated()">
+              <a class="nav-link" routerLink="/auth/login" (click)="navigateAndClose('/auth/login')">
+                <i class="fas fa-sign-in-alt me-1"></i>Login
+              </a>
+            </li>
+            <li *ngIf="authService.isAuthenticated()">
+              <a class="nav-link" routerLink="user/profile" (click)="navigateAndClose('user/profile')">
+                <i class="fas fa-user-alt me-1"></i>Account
+              </a>
+            </li>
+            <li *ngIf="authService.isAuthenticated()">
+              <a class="nav-link" (click)="logout()" style="cursor: pointer;">
+                <i class="fas fa-sign-out-alt me-1"></i>Logout
+              </a>
+            </li>
+          </ul>
+        </div>
+      
+        <!-- Navigation Section -->
+        <div class="mobile-nav-section">
+          <h3 class="section-title">Navigation</h3>
+          <ul class="mobile-nav-list">
+            <li>
+              <a class="nav-link store-link" routerLink="/" (click)="navigateAndClose('/')">
+                <i class="fas fa-home me-1"></i>Home
+              </a>
+            </li>
+            <li>
+              <a class="nav-link" routerLink="/about" (click)="navigateAndClose('/about')">
+                <i class="fas fa-info-circle me-1"></i>About Us
+              </a>
+            </li>
+            <li>
+              <a class="nav-link" routerLink="/faq" (click)="navigateAndClose('/faq')">
+                <i class="fas fa-question-circle me-1"></i>FAQ
+              </a>
+            </li>
+            <li>
+              <a class="nav-link" routerLink="/contact" (click)="navigateAndClose('/contact')">
+                <i class="fas fa-envelope me-1"></i>Contact Us
+              </a>
+            </li>
+          </ul>
+        </div>
+       
+
+
+        <!-- Categories Section -->
+        <div class="mobile-nav-section">
+          <h3 class="section-title">Categories</h3>
+          <ul class="mobile-nav-list">
+            <li *ngIf="categories.length === 0">
+              <span class="nav-link">No Categories</span>
+            </li>
+            <li *ngFor="let category of mainCategories">
+              <a class="nav-link" (click)="navigateToCategory(category.name)" style="cursor: pointer;">
+                {{ category.name }}
+              </a>
+            </li>
+            <li *ngFor="let category of additionalCategories">
+              <a class="nav-link" (click)="navigateToCategory(category.name)" style="cursor: pointer;">
+                {{ category.name }}
+              </a>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
   </div>
 </header>

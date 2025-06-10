@@ -36,6 +36,12 @@ export class Header implements OnInit, OnDestroy {
   ) {
   }
 
+  navigateAndClose(route: string): void {
+  this.router.navigate([route]);
+  this.closeMenu(); // Close mobile menu
+  this.closeDropdown(); // Close dropdown if open
+}
+
   ngOnInit(): void {
     // Fetch categories from database
     this.loadCategories();
@@ -106,7 +112,6 @@ export class Header implements OnInit, OnDestroy {
   // Perform search and navigate to products page
   performSearch(): void {
     const searchTerm = this.searchQuery.trim();
-
     if (searchTerm) {
       // Navigate to products page with search query parameter
       this.router.navigate(['/products'], {

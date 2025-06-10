@@ -1,3 +1,4 @@
+/* Main Header */
 .main-header {
   background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
@@ -7,94 +8,61 @@
   padding: 5px 0;
   color: #fff;
   font-family: "Gugi", "Coming Soon", "Open Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-
 }
 
-/* Top Row Styling */
-.top-header {
-  padding-bottom: 2px;
-  margin-bottom: 2px;
-  margin-top: 5px;
+/* Mobile Header */
+.mobile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0;
 }
 
-/* Bottom Row Styling */
-.bottom-header {
+.mobile-header-content {
   display: flex;
   align-items: center;
-  margin-bottom: 0;
+  width: 100%;
+  justify-content: space-between;
+  padding: 0 15px;
+  flex-wrap: nowrap; /* Ensure single row */
 }
 
-/* Logo and Brand Name */
-.navbar-brand {
-  display: flex;
-  align-items: center;
-  color: #fff !important;
-  font-weight: bold;
-  font-size: 1.5rem;
-  text-decoration: none;
-  margin-left: 25px;
-
+.mobile-logo {
+  flex: 0 0 auto; /* Fixed width for logo */
 }
 
-.navbar-brand:hover {
-  color: #f39c12 !important;
+.mobile-search-container {
+  flex: 1; /* Take available space */
+  margin: 0 10px;
+  min-width: 0; /* Prevent overflow */
 }
 
-.logo-img {
-  height: 60px;
-  width: 60px;
-  margin-right: 10px;
-  border-radius: 50%;
-  margin-left: 25px;
-}
-
-.brand-text {
-  font-family: 'Brush Script MT', cursive;
-  font-size: 2.5rem;
-  color: #f39c12;
-}
-
-/* Main Navigation (Categories) */
-.main-nav {
-  display: flex;
-  gap: 10px;
-  margin-left: 45px;
-}
-
-.main-nav .nav-link {
-  color: #ecf0f1 !important;
-  font-weight: 500;
-  font-size: 15px;
-  font-family: "Gugi", "Coming Soon", "Open Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  padding: 8px 16px;
-  border-radius: 20px;
-  transition: all 0.3s ease;
-}
-
-.main-nav .nav-link:hover,
-.main-nav .nav-link.active {
-  color: #2c3e50 !important;
-  background-color: #f39c12;
-  transform: translateY(-2px);
-}
-
-/* Search Bar */
-.search-container {
-  width: 500px;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 15px;
-}
-
-.search-box {
+.mobile-search-box {
+  width: 100%;
   border-radius: 25px;
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+.mobile-cart {
+  flex: 0 0 auto; /* Fixed width for cart */
+  margin: 0 10px;
+}
+
+.navbar-toggler {
+  flex: 0 0 auto; /* Fixed width for toggle */
+}
+
+.mobile-categories {
+  width: 100%;
+  padding: 0 15px;
+  margin-top: 10px;
+}
+
+/* Search Bar (reused for both mobile and desktop) */
 .search-input {
   border: none;
-  padding: 12px 20px;
+  padding: 8px 15px;
   font-size: 14px;
   background-color: #fff;
 }
@@ -109,7 +77,7 @@
   background-color: #f39c12;
   color: white;
   border: none;
-  padding: 12px 20px;
+  padding: 8px 15px;
   transition: all 0.3s ease;
 }
 
@@ -118,12 +86,116 @@
   transform: scale(1.05);
 }
 
-/* Right Navigation */
+/* Logo and Brand Name */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  color: #fff !important;
+  font-weight: bold;
+  font-size: 1.5rem;
+  text-decoration: none;
+  margin-left: 15px;
+}
+
+.navbar-brand:hover {
+  color: #f39c12 !important;
+}
+
+.logo-img {
+  height: 40px;
+  width: 40px;
+  margin-right: 8px;
+  border-radius: 50%;
+}
+
+.brand-text {
+  font-family: 'Brush Script MT', cursive;
+  font-size: 1.8rem;
+  color: #f39c12;
+}
+
+/* Main Navigation (Categories) */
+.main-nav {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.main-nav .nav-link {
+  color: #ecf0f1 !important;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.main-nav .nav-link:hover,
+.main-nav .nav-link.active {
+  color: #2c3e50 !important;
+  background-color: #f39c12;
+  transform: translateY(-2px);
+}
+
+/* Cart Badge */
+.cart-link {
+  position: relative;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #e74c3c;
+  color: white;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* Navbar Toggler */
+.navbar-toggler {
+  border: none;
+  color: #fff;
+}
+
+.navbar-toggler:focus {
+  box-shadow: none;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.85%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='m4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Desktop View */
+.top-header {
+  padding-bottom: 2px;
+  margin-bottom: 2px;
+  margin-top: 5px;
+}
+
+.bottom-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.search-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 10px 0;
+}
+
 .right-nav {
   display: flex;
   gap: 7px;
-  /*margin-right: 50px;*/
-  padding: 10px ;
+  padding: 10px;
 }
 
 .right-nav .nav-link {
@@ -131,7 +203,7 @@
   padding: 8px 12px;
   border-radius: 15px;
   transition: all 0.3s ease;
-  font-size: 17px;
+  font-size: 15px;
 }
 
 .right-nav .nav-link:hover {
@@ -140,7 +212,6 @@
   transform: translateY(-1px);
 }
 
-/* Icon Navigation */
 .icon-nav {
   display: flex;
   justify-content: flex-end;
@@ -161,103 +232,81 @@
   transform: translateY(-2px);
 }
 
-/* Cart Badge */
-.cart-link {
-  position: relative;
-
-}
-
-.cart-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: #e74c3c;
-  color: white;
-  border-radius: 50%;
-  width: 15px;
-  height: 15px;
-  font-size: 11px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-}
-
-/* Mobile Menu Toggle */
-.navbar-toggler {
-
-  border: none;
-  color: #fff;
-  display: none;
-}
-
-.navbar-toggler:focus {
-  box-shadow: none;
-}
-
-.navbar-toggler-icon {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.85%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='m4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-}
-
 /* Mobile Navigation */
 .mobile-nav {
   display: none;
 }
 
-/* Responsive Design */
-@media (max-width: 991.98px) {
-  .top-header, .bottom-header {
-    flex-direction: column;
-  }
-
-  .navbar-brand, .right-nav, .main-nav, .search-container, .icon-nav {
-    width: 100%;
-    justify-content: center;
-    margin: 10px 0;
-  }
-
-  .navbar-toggler {
-    display: block;
-    position: absolute;
-    top: 20px;
-    right: 20px;
-  }
-
-  .mobile-nav.show {
-    display: block;
-    padding: 15px;
-    background-color: rgba(44, 62, 80, 0.95);
-  }
-
-  .top-header, .bottom-header {
-    display: none;
-  }
-
-  .mobile-nav.show .top-header,
-  .mobile-nav.show .bottom-header {
-    display: block;
-  }
+.mobile-nav.show {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(44, 62, 80, 0.95);
+  z-index: 999;
+  overflow-y: auto;
 }
 
-@media (max-width: 768px) {
-  .brand-text {
-    font-size: 1.5rem;
-  }
-
-  .logo-img {
-    height: 60px;
-    width: 60px;
-  }
-
-  .right-nav, .main-nav, .icon-nav {
-    flex-wrap: wrap;
-  }
-
-  .search-container {
-    width: 90%;
-  }
+.mobile-nav-content {
+  padding: 20px;
+  padding-top: 60px;
 }
-/* Dropdown styling */
+
+.mobile-nav-section {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  color: #f39c12;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.mobile-nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mobile-nav-list li {
+  padding: 10px 0;
+}
+
+.mobile-nav-list .nav-link {
+  color: #ecf0f1 !important;
+  font-size: 16px;
+  padding: 10px 20px;
+  display: block;
+  transition: all 0.3s ease;
+}
+
+.mobile-nav-list .nav-link:hover {
+  color: #f39c12 !important;
+  background-color: rgba(243, 156, 18, 0.1);
+}
+
+/* Close Button */
+.close-menu-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.close-menu-btn:hover {
+  color: #f39c12;
+}
+
+/* Dropdown Styling */
 .dropdown {
   position: relative;
 }
@@ -315,7 +364,58 @@
   text-decoration: none;
   background-color: #f8f9fa;
 }
-.dropdown-item:hover{
+
+.dropdown-item:hover {
   color: #f39c12 !important;
   transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 991.98px) {
+  .mobile-header {
+    display: flex;
+  }
+
+  .top-header, .bottom-header {
+    display: none;
+  }
+}
+
+@media (min-width: 992px) {
+  .mobile-nav {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .brand-text {
+    font-size: 1.2rem;
+  }
+
+  .logo-img {
+    height: 30px;
+    width: 30px;
+  }
+
+  .mobile-header-content {
+    padding: 0 10px;
+  }
+
+  .mobile-search-container {
+    margin: 0 5px;
+  }
+
+  .mobile-cart {
+    margin: 0 5px;
+  }
+
+  .main-nav {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .main-nav .nav-link {
+    font-size: 13px;
+    padding: 5px 10px;
+  }
 }
