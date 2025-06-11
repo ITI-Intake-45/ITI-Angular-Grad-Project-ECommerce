@@ -249,11 +249,11 @@ export class OrderList implements OnInit {
 
   // Cancel an order
   cancelOrder(orderId: number, event: Event): void {
-    event.stopPropagation(); // Prevent triggering other events
-    if (confirm('Are you sure you want to cancel this order?')) {
+    // event.stopPropagation(); // Prevent triggering other events
+    // if (confirm('Are you sure you want to cancel this order?')) {
       this.orderService.cancelOrder(orderId).subscribe({
         next: () => {
-          alert('Order cancelled successfully.');
+          // alert('Order cancelled successfully.');
           this.loadOrders(); // Refresh orders after cancellation
         },
         error: (err) => {
@@ -261,10 +261,10 @@ export class OrderList implements OnInit {
           alert('Failed to cancel the order. Please try again.');
         }
       });
-    }
+    // }s
   }
 
-    // Cancel an order
+    // accept an order
   acceptOrder(orderId: number, event: Event): void {
     event.stopPropagation(); // Prevent triggering other events
     if (confirm('Are you sure you want to accept this order?')) {

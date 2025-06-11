@@ -82,10 +82,10 @@ export class OrderDetails implements OnInit {
       return;
     }
 
-    const confirmCancel = confirm('Are you sure you want to cancel this order?');
-    if (!confirmCancel) {
-      return;
-    }
+    // const confirmCancel = confirm('Are you sure you want to cancel this order?');
+    // if (!confirmCancel) {
+    //   return;
+    // }
 
     this.updatingStatus = true;
 
@@ -95,7 +95,7 @@ export class OrderDetails implements OnInit {
           this.order.status = OrderStatus.CANCELLED;
         }
         this.updatingStatus = false;
-        alert('Order cancelled successfully.');
+        // alert('Order cancelled successfully.');
         
         // Navigate back to orders list with a flag to refresh statistics
         this.router.navigate(['user/orders'], { 
