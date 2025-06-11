@@ -7,7 +7,7 @@ import {catchError, map, tap} from 'rxjs/operators';
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   private apiUrl = 'http://localhost:8080/api/v1/orders';
-  
+
   // Subject to emit when orders are updated
   private orderUpdatedSource = new Subject<void>();
   public orderUpdated$ = this.orderUpdatedSource.asObservable();
@@ -25,7 +25,7 @@ export class OrderService {
     );
   }
   private handlePlaceOrderError(error: HttpErrorResponse): Observable<never> {
-  console.error('error:', error.error); 
+  console.error('error:', error.error);
   return throwError(() => new Error(error.error || 'Something went wrong'));
 }
 
@@ -72,7 +72,7 @@ export class OrderService {
   }
 
   acceptOrder(orderId: number): Observable<string> {
-    return this.http.put<string>(`${this.apiUrl}/${orderId}/accept`, null, {
+    return this.http.patch<string>(`${this.apiUrl}/${orderId}/accept`, null, {
       withCredentials: true,
       responseType: 'text' as 'json'
     }).pipe(
@@ -81,7 +81,7 @@ export class OrderService {
   }
 
   cancelOrder(orderId: number): Observable<string> {
-    return this.http.put<string>(`${this.apiUrl}/${orderId}/cancel`, null, {
+    return this.http.patch<string>(`${this.apiUrl}/${orderId}/cancel`, null, {
       withCredentials: true,
       responseType: 'text' as 'json'
     }).pipe(
