@@ -155,30 +155,37 @@ export class AuthService {
     return null;
   }
 
-  register(newUser: RegisterRequest) {
+  register(newUser: RegisterRequest): Observable<any> {
     console.log('📝 AuthService: Starting registration process...');
 
-    this.http.post<UserLoginDto>(this.baseUrl + "/register", newUser)
-      .subscribe({
-        next: (response) => {
-          console.log('📝 AuthService: Registration successful:', response);
+    return this.http.post<UserLoginDto>(this.baseUrl + "/register", newUser).pipe(
+      switchMap((registerResponse) => {
+        console.log('📝 AuthService: Registration successful:', registerResponse);
 
-          // alert("🎉 Welcome! Your account has been created.");
-          console.log('📝 AuthService: Navigating to home...');
+        // Now automatically login with the same credentials
+        console.log('🔐 AuthService: Auto-logging in after registration...');
+        return this.login({ email: newUser.email, password: newUser.password });
+      }),
+      tap(() => {
+        console.log('✅ AuthService: Registration and auto-login completed successfully');
+      }),
+      catchError((error) => {
+        console.error('📝 AuthService: Registration error:', error);
 
-           this.login({ email: newUser.email, password: newUser.password });
-          this.router.navigate(['/']);
+        let errorMessage = 'Registration failed. Please try again.';
 
-        },
-        error: (error) => {
-          console.error('📝 AuthService: Registration error:', error);
-          if (error.status === 409) {
-            alert('❌ Email or phone number already in use.');
-          } else {
-            alert('⚠️ Something went wrong. Please try again later.');
-          }
+        if (error.status === 409) {
+          errorMessage = 'Email or phone number already in use.';
+        } else if (error.status === 400) {
+          errorMessage = 'Invalid registration data. Please check your information.';
+        } else if (error.status === 0) {
+          errorMessage = 'Unable to connect to server. Please check your internet connection.';
         }
-      });
+
+        // Re-throw the error so the component can handle it
+        return throwError(() => new Error(errorMessage));
+      })
+    );
   }
 
   logout(): void {

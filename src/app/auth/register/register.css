@@ -158,16 +158,16 @@ label {
     .register-wrapper {
         padding: 20px;
     }
-    
+
     .register-form {
         padding: 20px;
         margin: 0 10px;
     }
-    
+
     .form-control {
         padding: 10px;
     }
-    
+
     .register-btn {
         padding: 10px 16px;
     }
@@ -216,4 +216,35 @@ label {
   color: #2ecc71;
   font-size: 0.9em;
   margin-top: 4px;
+}
+
+
+.loading-msg {
+  text-align: center;
+  color: #007bff;
+  margin: 15px 0;
+}
+
+.spinner {
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #007bff;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.global-error-msg {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  border: 1px solid #f5c6cb;
 }

@@ -3,6 +3,15 @@
   <form (ngSubmit)="onRegister()" class="register-form" novalidate>
     <h2>PERSONAL INFORMATION</h2>
 
+    <!-- Global error message -->
+    <div class="global-error-msg" *ngIf="globalErrorMessage">{{ globalErrorMessage }}</div>
+
+    <!-- Loading indicator -->
+    <div class="loading-msg" *ngIf="isLoading">
+      <p>Creating your account and logging you in...</p>
+      <div class="spinner"></div>
+    </div>
+
     <!-- NAME -->
     <div class="form-group">
       <label>Name *</label>
@@ -15,6 +24,7 @@
         [class.success-border]="!nameError && name"
         (blur)="onNameChange()"
         placeholder="Enter your full name"
+        [disabled]="isLoading"
       />
       <div class="error-msg" *ngIf="nameError">{{ nameError }}</div>
       <div class="success-msg" *ngIf="nameTouched && !nameError && name">✔ Name looks good</div>
@@ -32,6 +42,7 @@
         [class.success-border]="!emailError && email"
         (blur)="onEmailChange()"
         placeholder="Enter your email address"
+        [disabled]="isLoading"
       />
       <div class="error-msg" *ngIf="emailError">{{ emailError }}</div>
       <div class="success-msg" *ngIf="emailTouched && !emailError && email">✔ Valid email</div>
@@ -50,6 +61,7 @@
         [class.success-border]="!phoneError && phone"
         (blur)="onPhoneChange()"
         placeholder="Enter 11-digit phone number"
+        [disabled]="isLoading"
       />
       <div class="error-msg" *ngIf="phoneError">{{ phoneError }}</div>
       <div class="success-msg" *ngIf="phoneTouched && !phoneError && phone">✔ Phone number valid</div>
@@ -68,6 +80,7 @@
         [class.success-border]="!addressError && address"
         (blur)="onAddressChange()"
         placeholder="Enter your address"
+        [disabled]="isLoading"
       />
       <div class="error-msg" *ngIf="addressError">{{ addressError }}</div>
       <div class="success-msg" *ngIf="addressTouched && !addressError && address">✔ Address looks good</div>
@@ -87,6 +100,7 @@
         [class.success-border]="!creditError && creditBalence !== null"
         (blur)="onCreditChange()"
         placeholder="Enter initial credit balance"
+        [disabled]="isLoading"
       />
       <div class="error-msg" *ngIf="creditError">{{ creditError }}</div>
       <div class="success-msg" *ngIf="creditTouched && !creditError && creditBalence !== null">✔ Credit valid</div>
@@ -104,9 +118,10 @@
         [class.success-border]="!passwordError && password"
         (blur)="onPasswordChange()"
         placeholder="Enter a strong password"
+        [disabled]="isLoading"
       />
       <div class="error-msg" *ngIf="passwordError">{{ passwordError }}</div>
-      <div class="success-msg" *passwordTouched && ngIf="!passwordError && password">✔ Password is strong</div>
+      <div class="success-msg" *ngIf="passwordTouched && !passwordError && password">✔ Password is strong</div>
       <div class="password-help" *ngIf="!password">
         <small>Password must contain: lowercase, uppercase, number, special character (min 8 chars)</small>
       </div>
@@ -125,6 +140,7 @@
         (blur)="onConfirmPasswordChange()"
         (input)="onConfirmPasswordChange()"
         placeholder="Confirm your password"
+        [disabled]="isLoading"
       />
       <div class="error-msg" *ngIf="confirmPasswordError">{{ confirmPasswordError }}</div>
       <div class="success-msg" *ngIf="confirmPasswordTouched && !confirmPasswordError && confirmPassword === password">
@@ -132,7 +148,10 @@
       </div>
     </div>
 
-    <button type="submit" class="register-btn">REGISTER</button>
+    <button type="submit" class="register-btn" [disabled]="isLoading">
+      <span *ngIf="!isLoading">REGISTER</span>
+      <span *ngIf="isLoading">CREATING ACCOUNT...</span>
+    </button>
   </form>
 </div>
 <app-footer></app-footer>

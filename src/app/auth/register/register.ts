@@ -10,6 +10,8 @@ import { Router } from '@angular/router';
   styleUrl: './register.css'
 })
 export class Register {
+  isLoading: boolean = false;
+  globalErrorMessage: string = ''
   name = '';
   email = '';
   phone = '';
@@ -51,7 +53,7 @@ export class Register {
 
   validateEmail(): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
+
     if (!this.email || this.email.trim() === '') {
       this.emailError = 'Email is required';
       return false;
@@ -153,14 +155,14 @@ validatePhone(): boolean {
       this.nameTouched = true;
 
       this.validateName();
-    
+
   }
 
   onEmailChange(): void {
           this.emailTouched = true;
 
       this.validateEmail();
-    
+
   }
 
   onPhoneChange(): void {
@@ -169,21 +171,21 @@ validatePhone(): boolean {
 
     this.phone = this.phone.replace(/[^0-9]/g, '');
       this.validatePhone();
-    
+
   }
 
   onAddressChange(): void {
           this.addressTouched = true;
 
       this.validateAddress();
-    
+
   }
 
   onCreditChange(): void {
           this.creditTouched = true;
 
       this.validateCredit();
-    
+
   }
 
 onPasswordChange(): void {
@@ -205,6 +207,8 @@ onConfirmPasswordChange(): void {
 
   onRegister() {
     this.submitted = true;
+    this.globalErrorMessage = '';
+    this.isLoading = true;
 
     // Validate all fields
     const isNameValid = this.validateName();
@@ -216,8 +220,9 @@ onConfirmPasswordChange(): void {
     const isConfirmPasswordValid = this.validateConfirmPassword();
 
     // Check if all validations passed
-    if (!isNameValid || !isEmailValid || !isPhoneValid || !isAddressValid || 
-        !isCreditValid || !isPasswordValid || !isConfirmPasswordValid) {
+    if (!isNameValid || !isEmailValid || !isPhoneValid || !isAddressValid ||
+      !isCreditValid || !isPasswordValid || !isConfirmPasswordValid) {
+      this.isLoading = false;
       return;
     }
 
@@ -230,13 +235,27 @@ onConfirmPasswordChange(): void {
       password: this.password
     };
 
-    this.authService.register(user);
+    // Subscribe to the register method
+    this.authService.register(user).subscribe({
+      next: (response) => {
+        console.log('✅ Registration and login successful:', response);
+        this.isLoading = false;
+        // Navigation will be handled by the AuthService login method
+      },
+      error: (error) => {
+        console.error('❌ Registration failed:', error);
+        this.isLoading = false;
+
+        // Display user-friendly error message
+        this.globalErrorMessage = error.message || 'Registration failed. Please try again.';
+      }
+    });
   }
 
   // Helper method to get password strength
   getPasswordStrength(): string {
     if (!this.password) return '';
-    
+
     const hasLowerCase = /[a-z]/.test(this.password);
     const hasUpperCase = /[A-Z]/.test(this.password);
     const hasNumbers = /\d/.test(this.password);

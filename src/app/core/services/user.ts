@@ -164,7 +164,6 @@ export class UserService {
     );
   }
 
-  // Update profile method with better error handling
   updateProfile(profile: Partial<UserProfile>): Observable<UserProfile> {
     console.log('🔄 UserService: Updating profile with data:', profile);
 
@@ -173,49 +172,27 @@ export class UserService {
       headers: {
         'Content-Type': 'application/json'
       },
-      observe: 'response', // Get full response
-      responseType: 'text' // Expect text response
+      observe: 'response',
+      responseType: 'text'
     }).pipe(
-      map((response) => {
+      switchMap((response) => {
         console.log('✅ UserService: Update profile response:', response);
 
         if (response.status === 200) {
           const responseBody = response.body;
 
-          // Check if response indicates success
           if (responseBody && responseBody.includes('successfully')) {
-            console.log('✅ Profile update successful');
+            console.log('✅ Profile update successful, refreshing from server...');
 
-            // Create updated profile object from the form data and current profile
-            const currentProfile = this.getCurrentUserProfile();
-            if (currentProfile) {
-              const updatedProfile: UserProfile = {
-                ...currentProfile,
-                ...profile // Merge the updated fields
-              };
-
-              // Update the BehaviorSubject and localStorage immediately
-              this.userProfileSubject.next(updatedProfile);
-              localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
-
-              // Also update currentUser in localStorage if it exists
-              const currentUser = localStorage.getItem('currentUser');
-              if (currentUser) {
-                try {
-                  const user = JSON.parse(currentUser);
-                  const updatedUser = {...user, ...profile};
-                  localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-                } catch (error) {
-                  console.error('Error updating currentUser in localStorage:', error);
-                }
-              }
-
-              return updatedProfile;
-            } else {
-              throw new Error('No current profile found');
-            }
+            // Always refresh from server to get the latest data
+            return this.refreshProfile().pipe(
+              tap(refreshedProfile => {
+                console.log('✅ UserService: Profile refreshed after update:', refreshedProfile);
+                // Sync across all storage locations
+                this.syncUserData(refreshedProfile);
+              })
+            );
           } else if (responseBody && (responseBody.includes('exists') || responseBody.includes('error'))) {
-            // Error response
             throw new Error(responseBody);
           } else {
             throw new Error('Unknown response from server');
@@ -256,7 +233,7 @@ export class UserService {
     console.log('💳 UserService: Updating balance to new total via real API:', newTotalBalance);
 
     return this.http.patch<UserProfile>(`${this.apiUrl}/change-balance`, {
-      balance: newTotalBalance // Send the new total balance to backend
+      balance: newTotalBalance
     }, {
       withCredentials: true,
       headers: {
@@ -266,23 +243,8 @@ export class UserService {
       tap(updatedUserProfile => {
         console.log('💳 UserService: Balance updated successfully:', updatedUserProfile);
 
-        // Update the BehaviorSubject with the new profile data from backend
-        this.userProfileSubject.next(updatedUserProfile);
-
-        // Update localStorage with the new profile
-        localStorage.setItem('userProfile', JSON.stringify(updatedUserProfile));
-
-        // Also update currentUser in localStorage if it exists
-        const currentUser = localStorage.getItem('currentUser');
-        if (currentUser) {
-          try {
-            const user = JSON.parse(currentUser);
-            const updatedUser = { ...user, creditBalance: updatedUserProfile.creditBalance };
-            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-          } catch (error) {
-            console.error('Error updating currentUser in localStorage:', error);
-          }
-        }
+        // Sync across all storage locations
+        this.syncUserData(updatedUserProfile);
       }),
       catchError((error: HttpErrorResponse) => {
         console.error('💳 UserService: Add balance error:', error);
@@ -298,6 +260,31 @@ export class UserService {
         }
 
         return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+  validateSessionBeforeUpdate(): Observable<boolean> {
+    return this.http.get(`${this.apiUrl}/check-session`, {
+      withCredentials: true,
+      observe: 'response'
+    }).pipe(
+      map(response => {
+        console.log('✅ UserService: Session validation successful');
+        return response.status === 200;
+      }),
+      catchError(error => {
+        console.error('❌ UserService: Session validation failed:', error);
+
+        if (error.status === 401) {
+          // Clear all auth data
+          this.clearProfile();
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('loginTimestamp');
+        }
+
+        return of(false);
       })
     );
   }
@@ -607,4 +594,39 @@ export class UserService {
 
     return throwError(() => new Error(errorMessage));
   }
+
+
+
+  // Method to sync user data across services and storage
+  syncUserData(updatedUser: UserProfile): void {
+    console.log('🔄 UserService: Syncing user data across all storage locations');
+
+    // Update UserService BehaviorSubject
+    this.userProfileSubject.next(updatedUser);
+
+    // Update localStorage userProfile
+    localStorage.setItem('userProfile', JSON.stringify(updatedUser));
+
+    // Update localStorage currentUser if it exists
+    const currentUser = localStorage.getItem('currentUser');
+    if (currentUser) {
+      try {
+        const user = JSON.parse(currentUser);
+        const updatedCurrentUser = {
+          ...user,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          phone: updatedUser.phone,
+          address: updatedUser.address,
+          creditBalance: updatedUser.creditBalance
+        };
+        localStorage.setItem('currentUser', JSON.stringify(updatedCurrentUser));
+        console.log('✅ UserService: currentUser localStorage updated');
+      } catch (error) {
+        console.error('❌ UserService: Error updating currentUser in localStorage:', error);
+      }
+    }
+  }
+
+
 }
