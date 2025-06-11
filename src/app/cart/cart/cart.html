@@ -12,9 +12,20 @@
 
 </div>
 
+      <!-- Empty state -->
+      <div *ngIf="!loading && cart.cartItems.length === 0" class="text-center py-5">
+        <div class="empty-cart">
+          <i class="fas fa-shopping-cart fa-4x mb-3 text-muted"></i>
+          <h3>No items yet.</h3>
+          <a routerLink="/products" class="btn btn-primary mt-3">
+            <i class="fas fa-shopping-bag"></i> Shop Now
+          </a>
+        </div>
+      </div>
+
     </div>
     <div class="col-auto">
-      <button class="btn btn-primary" (click)="proceedToCheckout()" [disabled]="isCartEmpty() || loading">Proceed to Checkout</button>
+      <button class="btn btn-primary" (click)="proceedToCheckout()" [hidden]="isCartEmpty() || loading">Proceed to Checkout</button>
     </div>
   </div>
 </div>

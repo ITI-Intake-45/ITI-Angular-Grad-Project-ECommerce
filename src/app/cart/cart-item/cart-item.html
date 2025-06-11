@@ -9,8 +9,8 @@
     <div class="col-3">
       <h5 class="card-title mb-0">{{ item.productName }}</h5>
       <p class="mb-0">Price: ${{ item.price | number:'1.2-2' }}</p>
-      <p 
-  class="mb-0 subtotal" 
+      <p
+  class="mb-0 subtotal"
   [class.fade]="isSubtotalChanged(item.productId)">
   Subtotal: ${{ item.subtotal | number:'1.2-2' }}
 </p>
@@ -23,6 +23,6 @@
     </div>
   </div>
 </div>
-<div class="text-center m-4" *ngIf="!cartItems.length">
-  <p>Your cart is empty.</p>
-</div>
+<!--<div class="text-center m-4" *ngIf="!cartItems.length">-->
+<!--  <p>Your cart is empty.</p>-->
+<!--</div>-->
