@@ -166,8 +166,8 @@ export class AuthService {
           // alert("🎉 Welcome! Your account has been created.");
           console.log('📝 AuthService: Navigating to home...');
 
-          //  this.login({ email: newUser.email, password: newUser.password });
-          this.router.navigate(['/auth/login']);
+           this.login({ email: newUser.email, password: newUser.password });
+          this.router.navigate(['/']);
 
         },
         error: (error) => {
