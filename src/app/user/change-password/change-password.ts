@@ -27,7 +27,8 @@ export class ChangePassword implements OnInit, OnDestroy {
     minLength: false,
     hasUppercase: false,
     hasLowercase: false,
-    hasNumbers: false
+    hasNumbers: false,
+    hasSpecialChar: false  // Added special character requirement
   };
 
   private subscriptions: Subscription[] = [];
@@ -127,15 +128,16 @@ export class ChangePassword implements OnInit, OnDestroy {
       return;
     }
 
-    // Check password requirements
+    // Check password requirements (including special character)
     this.passwordRequirements = {
       minLength: password.length >= 8,
       hasUppercase: /[A-Z]/.test(password),
       hasLowercase: /[a-z]/.test(password),
-      hasNumbers: /\d/.test(password)
+      hasNumbers: /\d/.test(password),
+      hasSpecialChar: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)  // Added special character validation
     };
 
-    // Calculate strength
+    // Calculate strength (now out of 5 requirements)
     this.passwordStrength = Object.values(this.passwordRequirements).filter(Boolean).length;
 
     // Check if new password is same as current password
@@ -146,9 +148,9 @@ export class ChangePassword implements OnInit, OnDestroy {
     }
 
     // Set status based on strength
-    if (this.passwordStrength === 4) {
+    if (this.passwordStrength === 5) {  // Updated to 5 requirements
       this.newPasswordStatus = '✅ Strong password';
-    } else if (this.passwordStrength >= 2) {
+    } else if (this.passwordStrength >= 3) {
       this.newPasswordStatus = '⚠️ Medium strength - consider adding more requirements';
     } else {
       this.newPasswordStatus = '❌ Weak password - please meet more requirements';
@@ -171,7 +173,7 @@ export class ChangePassword implements OnInit, OnDestroy {
     }
   }
 
-  // Custom validator for password strength
+  // Custom validator for password strength (updated to include special character)
   private passwordStrengthValidator(control: AbstractControl): ValidationErrors | null {
     const password = control.value;
     if (!password) return null;
@@ -179,9 +181,10 @@ export class ChangePassword implements OnInit, OnDestroy {
     const hasUppercase = /[A-Z]/.test(password);
     const hasLowercase = /[a-z]/.test(password);
     const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);  // Added special character check
     const hasMinLength = password.length >= 8;
 
-    const valid = hasUppercase && hasLowercase && hasNumbers && hasMinLength;
+    const valid = hasUppercase && hasLowercase && hasNumbers && hasSpecialChar && hasMinLength;  // Updated validation
     return valid ? null : { passwordStrength: true };
   }
 
@@ -196,12 +199,12 @@ export class ChangePassword implements OnInit, OnDestroy {
   }
 
   getStrengthColor(): string {
-    const colors = ['#ff4d4d', '#ff8c00', '#ffd700', '#32cd32'];
+    const colors = ['#ff4d4d', '#ff6b6b', '#ff8c00', '#ffd700', '#32cd32'];  // Updated colors for 5 levels
     return colors[this.passwordStrength - 1] || '#ddd';
   }
 
   getStrengthWidth(): string {
-    return (this.passwordStrength * 25) + '%';
+    return (this.passwordStrength * 20) + '%';  // Updated to 20% per requirement (5 requirements = 100%)
   }
 
   onSubmit(): void {
@@ -228,8 +231,8 @@ export class ChangePassword implements OnInit, OnDestroy {
       return;
     }
 
-    // Check if new password is strong enough
-    if (this.passwordStrength < 4) {
+    // Check if new password meets all requirements (updated to 5)
+    if (this.passwordStrength < 5) {
       this.formStatus = '❌ New password must meet all requirements';
       this.formStatusType = 'error';
       return;
@@ -311,7 +314,8 @@ export class ChangePassword implements OnInit, OnDestroy {
       minLength: false,
       hasUppercase: false,
       hasLowercase: false,
-      hasNumbers: false
+      hasNumbers: false,
+      hasSpecialChar: false  // Added special character requirement
     };
   }
 
@@ -320,11 +324,11 @@ export class ChangePassword implements OnInit, OnDestroy {
     return !!(field?.invalid && field?.touched);
   }
 
-  // Helper method to check if form can be submitted
+  // Helper method to check if form can be submitted (updated to require all 5 requirements)
   canSubmit(): boolean {
     return !this.isSubmitting &&
       this.currentPasswordStatus.includes('✅') &&
-      this.passwordStrength === 4 &&
+      this.passwordStrength === 5 &&  // Updated to 5 requirements
       this.confirmPasswordStatus.includes('✅') &&
       this.passwordForm.valid;
   }
