@@ -124,7 +124,7 @@ export class Shipping implements OnInit {
             console.log('Shipping: Cart cleared successfully, cart:', this.cartService.getCurrentCart());
             this.isProcessing = false;
             
-            alert("Order placed! ☕ Thank you for shopping with us.");
+            // alert("Order placed! ☕ Thank you for shopping with us.");
             this.cartService.clearCartAfterCheckOut();
             this.router.navigate(['/']);
           

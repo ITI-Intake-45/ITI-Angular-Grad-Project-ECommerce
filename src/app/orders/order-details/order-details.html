@@ -48,13 +48,13 @@
         <div *ngIf="order.status === OrderStatus.PENDING"
              class="d-flex justify-content-end gap-2">
           <!-- Accept Button -->
-          <button class="btn btn-success" 
+          <!-- <button class="btn btn-success" 
                   (click)="acceptOrder()"
                   [disabled]="updatingStatus">
             <i class="fas fa-check"></i> 
             <span *ngIf="!updatingStatus">Accept Order</span>
             <span *ngIf="updatingStatus">Processing...</span>
-          </button>
+          </button> -->
           
           <!-- Cancel Button -->
           <button class="btn btn-danger" 
