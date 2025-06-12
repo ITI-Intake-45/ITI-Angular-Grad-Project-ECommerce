@@ -28,26 +28,6 @@ export class Checkout implements OnInit {
       return;
     }
 
-    // Force cart sync and check cart state
-    /*this.cartService.syncCartWithServer().pipe(
-      tap(cart => console.log('Checkout: Cart synced', cart)),
-      switchMap(cart => {
-        this.isCartEmpty = cart.cartItems.length === 0;
-        console.log('Checkout: Cart state after sync, isCartEmpty:', this.isCartEmpty);
-        if (this.isCartEmpty) {
-          console.warn('Checkout: Cart is empty, redirecting to cart page');
-          this.router.navigate(['/cart']);
-          return of(null); // Stop further processing
-        }
-        return of(cart);
-      })
-    ).subscribe({
-      error: err => {
-        console.error('Checkout: Error syncing cart:', err);
-        this.isCartEmpty = true; // Assume empty on error to avoid checkout with invalid cart
-        this.router.navigate(['/cart']);
-      }
-    });*/
 
     // Monitor cart$ for real-time updates
     this.cartService.cart$.subscribe(cart => {

@@ -1,8 +1,9 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, throwError, Subject } from "rxjs";
+import {Observable, throwError, Subject, switchMap} from "rxjs";
 import {CreateOrderRequest, Order, OrderStatistics, OrderStatus, Page} from "../../shared/order-models";
 import {catchError, map, tap} from 'rxjs/operators';
+import {UserProfile, UserService} from './user';
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
@@ -12,18 +13,20 @@ export class OrderService {
   private orderUpdatedSource = new Subject<void>();
   public orderUpdated$ = this.orderUpdatedSource.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private userService: UserService) {}
 
-  // Create/Place order
-  createOrder(userId: number): Observable<string> {
+  // Update createOrder to refresh user profile
+  createOrder(userId: number): Observable<UserProfile> {
     return this.http.post<string>(`${this.apiUrl}/${userId}`, {}, {
       withCredentials: true,
       responseType: 'text' as 'json'
     }).pipe(
+      switchMap(() => this.userService.refreshProfile()), // Refresh profile to get latest balance
       tap(() => this.orderUpdatedSource.next()), // Emit event on order creation
       catchError(this.handlePlaceOrderError)
     );
   }
+
   private handlePlaceOrderError(error: HttpErrorResponse): Observable<never> {
   console.error('error:', error.error);
   return throwError(() => new Error(error.error || 'Something went wrong'));
@@ -80,12 +83,14 @@ export class OrderService {
     );
   }
 
-  cancelOrder(orderId: number): Observable<string> {
+  cancelOrder(orderId: number): Observable<UserProfile> {
     return this.http.patch<string>(`${this.apiUrl}/${orderId}/cancel`, null, {
       withCredentials: true,
       responseType: 'text' as 'json'
     }).pipe(
-      tap(() => this.orderUpdatedSource.next()) // Emit event on order cancellation
+      switchMap(() => this.userService.refreshProfile()), // Refresh profile to get latest balance
+      tap(() => this.orderUpdatedSource.next()), // Emit event on order cancellation
+      catchError(this.handleError)
     );
   }
 

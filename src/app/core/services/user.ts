@@ -71,28 +71,6 @@ export class UserService {
     }
   }
 
-  // Get user profile - first check if we have it in memory, otherwise fetch from API
-  // getProfile(): Observable<UserProfile> {
-  //   const currentProfile = this.getCurrentUserProfile();
-  //
-  //   // If we already have the profile in memory, return it
-  //   if (currentProfile) {
-  //     console.log('📁 UserService: Returning cached profile');
-  //     return of(currentProfile);
-  //   }
-  //
-  //   // Otherwise fetch from API
-  //   console.log('📁 UserService: Fetching profile from API');
-  //   return this.http.get<UserProfile>(`${this.apiUrl}/profile`).pipe(
-  //     tap(profile => {
-  //       console.log('📁 UserService: Profile loaded from API:', profile);
-  //       this.userProfileSubject.next(profile);
-  //       // Store in localStorage for persistence
-  //       localStorage.setItem('userProfile', JSON.stringify(profile));
-  //     }),
-  //     catchError(this.handleError)
-  //   );
-  // }
 
   // UserService: Map userId to id to resolve mismatched expectations
   getProfile(): Observable<UserProfile> {

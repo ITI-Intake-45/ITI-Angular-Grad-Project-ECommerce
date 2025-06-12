@@ -26,6 +26,7 @@ export class OrderList implements OnInit {
     private router: Router
   ) {}
 
+
   ngOnInit(): void {
     this.loadOrders();
   }
@@ -76,22 +77,22 @@ export class OrderList implements OnInit {
 
   // Cancel an order
   cancelOrder(orderId: number, event: Event): void {
-    // event.stopPropagation(); // Prevent triggering other events
-    // if (confirm('Are you sure you want to cancel this order?')) {
-      this.orderService.cancelOrder(orderId).subscribe({
-        next: () => {
-          // alert('Order cancelled successfully.');
-          this.loadOrders(); // Refresh orders after cancellation
-        },
-        error: (err) => {
-          console.error('Error cancelling order:', err);
-          alert('Failed to cancel the order. Please try again.');
-        }
-      });
-    // }s
+    event.stopPropagation();
+    this.orderService.cancelOrder(orderId).subscribe({
+      next: () => {
+        this.loadOrders(); // Refresh orders after cancellation
+        // Optionally, explicitly refresh profile (though this should be handled by OrderService)
+        this.userService.refreshProfile().subscribe();
+      },
+      error: (err) => {
+        console.error('Error cancelling order:', err);
+        alert('Failed to cancel the order. Please try again.');
+      }
+    });
   }
 
-    // accept an order
+
+  // accept an order
   acceptOrder(orderId: number, event: Event): void {
     event.stopPropagation(); // Prevent triggering other events
     if (confirm('Are you sure you want to accept this order?')) {
